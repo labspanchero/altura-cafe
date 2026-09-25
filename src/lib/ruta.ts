@@ -8,8 +8,31 @@ export type Parada = {
   puntaje: number | null;
   fuentePuntaje: string | null;
   fuente: string;
+  // Coordenadas de la dirección (OpenStreetMap). Faltan si no se pudo ubicar con confianza.
+  lat?: number;
+  lon?: number;
 };
-export type Ruta = { ciudad: string; consejo: string; paradas: Parada[]; maps: string };
+export type Ruta = { ciudad: string; consejo: string; paradas: Parada[]; maps: string; ubicada?: boolean };
+
+// Distancia en km entre dos puntos (haversine).
+export function distanciaKm(a: { lat: number; lon: number }, b: { lat: number; lon: number }) {
+  const r = Math.PI / 180;
+  const x = Math.sin(((b.lat - a.lat) * r) / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(((b.lon - a.lon) * r) / 2) ** 2;
+  return 12742 * Math.asin(Math.sqrt(x));
+}
+
+// Descarta paradas que el geocodificador ubicó lejos del lugar buscado (otra calle homónima, otra ciudad).
+export function filtrarCercanas(paradas: Parada[], centro: { lat: number; lon: number } | null, maxKm = 12): Parada[] {
+  return paradas.map((p) => {
+    if (p.lat === undefined || p.lon === undefined) return p;
+    const ok = Number.isFinite(p.lat) && Number.isFinite(p.lon) && (!centro || distanciaKm(centro, { lat: p.lat, lon: p.lon }) <= maxKm);
+    if (ok) return p;
+    const resto = { ...p };
+    delete resto.lat;
+    delete resto.lon;
+    return resto;
+  });
+}
 
 export function normalizarLugar(v: unknown) {
   if (typeof v !== "string") return null;

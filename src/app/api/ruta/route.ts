@@ -1,8 +1,8 @@
-import { bindings, ipDe, leerJson, superaLimite, superaTopeDiario } from "@/lib/entorno";
-import { claveLugar, limpiarRuta, limpiarUrl, normalizarLugar, type Ruta } from "@/lib/ruta";
+import { ipDe, leerJson, superaLimite, superaTopeDiario } from "@/lib/entorno";
+import { guardarRuta, leerRuta } from "@/lib/rutaCache";
+import { claveLugar, limpiarRuta, limpiarUrl, normalizarLugar } from "@/lib/ruta";
 
 // Ruta del café: búsqueda web con OpenAI (fuentes reales), caché de 24 h por lugar.
-const CACHE_SEG = 86400;
 const esquema = {
   type: "object",
   additionalProperties: false,
@@ -30,28 +30,6 @@ const esquema = {
   },
 };
 
-async function desdeCache(clave: string): Promise<Ruta | null> {
-  const { DB } = bindings();
-  if (!DB) return null;
-  try {
-    const { results } = await DB.prepare("SELECT datos, creado FROM rutas WHERE clave = ?").bind(clave).all<{ datos: string; creado: number }>();
-    const fila = results[0];
-    if (!fila || Date.now() / 1000 - fila.creado > CACHE_SEG) return null;
-    return JSON.parse(fila.datos) as Ruta;
-  } catch {
-    return null;
-  }
-}
-
-async function guardar(clave: string, ruta: Ruta) {
-  const { DB } = bindings();
-  if (!DB) return;
-  await DB.prepare("INSERT INTO rutas (clave, datos, creado) VALUES (?, ?, ?) ON CONFLICT(clave) DO UPDATE SET datos = excluded.datos, creado = excluded.creado")
-    .bind(clave, JSON.stringify(ruta), Math.floor(Date.now() / 1000))
-    .run()
-    .catch(() => {});
-}
-
 export async function POST(request: Request) {
   const cuerpo = await leerJson(request, 1_000);
   if (cuerpo === "grande") return Response.json({ error: "Solicitud demasiado grande." }, { status: 413 });
@@ -59,7 +37,7 @@ export async function POST(request: Request) {
   if (!lugar) return Response.json({ error: "Escribe una ciudad o un barrio." }, { status: 400 });
 
   const clave = claveLugar(lugar);
-  const guardada = await desdeCache(clave);
+  const guardada = await leerRuta(clave);
   if (guardada) return Response.json({ ruta: guardada, cache: true });
 
   const apiKey = process.env.OPENAI_API_KEY;
@@ -102,6 +80,6 @@ export async function POST(request: Request) {
   }
   const ruta = limpiarRuta(crudo, lugar, citas);
   if (!ruta) return Response.json({ error: `No encontramos cafeterías de especialidad con fuentes confiables en "${lugar}". Prueba con otro barrio o ciudad.` }, { status: 404 });
-  await guardar(clave, ruta);
+  await guardarRuta(clave, ruta);
   return Response.json({ ruta, cache: false });
 }

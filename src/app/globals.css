@@ -3282,6 +3282,111 @@ body::after {
   color: var(--ink-soft);
 }
 
+.mapa-ruta-marco {
+  margin-top: 24px;
+}
+
+.mapa-ruta {
+  height: clamp(320px, 48vw, 460px);
+  border: 3px solid var(--ink);
+  background: var(--paper-dim);
+  box-shadow: 8px 8px 0 var(--ink);
+  z-index: 0;
+}
+
+.mapa-ruta .leaflet-tile-pane {
+  filter: sepia(0.45) saturate(0.8) contrast(1.02);
+}
+
+.mapa-ruta-vacio {
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  text-align: center;
+  background: repeating-linear-gradient(45deg, rgba(28, 23, 16, 0.05) 0 12px, transparent 12px 24px), var(--paper-dim);
+}
+
+.mapa-ruta-vacio p {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.mapa-ruta-nota {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.mapa-ruta-marca {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--jute);
+  border: 3px solid var(--paper);
+  box-shadow: 0 3px 0 rgba(28, 23, 16, 0.45);
+  font-size: 22px;
+  transition: transform 0.2s var(--ease-out);
+}
+
+.mapa-ruta-marca span {
+  display: block;
+  width: 100%;
+  line-height: 1;
+  text-align: center;
+  transform: translateY(1px);
+}
+
+.mapa-ruta-marca:hover,
+.mapa-ruta-marca:focus-visible {
+  transform: scale(1.12);
+}
+
+.mapa-ruta-trazo {
+  animation: trazo-mapa 1.4s linear infinite;
+}
+
+@keyframes trazo-mapa {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+.mapa-ruta .leaflet-popup-content-wrapper {
+  border-radius: 0;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.mapa-ruta .leaflet-popup-tip {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+}
+
+.mapa-ruta-globo {
+  display: grid;
+  gap: 4px;
+  font-family: inherit;
+}
+
+.mapa-ruta-globo strong {
+  font-size: 16px;
+}
+
+.mapa-ruta-globo a {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.mapa-ruta .leaflet-control-attribution {
+  background: rgba(239, 228, 207, 0.9);
+  color: var(--ink-soft);
+}
+
 .ruta-paradas {
   position: relative;
   list-style: none;
@@ -3319,6 +3424,22 @@ body::after {
   background: var(--ink);
   color: var(--jute);
   font-size: 26px;
+}
+
+button.ruta-numero {
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.2s var(--ease-out);
+}
+
+button.ruta-numero:hover {
+  transform: scale(1.08);
+}
+
+.ruta-parada[data-activa="true"] .ruta-ficha {
+  background: rgba(255, 244, 222, 0.6);
+  box-shadow: 5px 5px 0 var(--ink);
 }
 
 .ruta-ficha {
@@ -3397,6 +3518,7 @@ body::after {
 
 @media (prefers-reduced-motion: reduce) {
   .ruta-trazo,
+  .mapa-ruta-trazo,
   .ruta-parada,
   .ruta-resultado {
     animation: none;

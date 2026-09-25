@@ -8,7 +8,7 @@ const csp = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' https://*.webflow.services",
   "style-src 'self' 'unsafe-inline' https://*.webflow.services",
-  "img-src 'self' data: blob: https://*.webflow.services https://d3e54v103j8qbb.cloudfront.net",
+  "img-src 'self' data: blob: https://*.webflow.services https://d3e54v103j8qbb.cloudfront.net https://tile.openstreetmap.org",
   "font-src 'self' data: https://*.webflow.services",
   "connect-src 'self' https://*.webflow.services",
   "worker-src 'self' blob:",

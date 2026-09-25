@@ -151,7 +151,23 @@ describe("seguridad", () => {
 });
 
 describe("ruta del café", async () => {
-  const { limpiarRuta, limpiarUrl, normalizarLugar, mapsRuta } = await import("@/lib/ruta");
+  const { limpiarRuta, limpiarUrl, normalizarLugar, mapsRuta, distanciaKm, filtrarCercanas } = await import("@/lib/ruta");
+  it("saca del mapa las paradas que el geocodificador ubicó lejos", () => {
+    const palermo = { lat: -34.5803, lon: -58.4245 };
+    expect(distanciaKm(palermo, { lat: -34.5886, lon: -58.4317 })).toBeLessThan(2);
+    const base = { barrio: "", destacado: "", puntaje: null, fuentePuntaje: null, fuente: "https://a.com" };
+    const [cerca, lejos, sin] = filtrarCercanas(
+      [
+        { ...base, nombre: "Cerca", direccion: "Thames 1535", lat: -34.5885, lon: -58.4317 },
+        { ...base, nombre: "Otra Thames", direccion: "Thames 1535", lat: -34.6737, lon: -58.5849 },
+        { ...base, nombre: "Sin datos", direccion: "?" },
+      ],
+      palermo,
+    );
+    expect(cerca.lat).toBeDefined();
+    expect(lejos.lat).toBeUndefined();
+    expect(sin.lat).toBeUndefined();
+  });
   it("extrae la URL de una fuente en markdown y quita utm", () => {
     expect(limpiarUrl("([catas.ar](https://www.catas.ar/?utm_source=openai))")).toBe("https://www.catas.ar/");
     expect(limpiarUrl("javascript:alert(1)")).toBeNull();

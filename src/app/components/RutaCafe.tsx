@@ -1,7 +1,10 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import { mapsParada, type Ruta } from "@/lib/ruta";
+import { mapsParada, type Parada, type Ruta } from "@/lib/ruta";
+
+const MapaRuta = dynamic(() => import("./MapaRuta"), { ssr: false, loading: () => <div className="mapa-ruta" aria-hidden="true" /> });
 
 const PASOS = ["Buscando cafeterías de especialidad…", "Confirmando que existen hoy…", "Revisando puntajes y fuentes…", "Trazando la ruta a pie…"];
 const SUGERENCIAS = ["Palermo, Buenos Aires", "Ciudad de México", "Medellín", "Madrid"];
@@ -20,6 +23,9 @@ export default function RutaCafe() {
   const [cargando, setCargando] = useState(false);
   const [paso, setPaso] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [ubicadas, setUbicadas] = useState<Parada[] | null>(null);
+  const [mapaEstado, setMapaEstado] = useState<"ubicando" | "listo" | "error">("ubicando");
+  const [activa, setActiva] = useState<number | null>(null);
   const campo = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -47,18 +53,42 @@ export default function RutaCafe() {
     setPaso(0);
     setError(null);
     setRuta(null);
+    setUbicadas(null);
+    setActiva(null);
     try {
       const res = await fetch("api/ruta", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lugar: q }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setRuta(data.ruta);
       requestAnimationFrame(() => document.getElementById("ruta-resultado")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+      ubicar(q, data.ruta);
     } catch (e) {
       setError(e instanceof Error && e.message ? e.message : "No pudimos armar la ruta. Intenta de nuevo.");
     } finally {
       setCargando(false);
     }
   }
+
+  // Las coordenadas llegan aparte: el geocodificador de OpenStreetMap va a 1 consulta por segundo.
+  async function ubicar(q: string, r: Ruta) {
+    if (r.ubicada) {
+      setUbicadas(r.paradas);
+      setMapaEstado("listo");
+      return;
+    }
+    setMapaEstado("ubicando");
+    try {
+      const res = await fetch("api/ruta/mapa", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lugar: q }) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setUbicadas(data.paradas);
+      setMapaEstado("listo");
+    } catch {
+      setMapaEstado("error");
+    }
+  }
+
+  const enMapa = ubicadas?.filter((p) => p.lat !== undefined).length ?? 0;
 
   return (
     <section className="ruta" id="ruta" aria-labelledby="ruta-titulo">
@@ -129,12 +159,49 @@ export default function RutaCafe() {
               </a>
             </div>
             {ruta.consejo && <p className="ruta-consejo">{ruta.consejo}</p>}
+            <div className="mapa-ruta-marco">
+              {mapaEstado === "listo" && ubicadas && enMapa > 0 ? (
+                <MapaRuta paradas={ubicadas} ciudad={ruta.ciudad} activa={activa} alElegir={setActiva} />
+              ) : (
+                <div className="mapa-ruta mapa-ruta-vacio">
+                  <p className="dato" aria-live="polite">
+                    {mapaEstado === "ubicando" ? (
+                      <>
+                        <span className="contador-punto" aria-hidden="true" /> Ubicando las paradas en el mapa…
+                      </>
+                    ) : (
+                      "No pudimos ubicar las paradas en el mapa. La ruta en Google Maps sigue disponible."
+                    )}
+                  </p>
+                </div>
+              )}
+              {mapaEstado === "listo" && ubicadas && enMapa < ubicadas.length && enMapa > 0 && (
+                <p className="dato mapa-ruta-nota">
+                  {ubicadas.length - enMapa === 1 ? "Una parada no se pudo ubicar" : `${ubicadas.length - enMapa} paradas no se pudieron ubicar`} con
+                  precisión; búscala con “Cómo llegar”.
+                </p>
+              )}
+            </div>
             <ol className="ruta-paradas">
               {ruta.paradas.map((p, i) => (
-                <li key={p.nombre + i} className="ruta-parada" style={{ "--i": i } as React.CSSProperties}>
-                  <span className="ruta-numero stencil" aria-hidden="true">
-                    {i + 1}
-                  </span>
+                <li key={p.nombre + i} className="ruta-parada" data-activa={activa === i} style={{ "--i": i } as React.CSSProperties}>
+                  {ubicadas?.[i]?.lat !== undefined ? (
+                    <button
+                      type="button"
+                      className="ruta-numero stencil"
+                      aria-label={`Ver ${p.nombre} en el mapa`}
+                      onClick={() => {
+                        setActiva(i);
+                        document.querySelector(".mapa-ruta-marco")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                      }}
+                    >
+                      {i + 1}
+                    </button>
+                  ) : (
+                    <span className="ruta-numero stencil" aria-hidden="true">
+                      {i + 1}
+                    </span>
+                  )}
                   <div className="ruta-ficha">
                     <div className="ruta-ficha-cabeza">
                       <h4 className="stencil">{p.nombre}</h4>
@@ -166,7 +233,7 @@ export default function RutaCafe() {
               Resultados de una búsqueda web con IA. Revisa horarios antes de ir; los puntajes solo aparecen cuando una
               fuente los publica.
             </p>
-            <button type="button" className="sello" onClick={() => { setRuta(null); setLugar(""); campo.current?.focus(); }}>
+            <button type="button" className="sello" onClick={() => { setRuta(null); setUbicadas(null); setActiva(null); setLugar(""); campo.current?.focus(); }}>
               Buscar otra ciudad
             </button>
           </div>
