@@ -27,8 +27,8 @@ export default function TazaLlena() {
 
       const escena = new THREE.Scene();
       const camara = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
-      camara.position.set(0, 2.3, 4.3);
-      camara.lookAt(0, 0.45, 0);
+      camara.position.set(0, 3.5, 3.4);
+      camara.lookAt(0, 0.5, 0);
       luces(escena);
 
       // Cerámica de gres artesanal: esmalte crema moteado, base de barro
@@ -188,6 +188,70 @@ export default function TazaLlena() {
       grupo.rotation.y = giroBase;
       escena.add(grupo);
 
+      // Latte art: rosetta de espuma sobre la crema. Va fuera del grupo para
+      // que la hoja siempre apunte hacia la cámara aunque la taza se balancee.
+      const lienzoArte = document.createElement("canvas");
+      lienzoArte.width = lienzoArte.height = 512;
+      const arteCtx = lienzoArte.getContext("2d")!;
+      {
+        const g = arteCtx;
+        const cx = 256;
+        g.clearRect(0, 0, 512, 512);
+        g.fillStyle = "#fbf3e4";
+        g.strokeStyle = "#fbf3e4";
+        g.shadowColor = "rgba(251,243,228,0.9)";
+        g.shadowBlur = 10;
+        g.lineCap = "round";
+        // hojas de la rosetta: de la base (cerca del borde) hacia la punta
+        const capas = 8;
+        for (let i = 0; i < capas; i++) {
+          const t = i / (capas - 1);
+          const y = 392 - t * 230;
+          const ancho = 150 - t * 92;
+          const caida = 62 - t * 26;
+          g.lineWidth = 22 - t * 9;
+          g.beginPath();
+          g.moveTo(cx - ancho, y - caida * 0.7);
+          g.bezierCurveTo(cx - ancho * 0.7, y + caida * 0.6, cx - ancho * 0.25, y + caida * 0.9, cx, y + caida * 0.55);
+          g.bezierCurveTo(cx + ancho * 0.25, y + caida * 0.9, cx + ancho * 0.7, y + caida * 0.6, cx + ancho, y - caida * 0.7);
+          g.stroke();
+        }
+        // corazón en la punta
+        g.beginPath();
+        g.moveTo(cx, 150);
+        g.bezierCurveTo(cx - 44, 118, cx - 34, 76, cx, 96);
+        g.bezierCurveTo(cx + 34, 76, cx + 44, 118, cx, 150);
+        g.fill();
+        // corte central que arrastra la espuma
+        g.shadowBlur = 4;
+        g.lineWidth = 7;
+        g.beginPath();
+        g.moveTo(cx, 110);
+        g.quadraticCurveTo(cx + 3, 280, cx, 440);
+        g.stroke();
+        // microespuma: puntos finos alrededor
+        g.shadowBlur = 0;
+        for (let i = 0; i < 500; i++) {
+          const a = Math.random() * Math.PI * 2;
+          const r = 200 + Math.random() * 50;
+          g.fillStyle = `rgba(251,243,228,${Math.random() * 0.25})`;
+          g.fillRect(256 + Math.cos(a) * r, 256 + Math.sin(a) * r, 2, 2);
+        }
+      }
+      const texArte = new THREE.CanvasTexture(lienzoArte);
+      texArte.colorSpace = THREE.SRGBColorSpace;
+      const arteMat = new THREE.MeshStandardMaterial({
+        map: texArte,
+        transparent: true,
+        opacity: 0,
+        roughness: 0.75,
+        depthWrite: false,
+      });
+      const arte = new THREE.Mesh(new THREE.CircleGeometry(1, 64), arteMat);
+      arte.rotation.x = -Math.PI / 2;
+      arte.renderOrder = 2;
+      escena.add(arte);
+
       let tueste = 1.6;
       const alTueste = (e: Event) => (tueste = (e as CustomEvent<number>).detail);
       window.addEventListener("altura:tueste", alTueste);
@@ -247,6 +311,11 @@ export default function TazaLlena() {
         }
         crema.position.y = alto;
         crema.scale.setScalar(rSup);
+        arte.position.y = alto + 0.004;
+        arte.scale.setScalar(rSup * 0.94);
+        const aparecer = Math.min(1, Math.max(0, (lleno - 0.86) / 0.12));
+        arteMat.opacity = aparecer;
+        arte.visible = aparecer > 0.01;
         cafe.visible = crema.visible = lleno > 0.01;
 
         colorTueste(tueste, color);
@@ -275,7 +344,8 @@ export default function TazaLlena() {
           const m = o as InstanceType<typeof THREE.Mesh>;
           m.geometry?.dispose();
         });
-        [loza, barro, ceramica, cafeMat, cremaMat].forEach((m) => m.dispose());
+        [loza, barro, ceramica, cafeMat, cremaMat, arteMat].forEach((m) => m.dispose());
+        texArte.dispose();
         [texEsmalte, texRug, texLiso].forEach((t) => t.dispose());
         renderer.dispose();
         renderer.domElement.remove();
