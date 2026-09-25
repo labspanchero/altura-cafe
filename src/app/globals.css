@@ -2112,3 +2112,214 @@ body::after {
     justify-items: start;
   }
 }
+
+/* ——— Trae tu café ——— */
+.tu-cafe {
+  padding: clamp(40px, 6vw, 90px) var(--gutter) clamp(72px, 10vw, 140px);
+  border-top: 3px dashed var(--ink);
+}
+
+.tu-cafe-interior {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.tu-cafe-cabeza {
+  margin-bottom: clamp(24px, 4vw, 40px);
+}
+
+.tu-cafe-entrada {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(16px, 3vw, 32px);
+  align-items: stretch;
+}
+
+.tu-cafe-foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 240px;
+  padding: 20px;
+  border: 3px dashed var(--ink);
+  background: rgba(255, 236, 196, 0.12);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.2s var(--ease-out);
+}
+
+.tu-cafe-foto:hover:not(:disabled) {
+  background: rgba(255, 236, 196, 0.24);
+}
+
+.tu-cafe-foto .stencil {
+  font-size: clamp(36px, 5vw, 56px);
+}
+
+.tu-cafe-foto img {
+  max-height: 220px;
+  max-width: 100%;
+  object-fit: contain;
+  border: 2px solid var(--ink);
+}
+
+.tu-cafe-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border: 3px solid var(--ink);
+}
+
+.tu-cafe-texto label {
+  font-size: 15px;
+}
+
+.tu-cafe-texto textarea {
+  flex: 1;
+  min-height: 110px;
+  padding: 12px;
+  border: 2px solid var(--ink);
+  background: rgba(255, 244, 222, 0.35);
+  color: var(--ink);
+  font: inherit;
+  resize: vertical;
+}
+
+.tu-cafe-texto textarea::placeholder {
+  color: var(--ink-soft);
+}
+
+.tu-cafe-texto .sello {
+  align-self: flex-start;
+}
+
+.tu-ficha {
+  margin-top: clamp(28px, 4vw, 48px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  border: 4px solid var(--tinta);
+  background-color: #b89460;
+  scroll-margin-top: 90px;
+  animation: ficha-entra 0.8s var(--ease-out) both;
+}
+
+.tu-ficha > * {
+  padding: clamp(18px, 2.5vw, 28px);
+  border-bottom: 2px solid rgba(28, 23, 16, 0.25);
+}
+
+.tu-ficha-cabeza {
+  grid-column: 1 / -1;
+}
+
+.tu-ficha-marca {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.tu-ficha-cabeza h3 {
+  margin: 0 0 14px;
+  font-size: clamp(48px, 8vw, 96px);
+  color: var(--tinta);
+}
+
+.notas-yute li {
+  border-color: var(--tinta);
+}
+
+.tu-ficha-datos {
+  align-content: start;
+  border-right: 2px solid rgba(28, 23, 16, 0.25);
+}
+
+.tu-ficha-datos dt {
+  color: var(--ink-soft);
+}
+
+.tu-ficha-metodo p,
+.tu-ficha-calibrar p {
+  margin: 0 0 10px;
+  font-size: 15px;
+}
+
+.filtro-yute {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.filtro-yute .metodo-icono {
+  width: 20px;
+  height: 20px;
+}
+
+.filtro-yute:hover {
+  border-color: var(--ink);
+  background: rgba(28, 23, 16, 0.08);
+}
+
+.filtro-yute[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--jute);
+}
+
+.tu-ficha-receta {
+  border-right: 2px solid rgba(28, 23, 16, 0.25);
+}
+
+.tu-ficha-receta .receta-molienda {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 2px 8px;
+  background: var(--tinta);
+  color: #fff;
+  font-size: 15px;
+}
+
+.tu-ficha-receta .tabla-datos {
+  margin-bottom: 16px;
+}
+
+.tu-ficha-receta .tabla-datos dt {
+  color: var(--ink-soft);
+}
+
+.tu-ficha-ajustes {
+  margin: 14px 0 0;
+  padding-left: 20px;
+}
+
+.tu-ficha-ajustes li {
+  margin-bottom: 6px;
+}
+
+.tu-ficha-primo,
+.tu-ficha-aviso {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.tu-ficha-aviso {
+  font-size: 13px;
+  color: var(--ink-soft);
+  border-bottom: 0;
+}
+
+@media (max-width: 800px) {
+  .tu-cafe-entrada,
+  .tu-ficha {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tu-ficha-datos,
+  .tu-ficha-receta {
+    border-right: 0;
+  }
+}

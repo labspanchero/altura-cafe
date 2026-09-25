@@ -4,6 +4,7 @@ import Pedido from "./components/Pedido";
 import Lluvia from "./components/Lluvia";
 import ContadorVivo from "./components/ContadorVivo";
 import MarcasFondo from "./components/MarcasFondo";
+import TraeTuCafe from "./components/TraeTuCafe";
 import { CartaProvider } from "./components/CartaContexto";
 import { obtenerCarta } from "@/lib/carta";
 
@@ -56,6 +57,9 @@ export default async function Home() {
           </li>
           <li>
             <a className="nav-link" href="#barista">Barista</a>
+          </li>
+          <li>
+            <a className="nav-link" href="#tu-cafe">Escanear</a>
           </li>
         </ul>
       </nav>
@@ -111,6 +115,7 @@ export default async function Home() {
         <MapaAltura />
         <Carta />
         <Pedido />
+        <TraeTuCafe />
       </main>
 
       <footer className="pie">
