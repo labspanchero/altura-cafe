@@ -203,7 +203,27 @@ a {
   overflow: hidden;
 }
 
+.lluvia {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease-out);
+}
+
+.lluvia[data-listo="true"] {
+  opacity: 1;
+}
+
+.lluvia canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 .saco-cara {
+  z-index: 1;
   position: relative;
   max-width: 1180px;
   width: 100%;
@@ -235,6 +255,8 @@ a {
 }
 
 .portada-datos {
+  position: relative;
+  background: var(--jute);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   border-top: 3px solid var(--ink);
@@ -509,6 +531,43 @@ a {
   transition: r 0.4s var(--ease-out);
 }
 
+/* Tostador 3D */
+.tostador {
+  max-width: 520px;
+  margin: 8px 0 20px;
+}
+
+.tostador-lienzo {
+  height: clamp(220px, 30vw, 300px);
+  border: 2px solid var(--ink);
+  background: radial-gradient(circle at 50% 40%, rgba(255, 236, 196, 0.35), transparent 70%), var(--jute-deep);
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.tostador-lienzo:active {
+  cursor: grabbing;
+}
+
+.tostador-lienzo canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.tostador input[type="range"] {
+  width: 100%;
+  accent-color: var(--ink);
+  height: 28px;
+  margin-top: 10px;
+}
+
+.tostador-ayuda {
+  font-size: 13px;
+  margin: 6px 0 0;
+  opacity: 0.8;
+}
+
 /* ——— Bodega: la carta ——— */
 .bodega {
   background: var(--bodega);
@@ -603,9 +662,67 @@ a {
   pointer-events: none;
 }
 
+.pila {
+  --rx: 0deg;
+  --ry: 0deg;
+  transform-style: preserve-3d;
+  transform: perspective(700px) rotateX(var(--rx)) rotateY(var(--ry));
+}
+
+.pila::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--lx, 50%) var(--ly, 30%), rgba(255, 240, 210, 0.28), transparent 55%);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+}
+
+.pila:hover::after {
+  opacity: 1;
+}
+
 .pila:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 22px 36px -14px rgba(0, 0, 0, 0.8);
+  transform: perspective(700px) rotateX(var(--rx)) rotateY(var(--ry)) translateZ(24px);
+  box-shadow: 0 30px 44px -16px rgba(0, 0, 0, 0.85);
+  transition: transform 0.12s linear, box-shadow 0.35s var(--ease-out);
+}
+
+.pila-pais {
+  transform: translateZ(22px);
+}
+
+.pila-lote,
+.pila-pie {
+  transform: translateZ(10px);
+}
+
+.ficha {
+  animation: ficha-entra 0.8s var(--ease-out) both;
+  transform-origin: top center;
+}
+
+@keyframes ficha-entra {
+  from {
+    opacity: 0;
+    transform: perspective(1200px) rotateX(-14deg) translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pila,
+  .pila:hover {
+    transform: none;
+  }
+
+  .ficha {
+    animation: none;
+  }
 }
 
 .pila[aria-pressed="true"] {

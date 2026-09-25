@@ -1,6 +1,7 @@
 import Carta from "./components/Carta";
 import Historia from "./components/Historia";
 import Pedido from "./components/Pedido";
+import Lluvia from "./components/Lluvia";
 
 function Estampa() {
   return (
@@ -42,6 +43,7 @@ export default function Home() {
 
       <main>
         <header className="portada">
+          <Lluvia />
           <div className="saco-cara">
             <Estampa />
             <span className="stencil portada-marca" aria-hidden="true">

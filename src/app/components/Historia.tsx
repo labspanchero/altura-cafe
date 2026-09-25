@@ -2,7 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { METODOS, METODOS_ORDEN } from "@/lib/cafes";
-import { Cereza, Cosecha, Planta, Procesos, Secado, Taza, Tueste } from "./Ilustraciones";
+import dynamic from "next/dynamic";
+import { Cereza, Cosecha, Planta, Procesos, Secado, Taza } from "./Ilustraciones";
+
+const GranoTueste = dynamic(() => import("./three/GranoTueste"), { ssr: false });
 
 type Etapa = {
   id: string;
@@ -87,7 +90,7 @@ const ETAPAS: Etapa[] = [
       "En el tostador el grano pierde agua, se dora y alrededor de los 196 °C cruje: es el primer crack.",
       "Un tueste claro conserva la acidez y las flores del origen. Uno más oscuro suma cuerpo, chocolate y amargor, pero borra el origen.",
     ],
-    ilustracion: <Tueste />,
+    ilustracion: <GranoTueste />,
     estampa: { texto: ["TUESTE CLARO"], x: 55, y: 565, giro: 3, ancho: 210 },
   },
   {

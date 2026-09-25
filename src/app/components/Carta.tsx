@@ -126,6 +126,22 @@ export function Ficha({ cafe }: { cafe: Cafe }) {
   );
 }
 
+function inclinar(e: React.PointerEvent<HTMLButtonElement>) {
+  if (e.pointerType !== "mouse") return;
+  const r = e.currentTarget.getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width - 0.5;
+  const y = (e.clientY - r.top) / r.height - 0.5;
+  e.currentTarget.style.setProperty("--ry", `${x * 22}deg`);
+  e.currentTarget.style.setProperty("--rx", `${-y * 18}deg`);
+  e.currentTarget.style.setProperty("--lx", `${(x + 0.5) * 100}%`);
+  e.currentTarget.style.setProperty("--ly", `${(y + 0.5) * 100}%`);
+}
+
+function soltar(e: React.PointerEvent<HTMLButtonElement>) {
+  e.currentTarget.style.setProperty("--ry", "0deg");
+  e.currentTarget.style.setProperty("--rx", "0deg");
+}
+
 export default function Carta() {
   const [filtro, setFiltro] = useState<(typeof FILTROS)[number]["id"]>("todos");
   const [elegido, setElegido] = useState<string>(CAFES[0].id);
@@ -180,6 +196,8 @@ export default function Carta() {
                       ?.scrollIntoView({ behavior: "smooth", block: "start" }),
                   );
                 }}
+                onPointerMove={inclinar}
+                onPointerLeave={soltar}
                 style={{ "--tinta": c.tinta } as React.CSSProperties}
               >
                 <span className="dato pila-lote">{c.lote}</span>
