@@ -1,26 +1,12 @@
 import { CAFES, METODOS } from "@/lib/cafes";
+import { ipDe, superaLimite } from "@/lib/entorno";
 
 type Mensaje = { role: "user" | "assistant"; content: string };
 
 const MAX_MENSAJES = 12;
 const MAX_CARACTERES = 500;
 const LIMITE_POR_VENTANA = 15;
-const VENTANA_MS = 10 * 60 * 1000;
-
-// Límite por IP en memoria del isolate: es de mejor esfuerzo. El tope real de
-// gasto se configura en el panel de OpenAI.
-const usos = new Map<string, { n: number; desde: number }>();
-
-function superaLimite(ip: string) {
-  const ahora = Date.now();
-  const u = usos.get(ip);
-  if (!u || ahora - u.desde > VENTANA_MS) {
-    usos.set(ip, { n: 1, desde: ahora });
-    return false;
-  }
-  u.n += 1;
-  return u.n > LIMITE_POR_VENTANA;
-}
+const VENTANA_SEG = 10 * 60;
 
 const CARTA = CAFES.map((c) => ({
   lote: c.lote,
@@ -69,8 +55,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const ip = request.headers.get("cf-connecting-ip") ?? "local";
-  if (superaLimite(ip)) {
+  // Límite por visitante en el KV de Webflow Cloud (sobrevive entre isolates).
+  if (await superaLimite(`barista:${ipDe(request)}`, LIMITE_POR_VENTANA, VENTANA_SEG)) {
     return Response.json(
       { error: "Muchas preguntas seguidas. Espera unos minutos y vuelve a intentar." },
       { status: 429 },

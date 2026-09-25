@@ -44,7 +44,59 @@ function coincide(cafe: Cafe, filtro: (typeof FILTROS)[number]["id"]) {
   return cafe.perfil.includes(filtro);
 }
 
-export function Ficha({ cafe }: { cafe: Cafe }) {
+function Corazon({ lleno }: { lleno: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" className="corazon" aria-hidden="true">
+      <path
+        d="M12 20.5s-7.5-4.6-9.3-9.4C1.4 7.6 3.6 4.5 6.9 4.5c2 0 3.6 1.1 5.1 3 1.5-1.9 3.1-3 5.1-3 3.3 0 5.5 3.1 4.2 6.6-1.8 4.8-9.3 9.4-9.3 9.4z"
+        fill={lleno ? "currentColor" : "none"}
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+type MeGusta = { conteos: Record<string, number>; mios: Set<string>; dar: (id: string) => void };
+
+function useMeGusta(): MeGusta {
+  const [conteos, setConteos] = useState<Record<string, number>>({});
+  const [mios, setMios] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    try {
+      setMios(new Set(JSON.parse(localStorage.getItem("altura:megusta") ?? "[]")));
+    } catch {
+      // sin almacenamiento local
+    }
+    fetch("api/megusta")
+      .then((r) => r.json())
+      .then((d) => d.conteos && setConteos(d.conteos))
+      .catch(() => {});
+  }, []);
+  const dar = (id: string) => {
+    if (mios.has(id)) return;
+    const nuevos = new Set(mios).add(id);
+    setMios(nuevos);
+    setConteos((c) => ({ ...c, [id]: (c[id] ?? 0) + 1 }));
+    try {
+      localStorage.setItem("altura:megusta", JSON.stringify([...nuevos]));
+    } catch {
+      // sin almacenamiento local
+    }
+    fetch("api/megusta", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    })
+      .then((r) => r.json())
+      .then((d) => d.conteos && setConteos(d.conteos))
+      .catch(() => {});
+  };
+  return { conteos, mios, dar };
+}
+
+export function Ficha({ cafe, meGusta }: { cafe: Cafe; meGusta?: MeGusta }) {
   return (
     <article
       className="ficha"
@@ -61,6 +113,20 @@ export function Ficha({ cafe }: { cafe: Cafe }) {
             {cafe.region} · {cafe.lote} · Cosecha {cafe.cosecha}
           </p>
         </div>
+        {meGusta && (
+          <button
+            type="button"
+            className="me-gusta"
+            aria-pressed={meGusta.mios.has(cafe.id)}
+            onClick={() => meGusta.dar(cafe.id)}
+            disabled={meGusta.mios.has(cafe.id)}
+          >
+            <Corazon lleno={meGusta.mios.has(cafe.id)} />
+            <span className="dato">
+              {meGusta.mios.has(cafe.id) ? "Te gusta" : "Me gusta"} · {meGusta.conteos[cafe.id] ?? 0}
+            </span>
+          </button>
+        )}
         <div className="ficha-puntaje">
           <span className="stencil">{cafe.puntaje.toLocaleString("es")}</span>
           <span className="dato">Puntos SCA</span>
@@ -168,6 +234,7 @@ export default function Carta() {
   const [filtro, setFiltro] = useState<(typeof FILTROS)[number]["id"]>("todos");
   const [elegido, setElegido] = useState<string>(CAFES[0].id);
   const cafe = CAFES.find((c) => c.id === elegido) ?? CAFES[0];
+  const meGusta = useMeGusta();
 
   // La trama de arpillera se genera una vez y la comparten todos los sacos.
   useEffect(() => {
@@ -263,6 +330,11 @@ export default function Carta() {
                   {c.proceso.split(",")[0]} · {c.altitud.toLocaleString("es")} msnm
                   <br />
                   {c.notas[0]}
+                  {(meGusta.conteos[c.id] ?? 0) > 0 && (
+                    <span className="pila-megusta">
+                      <Corazon lleno={meGusta.mios.has(c.id)} /> {meGusta.conteos[c.id]}
+                    </span>
+                  )}
                 </span>
               </button>
             );
@@ -270,7 +342,7 @@ export default function Carta() {
         </div>
 
         <div id="ficha-ancla" style={{ scrollMarginTop: 80 }} />
-        <Ficha key={cafe.id} cafe={cafe} />
+        <Ficha key={cafe.id} cafe={cafe} meGusta={meGusta} />
         <Comparador key={`cmp-${cafe.id}`} base={cafe} />
       </div>
     </section>

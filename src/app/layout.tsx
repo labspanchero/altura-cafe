@@ -20,10 +20,29 @@ const body = Barlow({
   subsets: ["latin"],
 });
 
+const titulo = "Altura · Café de especialidad, de la planta a la taza";
+const descripcion =
+  "Sigue un lote de café verde desde la planta hasta la taza y conoce la ficha completa de cada café: origen, altitud, proceso, notas, molienda y receta.";
+
 export const metadata: Metadata = {
-  title: "Altura · Café de especialidad, de la planta a la taza",
-  description:
-    "Sigue un lote de café verde desde la planta hasta la taza y conoce la ficha completa de cada café: origen, altitud, proceso, notas, molienda y receta.",
+  metadataBase: new URL("https://altura-cafe.webflow.io"),
+  title: titulo,
+  description: descripcion,
+  openGraph: {
+    type: "website",
+    locale: "es_AR",
+    url: "/",
+    siteName: "Altura",
+    title: titulo,
+    description: descripcion,
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Saco de café Altura con el lote ALT-07 de Guji, Etiopía" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: titulo,
+    description: descripcion,
+    images: ["/og.png"],
+  },
 };
 
 export default function RootLayout({

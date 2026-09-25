@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "altura-cafe",
+  "compatibility_date": "2025-04-15",
+  "d1_databases": [
+    { "binding": "DB", "database_name": "altura", "database_id": "0", "migrations_dir": "migraciones" }
+  ],
+  "kv_namespaces": [{ "binding": "LIMITES", "id": "local" }]
+}

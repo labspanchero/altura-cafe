@@ -80,6 +80,109 @@ const PREGUNTAS = [
   },
 ] as const;
 
+// Tarjeta para compartir el resultado del quiz (se dibuja en el navegador).
+async function tarjetaResultado(r: Resultado) {
+  const W = 1080;
+  const H = 1350;
+  const cv = document.createElement("canvas");
+  cv.width = W;
+  cv.height = H;
+  const g = cv.getContext("2d")!;
+  const muestra = document.querySelector(".stencil");
+  const stencil = muestra ? getComputedStyle(muestra).fontFamily : "sans-serif";
+  const datoEl = document.querySelector(".dato");
+  const dato = datoEl ? getComputedStyle(datoEl).fontFamily : "sans-serif";
+  await document.fonts.ready;
+
+  // yute con la trama de la página
+  g.fillStyle = "#b08a52";
+  g.fillRect(0, 0, W, H);
+  const trama = getComputedStyle(document.documentElement).getPropertyValue("--arpillera").match(/url\((.+)\)/)?.[1];
+  if (trama) {
+    const img = new Image();
+    img.src = trama;
+    await img.decode().catch(() => {});
+    const pat = g.createPattern(img, "repeat");
+    if (pat) {
+      g.globalAlpha = 0.9;
+      g.fillStyle = pat;
+      g.fillRect(0, 0, W, H);
+      g.globalAlpha = 1;
+    }
+  }
+  const tinta = "#1c1710";
+  g.strokeStyle = tinta;
+  g.lineWidth = 10;
+  g.strokeRect(60, 60, W - 120, H - 120);
+  g.setLineDash([22, 16]);
+  g.lineWidth = 4;
+  g.strokeRect(92, 92, W - 184, H - 184);
+  g.setLineDash([]);
+
+  g.fillStyle = tinta;
+  g.textBaseline = "alphabetic";
+  g.font = `900 150px ${stencil}`;
+  g.fillText("ALTURA", 130, 290);
+  g.font = `700 54px ${dato}`;
+  g.fillText("MI CAFÉ ES", 134, 420);
+
+  g.fillStyle = r.cafe.tinta;
+  let tam = 210;
+  g.font = `900 ${tam}px ${stencil}`;
+  while (g.measureText(r.cafe.pais.toUpperCase()).width > W - 260 && tam > 90) {
+    tam -= 10;
+    g.font = `900 ${tam}px ${stencil}`;
+  }
+  g.fillText(r.cafe.pais.toUpperCase(), 128, 420 + tam * 0.95);
+
+  g.fillStyle = tinta;
+  g.font = `700 50px ${dato}`;
+  const y0 = 420 + tam * 0.95 + 90;
+  g.fillText(`${r.cafe.lote} · ${r.cafe.region.toUpperCase()}`, 134, y0);
+  g.font = `600 44px ${dato}`;
+  g.fillText(r.cafe.notas.join(" · ").toUpperCase(), 134, y0 + 70);
+
+  // sello con el método y la receta
+  const ys = y0 + 150;
+  g.lineWidth = 8;
+  g.strokeStyle = r.cafe.tinta;
+  g.strokeRect(128, ys, W - 256, 300);
+  g.fillStyle = r.cafe.tinta;
+  g.font = `900 92px ${stencil}`;
+  g.fillText(r.metodo.nombre.toUpperCase(), 168, ys + 110);
+  g.font = `700 44px ${dato}`;
+  g.fillText(`MOLIENDA ${r.receta.molienda.toUpperCase()}`, 172, ys + 180);
+  g.fillText(`${r.receta.dosis} · ${r.receta.agua} · ${r.receta.temperatura} · ${r.receta.tiempo}`.toUpperCase(), 172, ys + 245);
+
+  g.fillStyle = tinta;
+  g.font = `600 36px ${dato}`;
+  g.fillText("ALTURA-CAFE.WEBFLOW.IO · NERDEARLA 2026", 134, H - 170);
+  g.font = `500 28px ${dato}`;
+  g.fillText("TOSTADERÍA FICTICIA · LOTES DE MUESTRA", 134, H - 128);
+
+  return new Promise<Blob | null>((ok) => cv.toBlob(ok, "image/png"));
+}
+
+async function compartirResultado(r: Resultado) {
+  const blob = await tarjetaResultado(r);
+  if (!blob) return;
+  const archivo = new File([blob], `mi-cafe-${r.cafe.lote}.png`, { type: "image/png" });
+  const texto = `Mi café es ${r.cafe.pais} ${r.cafe.lote}: ${r.cafe.notas.join(", ")}. Encuentra el tuyo en Altura.`;
+  try {
+    if (navigator.canShare?.({ files: [archivo] })) {
+      await navigator.share({ files: [archivo], text: texto, url: location.href });
+      return;
+    }
+  } catch {
+    // compartir cancelado: se descarga
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = archivo.name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
 function Quiz() {
   const [resp, setResp] = useState<Record<string, string>>({});
   const [resultado, setResultado] = useState<Resultado | null>(null);
@@ -181,9 +284,14 @@ function Quiz() {
           <p style={{ color: "var(--paper-dim)" }}>
             Si quieres otra opción, prueba el {resultado.alternativa.pais} {resultado.alternativa.lote}.
           </p>
-          <button type="button" className="sello sello-claro" onClick={() => abrirFicha(resultado.cafe.id)}>
-            Ver la ficha completa
-          </button>
+          <div className="resultado-acciones">
+            <button type="button" className="sello sello-claro" onClick={() => abrirFicha(resultado.cafe.id)}>
+              Ver la ficha completa
+            </button>
+            <button type="button" className="sello sello-claro" onClick={() => compartirResultado(resultado)}>
+              Compartir mi café
+            </button>
+          </div>
         </div>
       )}
     </div>
