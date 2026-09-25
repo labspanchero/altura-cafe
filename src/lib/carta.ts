@@ -2,10 +2,10 @@ import { CAFES, METODOS, type Cafe, type Metodo, type Perfil, type Receta } from
 import { bindings } from "./entorno";
 
 // La carta vive en el CMS de Webflow (sitio altura-cms, colección "Lotes"),
-// cargada con el MCP de Webflow. Se lee con la Data API, se cachea en KV y,
-// si algo falla, se usa la carta local.
-const COLECCION = process.env.WEBFLOW_COLLECTION_ID ?? "6ab5febfaaaa32050b28006c";
-const CACHE_CLAVE = "carta:v2";
+// cargada con el MCP de Webflow. Se lee con la Data API y se guarda en SQLite:
+// cuando Webflow avisa un cambio (webhook) se vuelve a leer al instante; si no,
+// cada 5 minutos. Si algo falla, se usa la carta local.
+export const COLECCION = process.env.WEBFLOW_COLLECTION_ID ?? "6ab5febfaaaa32050b28006c";
 const CACHE_SEG = 300;
 
 const TUESTES: Record<string, Cafe["tueste"]> = {
@@ -16,7 +16,8 @@ const TUESTES: Record<string, Cafe["tueste"]> = {
 };
 
 export type Fuente = "cms" | "local";
-export type Carta = { cafes: Cafe[]; fuente: Fuente };
+// cambiado: segundos Unix del último cambio real de contenido en el CMS.
+export type Carta = { cafes: Cafe[]; fuente: Fuente; cambiado: number | null };
 
 type Item = { fieldData: Record<string, unknown>; isDraft?: boolean; isArchived?: boolean };
 
@@ -98,22 +99,62 @@ async function desdeCms(): Promise<Cafe[] | null> {
   return cafes.length ? cafes : null;
 }
 
+type Fila = { datos: string; huella: string; leido: number; cambiado: number };
+let memoria: Fila | null = null;
+
+async function leerFila(): Promise<Fila | null> {
+  const { DB } = bindings();
+  if (!DB) return memoria;
+  try {
+    const { results } = await DB.prepare("SELECT datos, huella, leido, cambiado FROM carta WHERE id = 1").all<Fila>();
+    return results[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function huellaDe(texto: string) {
+  const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(texto));
+  return [...new Uint8Array(b).slice(0, 12)].map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+
+// Lee el CMS y guarda la carta. Devuelve null si el CMS no respondió.
+export async function refrescarCarta(): Promise<Carta | null> {
+  const cafes = await desdeCms().catch(() => null);
+  if (!cafes) return null;
+  const datos = JSON.stringify(cafes);
+  const huella = await huellaDe(datos);
+  const ahora = Math.floor(Date.now() / 1000);
+  const previa = await leerFila();
+  const cambiado = previa && previa.huella === huella ? previa.cambiado : ahora;
+  const fila = { datos, huella, leido: ahora, cambiado };
+  const { DB } = bindings();
+  if (!DB) memoria = fila;
+  else
+    await DB.prepare(
+      "INSERT INTO carta (id, datos, huella, leido, cambiado) VALUES (1, ?1, ?2, ?3, ?4) ON CONFLICT(id) DO UPDATE SET datos = ?1, huella = ?2, leido = ?3, cambiado = ?4",
+    )
+      .bind(datos, huella, ahora, cambiado)
+      .run()
+      .catch(() => {});
+  return { cafes, fuente: "cms", cambiado };
+}
+
+export async function versionCarta(): Promise<number | null> {
+  return (await leerFila())?.cambiado ?? null;
+}
+
 export async function obtenerCarta(): Promise<Carta> {
-  const { LIMITES } = bindings();
-  try {
-    const cache = await LIMITES?.get(CACHE_CLAVE);
-    if (cache) return { cafes: JSON.parse(cache) as Cafe[], fuente: "cms" };
-  } catch {
-    // cache ilegible: se ignora
-  }
-  try {
-    const cafes = await desdeCms();
-    if (cafes) {
-      await LIMITES?.put(CACHE_CLAVE, JSON.stringify(cafes), { expirationTtl: CACHE_SEG }).catch(() => {});
-      return { cafes, fuente: "cms" };
+  const fila = await leerFila();
+  if (fila && Date.now() / 1000 - fila.leido < CACHE_SEG) {
+    try {
+      return { cafes: JSON.parse(fila.datos) as Cafe[], fuente: "cms", cambiado: fila.cambiado };
+    } catch {
+      // fila ilegible: se vuelve a leer el CMS
     }
-  } catch {
-    // el CMS no respondió a tiempo: carta local
   }
-  return { cafes: CAFES, fuente: "local" };
+  const fresca = await refrescarCarta();
+  if (fresca) return fresca;
+  if (fila) return { cafes: JSON.parse(fila.datos) as Cafe[], fuente: "cms", cambiado: fila.cambiado };
+  return { cafes: CAFES, fuente: "local", cambiado: null };
 }

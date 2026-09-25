@@ -38,9 +38,9 @@ function Estampa() {
 }
 
 export default async function Home() {
-  const { cafes, fuente } = await obtenerCarta();
+  const { cafes, fuente, cambiado } = await obtenerCarta();
   return (
-    <CartaProvider cafes={cafes} fuente={fuente}>
+    <CartaProvider cafes={cafes} fuente={fuente} cambiado={cambiado}>
       <nav className="nav" aria-label="Principal">
         <a href="#" className="stencil nav-marca">
           Altura

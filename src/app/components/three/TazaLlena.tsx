@@ -429,6 +429,8 @@ export default function TazaLlena() {
         }
         renderer.render(escena, camara);
       };
+      await renderer.compileAsync(escena, camara).catch(() => {});
+      if (cancelado) return;
       cuadro();
 
       limpiar = () => {

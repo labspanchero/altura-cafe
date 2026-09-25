@@ -6,7 +6,6 @@ import { useCarta } from "./CartaContexto";
 import Temporizador from "./Temporizador";
 import BolsaDorada from "./BolsaDorada";
 import { etapasDe } from "@/lib/etapas";
-import { texturaArpillera } from "@/lib/arpillera";
 import MetodoIcono from "./MetodoIcono";
 
 const FILTROS: { id: "todos" | Perfil | "leche"; nombre: string }[] = [
@@ -248,12 +247,6 @@ export default function Carta() {
   const cafe = CAFES.find((c) => c.id === elegido) ?? CAFES[0];
   const meGusta = useMeGusta();
 
-  // La trama de arpillera se genera una vez y la comparten todos los sacos.
-  useEffect(() => {
-    const url = texturaArpillera();
-    if (url) document.documentElement.style.setProperty("--arpillera", `url(${url})`);
-  }, []);
-
   useEffect(() => {
     const abrir = (e: Event) => {
       const id = (e as CustomEvent<string>).detail;
@@ -278,11 +271,7 @@ export default function Carta() {
           Seis lotes en la bodega. Elige un saco para ver su ficha completa:
           origen, proceso, notas, perfil sensorial, molienda y receta.
         </p>
-        {fuente === "cms" && (
-          <p className="fuente-cms dato">
-            <span className="contador-punto" aria-hidden="true" /> Carta servida en vivo desde el CMS de Webflow
-          </p>
-        )}
+        {fuente === "cms" && <SelloCms />}
         <p className="aviso-ficticio">
           Lotes de muestra, ficticios. Orígenes, variedades y procesos son
           reales; fincas, productores y puntajes son ilustrativos.
@@ -374,6 +363,41 @@ export default function Carta() {
         <Comparador key={`cmp-${cafe.id}`} base={cafe} />
       </div>
     </section>
+  );
+}
+
+function hace(seg: number) {
+  if (seg < 60) return "hace unos segundos";
+  const m = Math.floor(seg / 60);
+  if (m < 60) return m === 1 ? "hace 1 minuto" : `hace ${m} minutos`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return h === 1 ? "hace 1 hora" : `hace ${h} horas`;
+  const d = Math.floor(h / 24);
+  return d === 1 ? "hace 1 día" : `hace ${d} días`;
+}
+
+// Sello en vivo: la carta viene del CMS de Webflow y se actualiza sola cuando alguien la edita.
+function SelloCms() {
+  const { cambiado, recien } = useCarta();
+  const [ahora, setAhora] = useState<number | null>(null);
+  useEffect(() => {
+    const tic = () => setAhora(Date.now() / 1000);
+    tic();
+    const t = setInterval(tic, 15000);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <p className="fuente-cms dato" data-recien={recien} aria-live="polite">
+      <span className="contador-punto" aria-hidden="true" />
+      {recien ? (
+        <span>¡La carta se acaba de actualizar desde Webflow!</span>
+      ) : (
+        <span>
+          Carta en vivo desde el CMS de Webflow
+          {cambiado && ahora ? ` · último cambio ${hace(Math.max(0, ahora - cambiado))}` : ""}
+        </span>
+      )}
+    </p>
   );
 }
 

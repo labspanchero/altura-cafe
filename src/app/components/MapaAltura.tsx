@@ -248,6 +248,8 @@ export default function MapaAltura() {
         if (!quieto && !arrastrando) azimut += dt * 0.09;
         dibujar();
       };
+      await renderer.compileAsync(escena, camara).catch(() => {});
+      if (cancelado) return;
       dibujar();
       cuadro();
       cont.setAttribute("data-listo", "true");

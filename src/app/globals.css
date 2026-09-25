@@ -795,9 +795,25 @@ main > section {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: fit-content;
   margin: 20px 0 0;
+  padding: 4px 0;
   color: var(--paper-dim);
   font-size: 14px;
+  transition: background 0.4s, color 0.4s, padding 0.4s;
+}
+
+.fuente-cms[data-recien="true"] {
+  padding: 4px 12px;
+  background: var(--jute);
+  color: var(--ink);
+  animation: sello-recien 0.6s var(--ease-out);
+}
+
+@keyframes sello-recien {
+  from {
+    transform: scale(0.94);
+  }
 }
 
 .aviso-ficticio {
@@ -1996,6 +2012,11 @@ body::after {
   pointer-events: none;
 }
 
+/* Trama de arpillera: imagen fija (antes se dibujaba en cada visita y trababa la carga). */
+:root {
+  --arpillera: url("./arpillera.png");
+}
+
 /* trama grande de arpillera, la misma de los sacos */
 body::before {
   background-image: var(--arpillera, none);
@@ -2633,6 +2654,12 @@ body::after {
   width: 14px;
   height: 14px;
   border: 2px solid var(--ink);
+}
+
+/* Texto chico sobre fondo oscuro: sin transparencia para que se lea bien. */
+.arma-opcion[data-activa="true"] .arma-opcion-desc {
+  color: var(--paper);
+  opacity: 1;
 }
 
 .arma-opcion[data-activa="true"] .arma-punto {

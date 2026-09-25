@@ -198,11 +198,15 @@ export function texturasGrano(): TexturasGrano {
 }
 
 // Material de grano según tueste (0 verde … 4 oscuro).
-export function materialGrano(t: number) {
+// ligero: en celulares se usa el material estándar, mucho más barato de compilar y dibujar.
+export function materialGrano(t: number, ligero = false) {
   const tex = texturasGrano();
   const color = new THREE.Color();
   const { rugosidad } = colorTueste(t, color);
   const oscuro = Math.max(0, (t - 2.6) / 1.4);
+  if (ligero) {
+    return new THREE.MeshStandardMaterial({ color, map: tex.mapa, bumpMap: tex.relieve, bumpScale: 2.2, roughnessMap: tex.rugosidad, roughness: rugosidad });
+  }
   return new THREE.MeshPhysicalMaterial({
     color,
     map: tex.mapa,
@@ -218,9 +222,10 @@ export function materialGrano(t: number) {
   });
 }
 
-export function ajustarMaterialGrano(m: THREE.MeshPhysicalMaterial, t: number) {
+export function ajustarMaterialGrano(m: THREE.MeshStandardMaterial | THREE.MeshPhysicalMaterial, t: number) {
   const { rugosidad } = colorTueste(t, m.color);
   m.roughness = rugosidad;
+  if (!("isMeshPhysicalMaterial" in m)) return;
   m.clearcoat = Math.max(0, (t - 2.6) / 1.4) * 0.55;
   m.sheen = Math.max(0, 1 - t) * 0.5;
 }

@@ -42,7 +42,7 @@ export default function LluviaGranos() {
       const geo = crearGeometriaGrano(nivel.baja ? 24 : 40);
       const movil = window.innerWidth < 720;
       const N = nivel.baja ? (movil ? 16 : 36) : movil ? 26 : 64;
-      const materiales = [0, 0.6, 1.3].map((t) => materialGrano(t));
+      const materiales = [0, 0.6, 1.3].map((t) => materialGrano(t, movil || nivel.baja));
 
       type Grano = { m: Mesh; vel: number; giro: Vector3; base: Vector3; hueco: Vector3; escala: number; emp: Vector3; empV: Vector3; tostado: number };
       const granos: Grano[] = [];
@@ -326,6 +326,9 @@ export default function LluviaGranos() {
         }
         renderer.render(escena, camara);
       };
+      // Compila los shaders en segundo plano (si el navegador lo permite) para no trabar la portada.
+      await renderer.compileAsync(escena, camara).catch(() => {});
+      if (cancelado) return;
       if (quieto) {
         renderer.render(escena, camara);
       } else {
