@@ -1,5 +1,6 @@
 import { CAFES, METODOS, type Cafe, type Metodo, type Perfil, type Receta } from "./cafes";
 import { bindings } from "./entorno";
+import { anotar } from "./eventos";
 
 // La carta vive en el CMS de Webflow (sitio altura-cms, colección "Lotes"),
 // cargada con el MCP de Webflow. Se lee con la Data API y se guarda en SQLite:
@@ -120,8 +121,10 @@ async function huellaDe(texto: string) {
 
 // Lee el CMS y guarda la carta. Devuelve null si el CMS no respondió.
 export async function refrescarCarta(): Promise<Carta | null> {
+  const t0 = Date.now();
   const cafes = await desdeCms().catch(() => null);
   if (!cafes) return null;
+  await anotar("cms_ms", Date.now() - t0);
   const datos = JSON.stringify(cafes);
   const huella = await huellaDe(datos);
   const ahora = Math.floor(Date.now() / 1000);

@@ -21,11 +21,11 @@ Altura es una tostadería **ficticia**. La app sigue un lote de café verde desd
 | **Encuentra tu café** | Quiz de cuatro preguntas que recomienda un lote, su molienda y su receta. Genera una **tarjeta para compartir**. | `POST /api/recomendar` y canvas + Web Share API. |
 | **Arma tu café** | Eliges cereza, proceso, tueste, método y cantidad; ves tu bolsa dorada con tu nombre, el perfil estimado y la receta, y haces un pedido de demostración guardado en SQLite. | `src/lib/armar.ts`, `POST /api/pedido`. |
 | **El laboratorio** | Las herramientas con IA (Ruta del café, Barista y quiz, Escanea tu café) en una sección con pestañas fijas; los botones de la portada abren la pestaña correcta. | `Laboratorio.tsx`: paneles montados (no pierden estado), navegación con flechas del teclado y anclas de siempre. |
-| **Ruta del café** | Escribes una ciudad o barrio y arma una ruta a pie por 4–6 cafeterías de especialidad reales. **Mapa** con la ruta que se dibuja parada por parada, paradas ordenadas para caminar, link de Google Maps y **tarjeta para compartir** con QR. | `POST /api/ruta` con OpenAI y **búsqueda web**: solo quedan paradas con fuente citada y el puntaje solo si una fuente lo publica. `POST /api/ruta/mapa` ubica las direcciones con Nominatim (OpenStreetMap, 1 consulta por segundo), descarta las que caen lejos y ordena por vecino más próximo. Mapa con Leaflet y teselas de OpenStreetMap. Caché de 24 h por lugar en SQLite y topes por visitante y diarios. |
+| **Ruta del café** | Escribes una ciudad o barrio y arma una ruta a pie por 4–6 cafeterías de especialidad reales. **Mapa** con la ruta que se dibuja parada por parada, paradas ordenadas para caminar, link de Google Maps y **tarjeta para compartir** con QR. | `POST /api/ruta` con OpenAI y **búsqueda web**: solo quedan paradas con fuente citada y el puntaje solo si una fuente lo publica. `POST /api/ruta/mapa` ubica las direcciones con Nominatim (OpenStreetMap, 1 consulta por segundo), descarta las que caen lejos y ordena por vecino más próximo. Mapa con Leaflet y teselas de OpenStreetMap. Sugiere la **ciudad del visitante** sin pedir permisos (`GET /api/donde`, con la ubicación aproximada que informa la red; no se guarda). Caché de 24 h por lugar en SQLite y topes por visitante y diarios. |
 | **Trae tu café** | Le sacas una foto al paquete de tu casa (o escribes la etiqueta): la IA la lee, arma la ficha de **tu** café, calcula la receta para tu método, abre el temporizador guiado y te dice qué ajustar según cómo te salió la taza. | `POST /api/escanear` con un modelo con visión y salida JSON; receta y calibración deterministas en `src/lib/tucafe.ts`; límite en SQLite; la foto se achica en el navegador y no se guarda. |
 | **Temporizador** | "Preparar ahora" en cada receta: cronómetro, etapas de vertido, agua objetivo en la balanza, aviso con sonido y vibración, pantalla encendida. | `src/lib/etapas.ts` deriva las etapas de la receta; Wake Lock y Web Audio. |
 | **Barista IA** | Chat que responde solo sobre la carta, en streaming, y convierte los lotes que menciona en links a su ficha. | `POST /api/barista` con la API de OpenAI (SSE → texto plano) y límite de uso en SQLite. |
-| **Cómo está hecho** | Diagrama animado de la arquitectura con datos en vivo (lotes del CMS y hace cuánto cambió la carta). | `ComoEstaHecho.tsx`, lee el mismo contexto en vivo de la carta. |
+| **Cómo está hecho** | Diagrama animado de la arquitectura y **panel en vivo** con mediciones reales: latencia de la base, lectura del CMS de Webflow, avisos de Webflow recibidos y rutas guardadas. | `ComoEstaHecho.tsx` + `GET /api/estado` (se consulta solo con la sección a la vista, caché de 5 s). |
 
 ## Webflow Cloud
 
@@ -61,7 +61,7 @@ DESIGN.md · PRODUCT.md           sistema de diseño y producto
 
 - **CD:** Webflow Cloud despliega `main` automáticamente en cada push.
 - **CI (GitHub Actions, `.github/workflows/ci.yml`):** en cada push y PR corre lint, chequeo de tipos, tests (Vitest) y build. En `main`, además espera el deploy y hace una prueba de humo de las rutas y la API en producción.
-- **Tests (`tests/logica.test.ts`, 20):** recomendador, etapas del temporizador, normalización de la lectura con IA, recetas y calibración, perfil de "Arma tu café", validaciones, mapeo de ítems del CMS de Webflow, límites de seguridad, IP real del visitante y la Ruta del café (fuentes, paradas lejanas y orden para caminar).
+- **Tests (`tests/logica.test.ts`, 21):** recomendador, etapas del temporizador, normalización de la lectura con IA, recetas y calibración, perfil de "Arma tu café", validaciones, mapeo de ítems del CMS de Webflow, límites de seguridad, IP real del visitante, datos estructurados y la Ruta del café (fuentes, paradas lejanas y orden para caminar).
 
 ```bash
 npm run lint && npm run typecheck && npm test
@@ -74,7 +74,7 @@ npm run lint && npm run typecheck && npm test
 - **Límites** atómicos en SQLite por visitante y **topes diarios globales** para lo que cuesta dinero (IA); si la base falla, caen a memoria y la ruta sigue funcionando.
 - **Tamaño máximo de cuerpo** en todas las API (413 antes de parsear).
 - **Headers:** CSP, `frame-ancestors 'none'`, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, HSTS y `Permissions-Policy` (`next.config.ts`).
-- Sin CORS abierto, sin `dangerouslySetInnerHTML`; la entrada de usuario se valida y se sanea en el servidor.
+- Sin CORS abierto; `dangerouslySetInnerHTML` solo para el JSON-LD, con `<` escapado; la entrada de usuario se valida y se sanea en el servidor.
 
 ## Desarrollo local
 
@@ -84,6 +84,10 @@ npm run dev
 ```
 
 Para usar el barista en local, crea `.env.local` a partir de `.env.example` con tu `OPENAI_API_KEY`.
+
+## Buscadores
+
+Datos estructurados schema.org (JSON-LD): `WebSite`, `WebApplication` y la carta como `ItemList`, con los lotes marcados como muestras ficticias y sin precio (`src/lib/datosEstructurados.ts`).
 
 ## Rendimiento
 

@@ -160,6 +160,17 @@ describe("ip del visitante", async () => {
   });
 });
 
+describe("datos estructurados", async () => {
+  const { datosEstructurados, jsonSeguro } = await import("@/lib/datosEstructurados");
+  const { CAFES } = await import("@/lib/cafes");
+  it("marca los lotes como ficticios y no puede cerrar la etiqueta <script>", () => {
+    const json = jsonSeguro(datosEstructurados(CAFES));
+    expect(json).toContain("Lote de muestra ficticio");
+    expect(json).not.toContain("offers");
+    expect(jsonSeguro({ x: "</script><script>alert(1)</script>" })).not.toContain("<");
+  });
+});
+
 describe("ruta del café", async () => {
   const { limpiarRuta, limpiarUrl, normalizarLugar, mapsRuta, distanciaKm, filtrarCercanas, ordenarParaCaminar } = await import("@/lib/ruta");
   it("ordena las paradas para caminar siempre hacia la más cercana", () => {

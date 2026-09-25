@@ -3286,6 +3286,75 @@ body::after {
   outline-offset: 3px;
 }
 
+/* Sugerencia con la ciudad aproximada del visitante. */
+.ruta-aqui {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px 16px;
+  border: 3px solid var(--ink);
+  background: var(--tinta-colombia);
+  color: #fff;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  box-shadow: 5px 5px 0 var(--ink);
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+  animation: ficha-entra 0.5s var(--ease-out) both;
+}
+
+.ruta-aqui:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--ink);
+}
+
+.ruta-aqui:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.ruta-aqui svg {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  animation: aqui-pulso 1.8s var(--ease-out) infinite;
+}
+
+@keyframes aqui-pulso {
+  50% {
+    opacity: 0.55;
+    transform: scale(0.88);
+  }
+}
+
+.ruta-aqui > span:nth-child(2) {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.ruta-aqui .stencil {
+  font-size: clamp(24px, 3vw, 32px);
+  line-height: 1;
+}
+
+.ruta-aqui-sub,
+.ruta-aqui-cta {
+  font-size: 13px;
+}
+
+@media (max-width: 560px) {
+  .ruta-aqui {
+    flex-wrap: wrap;
+  }
+
+  .ruta-aqui-cta {
+    width: 100%;
+  }
+}
+
 .ruta-sugerencias {
   display: flex;
   flex-wrap: wrap;
@@ -3584,6 +3653,8 @@ button.ruta-numero:hover {
   .ruta-trazo,
   .mapa-ruta-trazo,
   .mapa-ruta-marca,
+  .ruta-aqui,
+  .ruta-aqui svg,
   .ruta-parada,
   .ruta-resultado {
     animation: none;
@@ -3785,6 +3856,64 @@ button.ruta-numero:hover {
   font-size: 14px;
 }
 
+/* Panel en vivo: mediciones reales de la app. */
+.hecho-panel {
+  margin: 22px 0 0;
+  padding: 16px 18px 18px;
+  background: var(--ink);
+  color: var(--jute);
+  animation: ficha-entra 0.5s var(--ease-out) both;
+}
+
+.hecho-panel-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  font-size: 13px;
+}
+
+.hecho-panel dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.hecho-panel dl > div {
+  padding: 10px 12px;
+  border: 2px solid rgba(176, 138, 82, 0.45);
+}
+
+.hecho-panel dt {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hecho-panel dd {
+  margin: 0;
+}
+
+.hecho-panel dd.stencil {
+  margin-top: 4px;
+  color: var(--paper);
+  font-size: clamp(28px, 3.4vw, 40px);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.hecho-panel-detalle {
+  margin-top: 6px !important;
+  font-size: 12px;
+}
+
+@media (max-width: 860px) {
+  .hecho-panel dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .hecho-flujo {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -3935,6 +4064,7 @@ button.ruta-numero:hover {
 
 @media (prefers-reduced-motion: reduce) {
   .hecho-columna,
+  .hecho-panel,
   .hecho-flecha {
     animation: none;
   }
@@ -3945,6 +4075,11 @@ button.ruta-numero:hover {
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
+}
+
+/* Durante la transición los clics pasan a la página real (si no, el navegador los descarta). */
+::view-transition {
+  pointer-events: none;
 }
 
 .lab-panel:not([hidden]) {

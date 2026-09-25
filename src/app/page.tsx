@@ -8,6 +8,7 @@ import Laboratorio from "./components/Laboratorio";
 import ComoEstaHecho from "./components/ComoEstaHecho";
 import { CartaProvider } from "./components/CartaContexto";
 import { obtenerCarta } from "@/lib/carta";
+import { datosEstructurados, jsonSeguro } from "@/lib/datosEstructurados";
 
 // La carta llega del CMS de Webflow en cada request (con caché en KV).
 export const dynamic = "force-dynamic";
@@ -42,6 +43,7 @@ export default async function Home() {
   const { cafes, fuente, cambiado } = await obtenerCarta();
   return (
     <CartaProvider cafes={cafes} fuente={fuente} cambiado={cambiado}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonSeguro(datosEstructurados(cafes)) }} />
       <nav className="nav" aria-label="Principal">
         <a href="#" className="stencil nav-marca">
           Altura

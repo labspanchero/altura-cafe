@@ -28,6 +28,14 @@ export default function RutaCafe() {
   const [mapaEstado, setMapaEstado] = useState<"ubicando" | "listo" | "error">("ubicando");
   const [activa, setActiva] = useState<number | null>(null);
   const campo = useRef<HTMLInputElement>(null);
+  // Ciudad aproximada del visitante (la informa la red, sin pedir permisos): se ofrece como primera sugerencia.
+  const [aqui, setAqui] = useState<string | null>(null);
+  useEffect(() => {
+    fetch("api/donde", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d: { ciudad?: string | null; lugar?: string | null }) => d.lugar && d.ciudad && setAqui(d.lugar))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!cargando) return;
@@ -147,6 +155,20 @@ export default function RutaCafe() {
             {cargando ? "Buscando…" : "Armar mi ruta"}
           </button>
         </form>
+        {!ruta && !cargando && aqui && (
+          <button type="button" className="ruta-aqui" onClick={() => buscar(aqui)}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="3.2" fill="currentColor" />
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="2" />
+            </svg>
+            <span>
+              <span className="dato ruta-aqui-sub">Parece que estás en</span>
+              <span className="stencil">{aqui.split(",")[0]}</span>
+            </span>
+            <span className="dato ruta-aqui-cta">Armar mi ruta aquí →</span>
+          </button>
+        )}
         {!ruta && !cargando && (
           <div className="ruta-sugerencias">
             {SUGERENCIAS.map((s) => (
