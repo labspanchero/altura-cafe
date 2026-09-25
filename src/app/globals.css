@@ -2511,3 +2511,13 @@ body::after {
     font-size: 12px;
   }
 }
+
+.etapa-variable-icono {
+  width: 34px;
+  height: 20px;
+  align-self: center;
+  padding-right: 10px;
+  margin-right: 2px;
+  border-right: 2px solid var(--ink);
+  box-sizing: content-box;
+}

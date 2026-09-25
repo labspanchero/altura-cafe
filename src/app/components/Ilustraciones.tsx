@@ -1,31 +1,87 @@
 // Ilustraciones de estarcido: formas planas en tinta, con puentes de plantilla.
 const TINTA = "var(--ink)";
 
+// Hoja de cafeto: forma lanceolada con nervadura central y venas laterales.
+function Hoja({ x, y, giro, largo = 150, id, clave }: { x: number; y: number; giro: number; largo?: number; id: string; clave: string }) {
+  const a = largo * 0.22;
+  const cuerpo = `M0 0 C${largo * 0.18} ${-a * 1.25} ${largo * 0.7} ${-a * 1.05} ${largo} 0 C${largo * 0.7} ${a * 0.95} ${largo * 0.18} ${a * 1.1} 0 0Z`;
+  const venas = [0.22, 0.38, 0.54, 0.7, 0.84].flatMap((t) => {
+    const vx = largo * t;
+    const d = a * (1 - Math.abs(t - 0.45) * 1.1) * 0.78;
+    return [`M${vx} 0 Q${vx + largo * 0.07} ${-d * 0.5} ${vx + largo * 0.13} ${-d}`, `M${vx} 0 Q${vx + largo * 0.07} ${d * 0.5} ${vx + largo * 0.13} ${d}`];
+  });
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${giro})`}>
+      <clipPath id={`recorte-${clave}`}>
+        <path d={cuerpo} />
+      </clipPath>
+      <path d={cuerpo} fill={`url(#${id})`} />
+      <g clipPath={`url(#recorte-${clave})`}>
+        <path d={`M2 0 Q${largo * 0.5} ${-a * 0.08} ${largo - 6} 0`} stroke="#d8d27a" strokeWidth="2.6" fill="none" strokeLinecap="round" />
+        {venas.map((v) => (
+          <path key={v} d={v} stroke="#b9c46a" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.8" />
+        ))}
+      </g>
+      <path d={cuerpo} fill="none" stroke="#0f1a0e" strokeWidth="3.2" strokeLinejoin="round" />
+    </g>
+  );
+}
+
+function Fruto({ cx, cy, color, r = 14 }: { cx: number; cy: number; color: string; r?: number }) {
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={r} fill={color} stroke="#1a0f0c" strokeWidth="3" />
+      <ellipse cx={cx - r * 0.35} cy={cy - r * 0.38} rx={r * 0.32} ry={r * 0.22} fill="#fff" opacity="0.75" transform={`rotate(-30 ${cx - r * 0.35} ${cy - r * 0.38})`} />
+      <circle cx={cx + r * 0.5} cy={cy - r * 0.62} r={r * 0.14} fill="#1a0f0c" />
+    </g>
+  );
+}
+
 export function Planta() {
   return (
-    <svg viewBox="0 0 400 220" className="etapa-ilustracion" role="img" aria-label="Rama de cafeto con hojas y cerezas en distintos grados de maduración">
-      <path d="M10 120 C120 110 260 100 390 70" stroke={TINTA} strokeWidth="7" fill="none" strokeLinecap="round" />
-      {[60, 150, 240, 320].map((x, i) => (
-        <g key={x} transform={`translate(${x} ${118 - i * 12})`}>
-          <path d="M0 0 C20 -60 80 -70 110 -60 C80 -30 40 -5 0 0Z" fill={TINTA} transform="rotate(-8)" />
-          <path d="M4 -3 L92 -56" stroke="var(--jute)" strokeWidth="3" transform="rotate(-8)" />
-          <path d="M0 0 C20 60 70 70 100 58 C70 30 40 6 0 0Z" fill={TINTA} transform="rotate(10)" />
-          <path d="M4 3 L86 54" stroke="var(--jute)" strokeWidth="3" transform="rotate(10)" />
-        </g>
-      ))}
+    <svg viewBox="0 -10 450 245" className="etapa-ilustracion" role="img" aria-label="Rama de cafeto con hojas verdes y cerezas verdes, amarillas y rojas según su maduración">
+      <defs>
+        <linearGradient id="hoja-arriba" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stopColor="#2f7a2a" />
+          <stop offset="0.55" stopColor="#1f5f22" />
+          <stop offset="1" stopColor="#154a1a" />
+        </linearGradient>
+        <linearGradient id="hoja-abajo" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#276f26" />
+          <stop offset="1" stopColor="#123f16" />
+        </linearGradient>
+        <linearGradient id="tallo" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#5a3418" />
+          <stop offset="1" stopColor="#7b4a24" />
+        </linearGradient>
+      </defs>
+      {/* hojas de abajo, detrás del tallo */}
       {[
-        [100, 128, "#2f6b2a"],
-        [118, 136, "#c8202f"],
-        [196, 118, "#d9a90b"],
-        [212, 126, "#c8202f"],
-        [284, 104, "#6e1320"],
-        [300, 112, "#c8202f"],
-      ].map(([cx, cy, c]) => (
-        <g key={`${cx}-${cy}`}>
-          <circle cx={cx} cy={cy} r="12" fill={c as string} stroke={TINTA} strokeWidth="3" />
-          <circle cx={(cx as number) - 4} cy={(cy as number) - 4} r="3" fill="var(--paper)" opacity="0.7" />
-        </g>
+        [58, 132, 42],
+        [148, 124, 44],
+        [238, 114, 42],
+        [322, 104, 40],
+      ].map(([x, y, g], i) => (
+        <Hoja key={`b${i}`} clave={`b${i}`} id="hoja-abajo" x={x} y={y} giro={g} largo={128 - i * 4} />
       ))}
+      <path d="M12 142 C120 130 260 112 408 76" stroke="#1a0f0c" strokeWidth="10" fill="none" strokeLinecap="round" />
+      <path d="M12 142 C120 130 260 112 408 76" stroke="url(#tallo)" strokeWidth="6" fill="none" strokeLinecap="round" />
+      {/* hojas de arriba */}
+      {[
+        [62, 130, -38],
+        [152, 121, -40],
+        [242, 111, -38],
+        [326, 101, -40],
+      ].map(([x, y, g], i) => (
+        <Hoja key={`a${i}`} clave={`a${i}`} id="hoja-arriba" x={x} y={y} giro={g} largo={140 - i * 4} />
+      ))}
+      {/* cerezas: de verde a madura, siguiendo la rama */}
+      <Fruto cx={94} cy={140} color="#5c9e2e" />
+      <Fruto cx={118} cy={148} color="#d7263d" r={15} />
+      <Fruto cx={186} cy={129} color="#e8c11c" />
+      <Fruto cx={210} cy={138} color="#d7263d" r={15} />
+      <Fruto cx={276} cy={116} color="#c81d33" />
+      <Fruto cx={300} cy={126} color="#d7263d" r={15} />
     </svg>
   );
 }

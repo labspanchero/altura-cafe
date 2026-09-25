@@ -386,6 +386,12 @@ export default function Historia() {
                 <p key={t}>{t}</p>
               ))}
               <p className="dato etapa-variable">
+                {e.id === "planta" && (
+                  <svg viewBox="0 0 40 24" className="etapa-variable-icono" aria-hidden="true">
+                    <path d="M1 23 L13 7 L19 14 L25 5 L39 23Z" fill="currentColor" />
+                    <path d="M22 9 L25 5 L28 9 L26 10 L25 8.5 L24 10Z" fill="var(--jute)" />
+                  </svg>
+                )}
                 <span>{e.variable[0]}</span>
                 <strong>{e.variable[1]}</strong>
               </p>
