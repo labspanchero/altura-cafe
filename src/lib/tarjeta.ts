@@ -15,6 +15,8 @@ export async function fondoYute(g: CanvasRenderingContext2D, W: number, H: numbe
   g.fillStyle = "#b08a52";
   g.fillRect(0, 0, W, H);
   const img = new Image();
+  // En Webflow Cloud los archivos se sirven desde otro dominio (con CORS): sin esto el lienzo queda bloqueado.
+  img.crossOrigin = "anonymous";
   img.src = arpillera.src;
   await img.decode().catch(() => {});
   const pat = img.naturalWidth ? g.createPattern(img, "repeat") : null;

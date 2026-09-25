@@ -3667,6 +3667,10 @@ button.ruta-numero:hover {
   box-shadow: 5px 5px 0 rgba(28, 23, 16, 0.35);
 }
 
+.lab-pestana[aria-selected="true"] .lab-pestana-texto .dato {
+  opacity: 1;
+}
+
 .lab-pestana:focus-visible {
   outline: 3px solid var(--ink);
   outline-offset: 3px;
