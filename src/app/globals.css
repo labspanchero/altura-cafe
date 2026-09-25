@@ -220,8 +220,7 @@ a {
   transition: none;
 }
 
-main > .historia,
-main > .pedido {
+main > section {
   position: relative;
   z-index: 1;
 }
