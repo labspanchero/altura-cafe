@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { calidad, esperarCerca } from "@/lib/rendimiento";
 import { TUESTES } from "./grano";
 
 // Un grano grande que se tuesta con el control: cambia color, brillo y tamaño.
@@ -22,13 +23,15 @@ export default function GranoTueste() {
     let limpiar = () => {};
 
     (async () => {
+      await esperarCerca(cont);
+      if (cancelado) return;
       const THREE = await import("three");
       const { crearGeometriaGrano, luces, colorTueste, prefiereMenosMovimiento, materialGrano, ajustarMaterialGrano } = await import("./grano");
       if (cancelado) return;
 
       const quieto = prefiereMenosMovimiento();
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(calidad().dpr);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       cont.appendChild(renderer.domElement);
 

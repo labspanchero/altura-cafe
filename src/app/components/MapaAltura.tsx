@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { calidad, esperarCerca } from "@/lib/rendimiento";
 import { useCarta } from "./CartaContexto";
 import { abrirFicha } from "./Pedido";
 import estilos from "./MapaAltura.module.css";
@@ -50,12 +51,14 @@ export default function MapaAltura() {
     let limpiar = () => {};
 
     (async () => {
+      await esperarCerca(cont);
+      if (cancelado) return;
       const THREE = await import("three");
       if (cancelado) return;
 
       const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(calidad().dpr);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       cont.appendChild(renderer.domElement);
 

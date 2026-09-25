@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { calidad, esperarCerca } from "@/lib/rendimiento";
 
 // Taza 3D que se llena con el scroll. El color del café sigue el tueste
 // elegido en el tostador (evento "altura:tueste").
@@ -15,13 +16,15 @@ export default function TazaLlena() {
     let limpiar = () => {};
 
     (async () => {
+      await esperarCerca(cont);
+      if (cancelado) return;
       const THREE = await import("three");
       const { luces, colorTueste, prefiereMenosMovimiento } = await import("./grano");
       if (cancelado) return;
 
       const quieto = prefiereMenosMovimiento();
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(calidad().dpr);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       cont.appendChild(renderer.domElement);
 
@@ -33,8 +36,8 @@ export default function TazaLlena() {
 
       // Cerámica de gres artesanal: esmalte crema moteado, base de barro
       // sin esmaltar con línea de inmersión irregular y el logo como calca.
-      const W = 4096;
-      const H = 2048;
+      const W = calidad().movil ? 2048 : 4096;
+      const H = W / 2;
       const lienzoTex = document.createElement("canvas");
       lienzoTex.width = W;
       lienzoTex.height = H;
@@ -70,7 +73,7 @@ export default function TazaLlena() {
       rug.fill();
       // interior y fondo esmaltados (v>0.5 es el interior del perfil)
       // moteado de hierro sobre todo el esmalte
-      for (let i = 0; i < 26000; i++) {
+      for (let i = 0; i < (W === 4096 ? 26000 : 8000); i++) {
         const x = azar() * W;
         const y = azar() * yDe(0.2);
         const r = azar() < 0.9 ? 1 + azar() * 2.2 : 3 + azar() * 3;
@@ -80,7 +83,7 @@ export default function TazaLlena() {
         ctx.fill();
       }
       // grano del barro
-      for (let i = 0; i < 9000; i++) {
+      for (let i = 0; i < (W === 4096 ? 9000 : 3000); i++) {
         const x = azar() * W;
         const y = yDe(0.2) + azar() * (H - yDe(0.2));
         ctx.fillStyle = azar() < 0.5 ? "rgba(90,58,30,0.35)" : "rgba(240,210,170,0.25)";
@@ -108,7 +111,7 @@ export default function TazaLlena() {
         ctx.globalAlpha = 1;
         texEsmalte.needsUpdate = true;
       };
-      logo.src = new URL("nerd-logo.png", document.baseURI).href;
+      logo.src = new URL("nerd-logo.webp", document.baseURI).href;
 
       // Material liso moteado para asa y plato (sin el logo).
       const lienzoLiso = document.createElement("canvas");

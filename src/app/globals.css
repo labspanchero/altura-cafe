@@ -600,14 +600,16 @@ main > section {
   .saco-tira span {
     flex: 0 0 auto;
     padding: 4px 8px;
-    border: 2px solid var(--ink);
+    border: 2px dashed var(--ink-soft);
+    color: var(--ink-soft);
     font-size: 13px;
-    opacity: 0.35;
     transition: opacity 0.3s var(--ease-out), background 0.3s var(--ease-out);
   }
 
   .saco-tira span[data-puesta="true"] {
-    opacity: 1;
+    border-style: solid;
+    border-color: var(--ink);
+    color: var(--ink);
   }
 
   .saco-tira span[data-activa="true"] {

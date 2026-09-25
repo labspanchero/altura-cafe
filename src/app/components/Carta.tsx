@@ -301,7 +301,6 @@ export default function Carta() {
                 type="button"
                 className="pila"
                 aria-pressed={c.id === elegido}
-                aria-controls={`ficha-${c.id}`}
                 data-apagada={!visible}
                 disabled={!visible}
                 onClick={(e) => {

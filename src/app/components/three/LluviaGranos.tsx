@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { calidad } from "@/lib/rendimiento";
 import type { Mesh, Vector3 } from "three";
 
 // Granos verdes que caen del saco en la portada. Three.js se carga aparte
@@ -21,7 +22,8 @@ export default function LluviaGranos() {
 
       const quieto = prefiereMenosMovimiento();
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      const nivel = calidad();
+      renderer.setPixelRatio(nivel.dpr);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       cont.appendChild(renderer.domElement);
 
@@ -30,9 +32,9 @@ export default function LluviaGranos() {
       camara.position.set(0, 0, 14);
       luces(escena);
 
-      const geo = crearGeometriaGrano(40);
+      const geo = crearGeometriaGrano(nivel.baja ? 24 : 40);
       const movil = window.innerWidth < 720;
-      const N = movil ? 26 : 64;
+      const N = nivel.baja ? (movil ? 16 : 36) : movil ? 26 : 64;
       const materiales = [0, 0.6, 1.3].map((t) => materialGrano(t));
 
       type Grano = { m: Mesh; vel: number; giro: Vector3; base: Vector3; hueco: Vector3; escala: number; emp: Vector3; empV: Vector3; tostado: number };
