@@ -247,66 +247,49 @@ export default function TazaLlena() {
         const g = lienzoArte.getContext("2d")!;
         const leche = "rgb(255,249,236)";
         const temblor = () => (azarL() - 0.5) * 6;
-        // hojas: medialunas finas, levemente asimétricas, más anchas abajo
-        const capas = 9;
-        g.lineCap = "round";
-        g.lineJoin = "round";
-        for (let k = 0; k < capas; k++) {
-          const t = k / (capas - 1);
-          const y = C * 1.62 - t * C * 0.95;
-          const ancho = C * (0.62 - t * 0.4) * (1 + (azarL() - 0.5) * 0.06);
-          const caida = C * (0.24 - t * 0.1);
-          const grosor = C * (0.085 - t * 0.04);
-          const sesgo = (azarL() - 0.5) * 10;
-          const hoja = () => {
-            g.beginPath();
-            g.moveTo(C - ancho + temblor(), y - caida * 0.75);
-            g.bezierCurveTo(C - ancho * 0.72, y + caida * 0.5 + temblor(), C - ancho * 0.24 + sesgo, y + caida * 0.95, C + sesgo * 0.4, y + caida * 0.6);
-            g.bezierCurveTo(C + ancho * 0.24 + sesgo, y + caida * 0.95, C + ancho * 0.72, y + caida * 0.5 + temblor(), C + ancho + temblor(), y - caida * 0.8);
-          };
-          // borde difuso: varias pasadas cada vez más finas y opacas
-          for (const [f, a] of [
-            [1.35, 0.18],
-            [1.15, 0.35],
-            [1, 0.95],
-          ] as const) {
-            g.strokeStyle = leche;
-            g.globalAlpha = a;
-            g.lineWidth = grosor * f;
-            hoja();
-            g.stroke();
-          }
-          g.globalAlpha = 1;
-        }
-        // corazón de la punta, algo irregular
-        const yc = C * 0.6;
+        // corazón: dos lóbulos redondeados, punta hacia quien mira y una
+        // colita fina donde se cortó el vertido. Levemente asimétrico.
+        const cy = C * 1.02;
+        const R = C * 0.56;
+        const corazon = (f: number) => {
+          g.beginPath();
+          g.moveTo(C + 4, cy - R * 0.42 * f);
+          g.bezierCurveTo(C + R * 0.35 * f, cy - R * 1.02 * f, C + R * 1.12 * f, cy - R * 0.72 * f, C + R * 0.98 * f, cy - R * 0.05 * f);
+          g.bezierCurveTo(C + R * 0.88 * f, cy + R * 0.42 * f, C + R * 0.36 * f, cy + R * 0.78 * f, C + 2, cy + R * 1.02 * f);
+          g.bezierCurveTo(C - R * 0.34 * f, cy + R * 0.8 * f, C - R * 0.92 * f, cy + R * 0.44 * f, C - R * 1.0 * f, cy - R * 0.06 * f);
+          g.bezierCurveTo(C - R * 1.1 * f, cy - R * 0.74 * f, C - R * 0.33 * f, cy - R * 1.0 * f, C + 4, cy - R * 0.42 * f);
+          g.closePath();
+        };
         g.fillStyle = leche;
         for (const [f, a] of [
-          [1.15, 0.25],
+          [1.1, 0.12],
+          [1.05, 0.28],
           [1, 1],
         ] as const) {
           g.globalAlpha = a;
-          g.beginPath();
-          g.moveTo(C, yc + 70 * f);
-          g.bezierCurveTo(C - 82 * f, yc + 20 * f, C - 62 * f, yc - 62 * f, C + 2, yc - 16 * f);
-          g.bezierCurveTo(C + 64 * f, yc - 60 * f, C + 80 * f, yc + 24 * f, C, yc + 70 * f);
+          corazon(f);
           g.fill();
         }
         g.globalAlpha = 1;
-        // corte central: arrastra la espuma y deja un surco fino de café
-        g.globalCompositeOperation = "destination-out";
-        g.lineWidth = 5;
-        g.beginPath();
-        g.moveTo(C, yc - 10);
-        g.bezierCurveTo(C + 4, C * 0.95, C - 3, C * 1.35, C + 1, C * 1.8);
+        // anillo interior de crema: el borde del primer vertido
+        g.strokeStyle = "rgba(205,160,112,0.1)";
+        g.lineWidth = 26;
+        corazon(0.7);
         g.stroke();
-        g.globalCompositeOperation = "source-over";
+        // colita del corte, afinándose hacia el borde
         g.strokeStyle = leche;
-        g.lineWidth = 3;
-        g.beginPath();
-        g.moveTo(C + 1, C * 1.8);
-        g.lineTo(C + 1, C * 1.9);
-        g.stroke();
+        g.lineCap = "round";
+        for (const [w, y0, y1] of [
+          [7, cy + R * 0.95, cy + R * 1.18],
+          [4, cy + R * 1.15, cy + R * 1.36],
+          [2, cy + R * 1.33, cy + R * 1.48],
+        ] as const) {
+          g.lineWidth = w;
+          g.beginPath();
+          g.moveTo(C + 2, y0);
+          g.lineTo(C + 3, y1);
+          g.stroke();
+        }
         // microespuma y velo marrón dentro de la leche
         g.globalCompositeOperation = "source-atop";
         for (let k = 0; k < 5000; k++) {
