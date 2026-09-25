@@ -38,7 +38,9 @@ export default function TraeTuCafe() {
   const [metodo, setMetodo] = useState<Metodo>("v60");
   const [preparando, setPreparando] = useState(false);
   const [resultado, setResultado] = useState<Resultado | null>(null);
-  const input = useRef<HTMLInputElement>(null);
+  const camara = useRef<HTMLInputElement>(null);
+  const galeria = useRef<HTMLInputElement>(null);
+  const [arrastrando, setArrastrando] = useState(false);
 
   async function leer(payload: { imagen?: string; texto?: string }) {
     setCargando(true);
@@ -62,17 +64,25 @@ export default function TraeTuCafe() {
     }
   }
 
-  async function alElegirFoto(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0];
-    e.target.value = "";
+  async function usarArchivo(f: File | undefined) {
     if (!f) return;
+    if (!f.type.startsWith("image/")) {
+      setError("Ese archivo no es una imagen. Usa una foto JPG, PNG o HEIC.");
+      return;
+    }
     try {
       const url = await comprimir(f);
       setVista(url);
       await leer({ imagen: url });
     } catch {
-      setError("No pudimos abrir la foto. Prueba con otra.");
+      setError("No pudimos abrir la imagen. Prueba con otra o guárdala como JPG.");
     }
+  }
+
+  function alElegirFoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    usarArchivo(f);
   }
 
   const receta = leido ? recetaPara(leido, metodo) : null;
@@ -120,11 +130,47 @@ export default function TraeTuCafe() {
         </div>
 
         <div className="tu-cafe-entrada">
-          <button type="button" className="tu-cafe-foto" onClick={() => input.current?.click()} disabled={cargando}>
-            {vista ? <img src={vista} alt="Foto del paquete" /> : <span className="stencil">Foto del paquete</span>}
-            <span className="dato">{cargando ? "Leyendo la etiqueta…" : vista ? "Cambiar foto" : "Abrir cámara o elegir foto"}</span>
-          </button>
-          <input ref={input} type="file" accept="image/*" capture="environment" hidden onChange={alElegirFoto} />
+          <div
+            className="tu-cafe-foto"
+            data-arrastrando={arrastrando}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setArrastrando(true);
+            }}
+            onDragLeave={() => setArrastrando(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setArrastrando(false);
+              usarArchivo(e.dataTransfer.files?.[0]);
+            }}
+          >
+            {vista ? (
+              <img src={vista} alt="Imagen del paquete" />
+            ) : (
+              <span className="stencil">Tu paquete</span>
+            )}
+            <span className="dato tu-cafe-estado">
+              {cargando ? (
+                "Leyendo la etiqueta…"
+              ) : arrastrando ? (
+                "Suelta la imagen aquí"
+              ) : (
+                <>
+                  Saca una foto o sube una imagen<span className="solo-puntero"> · o arrástrala aquí</span>
+                </>
+              )}
+            </span>
+            <div className="tu-cafe-botones">
+              <button type="button" className="sello" data-lleno="true" onClick={() => camara.current?.click()} disabled={cargando}>
+                Sacar foto
+              </button>
+              <button type="button" className="sello" onClick={() => galeria.current?.click()} disabled={cargando}>
+                Subir imagen
+              </button>
+            </div>
+          </div>
+          <input ref={camara} type="file" accept="image/*" capture="environment" hidden onChange={alElegirFoto} />
+          <input ref={galeria} type="file" accept="image/*" hidden onChange={alElegirFoto} />
           <form
             className="tu-cafe-texto"
             onSubmit={(e) => {

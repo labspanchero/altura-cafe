@@ -2146,12 +2146,24 @@ body::after {
   border: 3px dashed var(--ink);
   background: rgba(255, 236, 196, 0.12);
   color: var(--ink);
-  cursor: pointer;
   transition: background 0.2s var(--ease-out);
 }
 
-.tu-cafe-foto:hover:not(:disabled) {
-  background: rgba(255, 236, 196, 0.24);
+.tu-cafe-foto[data-arrastrando="true"] {
+  background: rgba(255, 236, 196, 0.32);
+  border-style: solid;
+}
+
+.tu-cafe-estado {
+  font-size: 14px;
+  text-align: center;
+}
+
+.tu-cafe-botones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
 }
 
 .tu-cafe-foto .stencil {
@@ -2321,5 +2333,11 @@ body::after {
   .tu-ficha-datos,
   .tu-ficha-receta {
     border-right: 0;
+  }
+}
+
+@media (pointer: coarse) {
+  .solo-puntero {
+    display: none;
   }
 }
