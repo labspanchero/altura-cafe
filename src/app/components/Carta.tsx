@@ -19,6 +19,23 @@ const SENSORIAL: { k: keyof Cafe["sensorial"]; n: string }[] = [
   { k: "amargor", n: "Amargor" },
 ];
 
+function esClara(hex: string) {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.45;
+}
+
+export function SiluetaSaco({ className = "pila-saco" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 300 400" preserveAspectRatio="none" aria-hidden="true">
+      <path
+        d="M14 34 Q24 6 58 18 L242 18 Q276 6 286 34 L292 368 Q292 392 266 394 L34 394 Q8 392 8 368Z"
+        className="saco-cuerpo"
+      />
+      <path d="M14 50 Q150 62 286 50" className="saco-costura" />
+    </svg>
+  );
+}
+
 function coincide(cafe: Cafe, filtro: (typeof FILTROS)[number]["id"]) {
   if (filtro === "todos") return true;
   if (filtro === "leche") return cafe.conLeche;
@@ -31,7 +48,7 @@ export function Ficha({ cafe }: { cafe: Cafe }) {
       className="ficha"
       id={`ficha-${cafe.id}`}
       aria-labelledby={`ficha-titulo-${cafe.id}`}
-      style={{ "--tinta": cafe.tinta } as React.CSSProperties}
+      style={{ "--tinta": cafe.tinta, "--clara": cafe.tintaClara } as React.CSSProperties}
     >
       <header className="ficha-cabeza">
         <div>
@@ -202,19 +219,34 @@ export default function Carta() {
                 aria-controls={`ficha-${c.id}`}
                 data-apagada={!visible}
                 disabled={!visible}
-                onClick={() => {
-                  setElegido(c.id);
-                  requestAnimationFrame(() =>
-                    document
-                      .getElementById("ficha-ancla")
-                      ?.scrollIntoView({ behavior: "smooth", block: "start" }),
-                  );
+                onClick={(e) => {
+                  const irAFicha = () => {
+                    setElegido(c.id);
+                    requestAnimationFrame(() =>
+                      document
+                        .getElementById("ficha-ancla")
+                        ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+                    );
+                  };
+                  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return irAFicha();
+                  e.currentTarget
+                    .animate(
+                      [
+                        { transform: "perspective(700px) rotateY(0deg)" },
+                        { transform: "perspective(700px) rotateY(180deg)" },
+                      ],
+                      { duration: 450, easing: "cubic-bezier(0.16, 1, 0.3, 1)" },
+                    )
+                    .finished.then(irAFicha);
                 }}
                 onPointerMove={inclinar}
                 onPointerLeave={soltar}
                 style={{ "--tinta": c.tinta } as React.CSSProperties}
               >
-                <span className="dato pila-lote">{c.lote}</span>
+                <SiluetaSaco />
+                <span className="dato pila-lote" style={{ color: esClara(c.tinta) ? "var(--ink)" : "#fff" }}>
+                  {c.lote}
+                </span>
                 <span className="stencil pila-pais">{c.pais}</span>
                 <span className="dato pila-pie">
                   {c.proceso.split(",")[0]} · {c.altitud.toLocaleString("es")} msnm
@@ -261,7 +293,7 @@ function Comparador({ base }: { base: Cafe }) {
               className="filtro"
               aria-pressed={otroId === c.id}
               onClick={() => setOtroId(otroId === c.id ? null : c.id)}
-              style={{ "--tinta": c.tinta } as React.CSSProperties}
+              style={{ "--tinta": c.tintaClara } as React.CSSProperties}
             >
               {c.pais}
             </button>
@@ -273,8 +305,8 @@ function Comparador({ base }: { base: Cafe }) {
         <div className="comparacion" key={otro.id}>
           <div className="comparacion-fila comparacion-titulos">
             <span />
-            <span className="stencil" style={{ color: base.tinta }}>{base.pais}</span>
-            <span className="stencil" style={{ color: otro.tinta }}>{otro.pais}</span>
+            <span className="stencil" style={{ color: base.tintaClara }}>{base.pais}</span>
+            <span className="stencil" style={{ color: otro.tintaClara }}>{otro.pais}</span>
           </div>
           {filas.map((f) => (
             <div className="comparacion-fila" key={f.n}>
@@ -292,7 +324,7 @@ function Comparador({ base }: { base: Cafe }) {
                   className="medidor-escala"
                   role="img"
                   aria-label={`${c.pais}, ${n}: ${c.sensorial[k]} de 5`}
-                  style={{ "--lote": c.tinta } as React.CSSProperties}
+                  style={{ "--lote": c.tintaClara } as React.CSSProperties}
                 >
                   {Array.from({ length: 5 }).map((_, i) => (
                     <span key={i} data-lleno={i < c.sensorial[k]} style={{ "--i": i } as React.CSSProperties} />

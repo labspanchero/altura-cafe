@@ -37,7 +37,7 @@ const ETAPAS: Etapa[] = [
       "La variedad (Geisha, Bourbon, SL28, Caturra) define el techo de sabor que puede alcanzar la taza.",
     ],
     ilustracion: <Cereza />,
-    estampa: { texto: ["HEIRLOOM"], x: 280, y: 200, giro: 6, ancho: 160 },
+    estampa: { texto: ["HEIRLOOM"], x: 262, y: 200, giro: 6, ancho: 150 },
   },
   {
     id: "cosecha",

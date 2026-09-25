@@ -104,7 +104,7 @@ export default function LluviaGranos() {
         const inicio = 0;
         const fin = Math.max(1, docTop - window.innerHeight * 0.18);
         progreso = Math.min(1, Math.max(0, (window.scrollY - inicio) / (fin - inicio)));
-        ndc.set(((r.left + r.width / 2) / window.innerWidth) * 2 - 1, -(((r.top + r.height * 0.04) / window.innerHeight) * 2 - 1));
+        ndc.set(((r.left + r.width / 2) / window.innerWidth) * 2 - 1, -(((r.top + r.height * 0.08) / window.innerHeight) * 2 - 1));
         rayo.setFromCamera(ndc, camara);
         return rayo.ray.intersectPlane(plano, boca) !== null;
       };
@@ -132,7 +132,7 @@ export default function LluviaGranos() {
           g.m.rotation.y += g.giro.y * dt;
           g.m.rotation.z += g.giro.z * dt;
           if (e > 0) {
-            g.m.position.set(boca.x + g.hueco.x * (1 - e), boca.y + g.hueco.y * (1 - e) - e * e * 0.9, boca.z + g.hueco.z);
+            g.m.position.set(boca.x + g.hueco.x * (1 - e) * 0.6, boca.y + g.hueco.y * (1 - e) - e * e * 0.9, boca.z + g.hueco.z * (1 - e));
             g.m.position.lerpVectors(g.base, g.m.position, e);
             g.m.scale.setScalar(g.escala * (1 - e * 0.45));
           } else {

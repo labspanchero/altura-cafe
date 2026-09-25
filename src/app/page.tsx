@@ -2,10 +2,19 @@ import Carta from "./components/Carta";
 import Historia from "./components/Historia";
 import Pedido from "./components/Pedido";
 import Lluvia from "./components/Lluvia";
+import { SiluetaSaco } from "./components/Carta";
 
 function Estampa() {
   return (
     <svg className="portada-estampa" viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <filter id="sello-gastado">
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="9" />
+          <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.8 1.4" />
+          <feComposite in="SourceGraphic" operator="in" />
+        </filter>
+      </defs>
+      <g filter="url(#sello-gastado)">
       <circle cx="100" cy="100" r="92" fill="none" stroke="currentColor" strokeWidth="6" />
       <circle cx="100" cy="100" r="74" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 5" />
       <text x="100" y="92" textAnchor="middle" className="stencil" fontSize="34" fill="currentColor">
@@ -14,6 +23,7 @@ function Estampa() {
       <text x="100" y="124" textAnchor="middle" className="dato" fontSize="18" fill="currentColor">
         PUNTOS SCA
       </text>
+      </g>
     </svg>
   );
 }
@@ -45,6 +55,7 @@ export default function Home() {
         <header className="portada">
           <Lluvia />
           <div className="saco-cara">
+            <SiluetaSaco className="saco-cara-fondo" />
             <Estampa />
             <span className="stencil portada-marca" aria-hidden="true">
               Altura

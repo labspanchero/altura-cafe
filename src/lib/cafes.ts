@@ -36,6 +36,7 @@ export type Cafe = {
   puntaje: number;
   cosecha: string;
   tinta: string;
+  tintaClara: string;
   notas: string[];
   aroma: string;
   perfil: Perfil[];
@@ -81,6 +82,7 @@ export const CAFES: Cafe[] = [
     puntaje: 88.5,
     cosecha: "2025/26",
     tinta: "#1f4fd1",
+    tintaClara: "#7a9bff",
     notas: ["Jazmín", "Durazno blanco", "Bergamota"],
     aroma: "Floral intenso, flor de azahar y té negro",
     perfil: ["floral", "frutal"],
@@ -108,6 +110,7 @@ export const CAFES: Cafe[] = [
     puntaje: 87.75,
     cosecha: "2025/26",
     tinta: "#c8202f",
+    tintaClara: "#ff6b76",
     notas: ["Grosella negra", "Pomelo rosado", "Tomate"],
     aroma: "Frutos rojos y hoja de tomate",
     perfil: ["frutal"],
@@ -135,6 +138,7 @@ export const CAFES: Cafe[] = [
     puntaje: 90.25,
     cosecha: "2025/26",
     tinta: "#e5601c",
+    tintaClara: "#ff9a5c",
     notas: ["Mango", "Jazmín", "Té de durazno"],
     aroma: "Frutas tropicales maduras y flores blancas",
     perfil: ["floral", "frutal"],
@@ -162,6 +166,7 @@ export const CAFES: Cafe[] = [
     puntaje: 86.5,
     cosecha: "2026",
     tinta: "#0f7a3a",
+    tintaClara: "#4fcf7e",
     notas: ["Panela", "Naranja", "Cacao"],
     aroma: "Caramelo y cítricos dulces",
     perfil: ["caramelo", "frutal"],
@@ -190,6 +195,7 @@ export const CAFES: Cafe[] = [
     puntaje: 85.75,
     cosecha: "2026",
     tinta: "#6b2fb3",
+    tintaClara: "#bb95f5",
     notas: ["Chocolate con leche", "Manzana roja", "Almendra"],
     aroma: "Cacao tostado y fruta de pepita",
     perfil: ["chocolate", "caramelo"],
@@ -218,6 +224,7 @@ export const CAFES: Cafe[] = [
     puntaje: 84.5,
     cosecha: "2026",
     tinta: "#d9a90b",
+    tintaClara: "#f2c94c",
     notas: ["Maní tostado", "Chocolate amargo", "Caramelo"],
     aroma: "Nuez tostada y dulce de leche",
     perfil: ["chocolate", "caramelo"],

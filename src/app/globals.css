@@ -101,8 +101,7 @@ a {
   justify-content: space-between;
   gap: 16px;
   padding: 12px var(--gutter);
-  background: color-mix(in srgb, var(--jute) 88%, transparent);
-  backdrop-filter: blur(6px);
+  background-color: var(--jute);
   border-bottom: 2px solid var(--ink);
 }
 
@@ -241,13 +240,34 @@ main > .pedido {
 .saco-cara {
   z-index: 1;
   position: relative;
-  max-width: 1180px;
+  max-width: 1320px;
   width: 100%;
   margin: 0 auto;
-  padding: clamp(24px, 4vw, 56px);
-  border: 4px solid var(--ink);
-  outline: 2px dashed var(--ink-soft);
-  outline-offset: -16px;
+  padding: clamp(56px, 7vw, 96px) clamp(28px, 5vw, 80px) clamp(36px, 5vw, 64px);
+}
+
+.saco-cara-fondo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: visible;
+}
+
+.saco-cara-fondo .saco-cuerpo {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.saco-cara-fondo .saco-costura {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-dasharray: 10 8;
+  vector-effect: non-scaling-stroke;
 }
 
 .portada-marca {
@@ -272,7 +292,6 @@ main > .pedido {
 
 .portada-datos {
   position: relative;
-  background: var(--jute);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   border-top: 3px solid var(--ink);
@@ -287,6 +306,27 @@ main > .pedido {
 
 .portada-datos div:last-child {
   border-right: 0;
+}
+
+@media (max-width: 720px) {
+  .portada-datos {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .portada-datos div {
+    border-right: 0;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .portada-datos div:nth-child(odd) {
+    border-right: 2px solid var(--ink);
+  }
+
+  .portada-datos div:last-child {
+    grid-column: 1 / -1;
+    border-right: 0;
+    border-bottom: 0;
+  }
 }
 
 .portada-datos dt {
@@ -311,7 +351,7 @@ main > .pedido {
   top: clamp(16px, 4vw, 48px);
   width: clamp(110px, 16vw, 190px);
   color: var(--lote);
-  transform: rotate(-9deg);
+  transform: rotate(-6deg);
   mix-blend-mode: multiply;
 }
 
@@ -330,8 +370,15 @@ main > .pedido {
 }
 
 .historia-cabeza {
+  position: relative;
+  z-index: 2;
   max-width: 1180px;
   margin: 0 auto clamp(40px, 6vw, 72px);
+}
+
+.historia-cabeza .bajada {
+  background-color: var(--jute);
+  box-shadow: 0 0 0 12px var(--jute);
 }
 
 .titulo-seccion {
@@ -517,10 +564,55 @@ main > .pedido {
   max-width: 520px;
 }
 
-.molinillo input[type="range"] {
+.molinillo input[type="range"],
+.tostador input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
-  accent-color: var(--ink);
   height: 28px;
+  margin: 10px 0 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.molinillo input[type="range"]::-webkit-slider-runnable-track,
+.tostador input[type="range"]::-webkit-slider-runnable-track {
+  height: 10px;
+  background: var(--jute-deep);
+  border: 2px solid var(--ink);
+}
+
+.molinillo input[type="range"]::-moz-range-track,
+.tostador input[type="range"]::-moz-range-track {
+  height: 6px;
+  background: var(--jute-deep);
+  border: 2px solid var(--ink);
+}
+
+.molinillo input[type="range"]::-moz-range-progress,
+.tostador input[type="range"]::-moz-range-progress {
+  height: 6px;
+  background: var(--ink);
+}
+
+.molinillo input[type="range"]::-webkit-slider-thumb,
+.tostador input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 28px;
+  margin-top: -11px;
+  background: var(--ink);
+  border: 0;
+  border-radius: 0;
+}
+
+.molinillo input[type="range"]::-moz-range-thumb,
+.tostador input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 28px;
+  background: var(--ink);
+  border: 0;
+  border-radius: 0;
 }
 
 .molinillo-lectura {
@@ -569,13 +661,6 @@ main > .pedido {
   width: 100%;
   height: 100%;
   display: block;
-}
-
-.tostador input[type="range"] {
-  width: 100%;
-  accent-color: var(--ink);
-  height: 28px;
-  margin-top: 10px;
 }
 
 .tostador-ayuda {
@@ -663,19 +748,38 @@ main > .pedido {
   border: 0;
   cursor: pointer;
   color: var(--ink);
-  background-color: var(--jute);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cpath d='M0 1.5h6M0 4.5h6' stroke='%233a260c' stroke-opacity='.2' stroke-width='1.2'/%3E%3Cpath d='M1.5 0v6M4.5 0v6' stroke='%23ffecc4' stroke-opacity='.1' stroke-width='1'/%3E%3C/svg%3E");
-  box-shadow: 0 14px 28px -12px rgba(0, 0, 0, 0.7);
+  background: transparent;
+  padding-top: 30px;
+  filter: drop-shadow(0 14px 16px rgba(0, 0, 0, 0.55));
   transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out),
     opacity 0.3s;
 }
 
-.pila::before {
-  content: "";
+.pila-saco {
   position: absolute;
-  inset: 8px;
-  border: 2px solid var(--tinta);
-  pointer-events: none;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.pila {
+  isolation: isolate;
+}
+
+.pila-saco .saco-cuerpo {
+  fill: var(--jute);
+  stroke: var(--tinta);
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.pila-saco .saco-costura {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 5;
+  vector-effect: non-scaling-stroke;
 }
 
 .pila {
@@ -690,6 +794,7 @@ main > .pedido {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  inset: 8% 4% 2%;
   background: radial-gradient(circle at var(--lx, 50%) var(--ly, 30%), rgba(255, 240, 210, 0.28), transparent 55%);
   opacity: 0;
   transition: opacity 0.3s var(--ease-out);
@@ -701,8 +806,8 @@ main > .pedido {
 
 .pila:hover {
   transform: perspective(700px) rotateX(var(--rx)) rotateY(var(--ry)) translateZ(24px);
-  box-shadow: 0 30px 44px -16px rgba(0, 0, 0, 0.85);
-  transition: transform 0.12s linear, box-shadow 0.35s var(--ease-out);
+  filter: drop-shadow(0 24px 22px rgba(0, 0, 0, 0.7));
+  transition: transform 0.12s linear, filter 0.35s var(--ease-out);
 }
 
 .pila-pais {
@@ -716,13 +821,13 @@ main > .pedido {
 
 .ficha {
   animation: ficha-entra 0.8s var(--ease-out) both;
-  transform-origin: top center;
+  transform-origin: left center;
 }
 
 @keyframes ficha-entra {
   from {
     opacity: 0;
-    transform: perspective(1200px) rotateX(-14deg) translateY(24px);
+    transform: perspective(1200px) rotateY(-90deg);
   }
   to {
     opacity: 1;
@@ -741,9 +846,16 @@ main > .pedido {
   }
 }
 
-.pila[aria-pressed="true"] {
-  outline: 3px solid var(--paper);
-  outline-offset: 4px;
+.pila[aria-pressed="true"] .saco-cuerpo {
+  stroke-width: 6;
+}
+
+.pila[aria-pressed="true"]::after {
+  opacity: 0;
+}
+
+.pila[aria-pressed="true"] .pila-pie::after {
+  content: " · Abierto";
 }
 
 .pila[data-apagada="true"] {
@@ -756,11 +868,15 @@ main > .pedido {
 
 .pila-pais {
   font-size: min(19cqw, 40px);
-  color: var(--tinta);
+  color: var(--ink);
 }
 
 .pila-lote {
+  align-self: flex-start;
+  padding: 2px 8px;
   font-size: 14px;
+  background: var(--tinta);
+  color: #fff;
 }
 
 .pila-pie {
@@ -773,7 +889,7 @@ main > .pedido {
   margin-top: 40px;
   border: 2px solid var(--bodega-line);
   background: var(--bodega-2);
-  --lote: var(--tinta);
+  --lote: var(--clara);
 }
 
 .ficha-cabeza {
@@ -789,7 +905,6 @@ main > .pedido {
   font-size: clamp(44px, 7vw, 5.5rem);
   margin: 0;
   color: var(--lote);
-  filter: brightness(1.25);
 }
 
 .ficha-region {
@@ -900,7 +1015,6 @@ main > .pedido {
 .medidor-escala span[data-lleno="true"] {
   background: var(--lote);
   border-color: var(--lote);
-  filter: brightness(1.2);
   animation: asentar 0.5s var(--ease-out) both;
   animation-delay: calc(var(--i) * 60ms);
 }
@@ -946,7 +1060,7 @@ main > .pedido {
   margin: 0 0 12px;
   padding: 2px 8px;
   background: var(--lote);
-  color: #fff;
+  color: var(--ink);
   font-size: 15px;
 }
 
@@ -981,7 +1095,7 @@ main > .pedido {
 .comparador .filtro[aria-pressed="true"] {
   background: var(--tinta);
   border-color: var(--tinta);
-  color: #fff;
+  color: var(--ink);
 }
 
 .comparacion {
@@ -1000,7 +1114,6 @@ main > .pedido {
 
 .comparacion-titulos .stencil {
   font-size: clamp(30px, 4vw, 48px);
-  filter: brightness(1.25);
 }
 
 .comparacion-medidor .medidor-escala span[data-lleno="true"] {
@@ -1022,7 +1135,7 @@ main > .pedido {
   margin: 0 2px;
   border: 0;
   background: var(--tinta);
-  color: #fff;
+  color: var(--ink);
   font-size: 0.9em;
   cursor: pointer;
   text-decoration: underline;
@@ -1130,7 +1243,6 @@ main > .pedido {
   font-size: clamp(36px, 5vw, 56px);
   margin: 4px 0 8px;
   color: var(--lote);
-  filter: brightness(1.3);
 }
 
 .resultado p {
@@ -1147,6 +1259,8 @@ main > .pedido {
 }
 
 .barista {
+  position: sticky;
+  top: 88px;
   display: flex;
   flex-direction: column;
   border: 3px solid var(--ink);

@@ -20,7 +20,7 @@ function ConLotes({ texto }: { texto: string }) {
             key={i}
             type="button"
             className="lote-link dato"
-            style={{ "--tinta": cafe.tinta } as React.CSSProperties}
+            style={{ "--tinta": cafe.tintaClara } as React.CSSProperties}
             onClick={() => abrirFicha(cafe.id)}
             title={`Ver la ficha de ${cafe.pais}`}
           >
@@ -150,7 +150,7 @@ function Quiz() {
         <div
           className="resultado"
           aria-live="polite"
-          style={{ "--tinta": resultado.cafe.tinta } as React.CSSProperties}
+          style={{ "--tinta": resultado.cafe.tintaClara } as React.CSSProperties}
         >
           <h3 className="stencil">
             {resultado.cafe.pais} {resultado.cafe.lote}
@@ -289,7 +289,7 @@ function Barista() {
           value={texto}
           maxLength={500}
           onChange={(e) => setTexto(e.target.value)}
-          placeholder="Ej.: ¿qué molienda uso para prensa?"
+          placeholder="Ej.: molienda para prensa"
           autoComplete="off"
         />
         <button className="sello" type="submit" disabled={!texto.trim() || cargando}>
