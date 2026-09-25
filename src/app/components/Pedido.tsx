@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { METODOS, type Cafe, type Metodo, type Receta } from "@/lib/cafes";
 import { useCarta } from "./CartaContexto";
 import MetodoIcono from "./MetodoIcono";
@@ -349,6 +349,20 @@ const SUGERENCIAS = [
 ];
 
 function Barista() {
+  const campo = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const alClic = (e: MouseEvent) => {
+      const a = (e.target as Element | null)?.closest?.('a[data-enfocar="pregunta"]');
+      if (!a || !campo.current) return;
+      e.preventDefault();
+      const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      campo.current.closest(".barista")?.scrollIntoView({ behavior: quieto ? "auto" : "smooth", block: "center" });
+      history.replaceState(null, "", "#barista");
+      setTimeout(() => campo.current?.focus({ preventScroll: true }), quieto ? 0 : 900);
+    };
+    document.addEventListener("click", alClic);
+    return () => document.removeEventListener("click", alClic);
+  }, []);
   const [mensajes, setMensajes] = useState<Msj[]>([
     {
       role: "assistant",
@@ -443,6 +457,7 @@ function Barista() {
         </label>
         <input
           id="pregunta"
+          ref={campo}
           type="text"
           value={texto}
           maxLength={500}

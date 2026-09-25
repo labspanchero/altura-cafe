@@ -2786,3 +2786,110 @@ body::after {
     white-space: nowrap;
   }
 }
+
+/* ——— Dos llamadas en la portada ——— */
+.portada-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 18px;
+  margin: 0 0 22px;
+}
+
+.portada-ctas .escanear-cta {
+  margin: 0;
+}
+
+.barista-cta {
+  background: var(--ink);
+  color: var(--paper);
+  rotate: 1deg;
+}
+
+.barista-cta::after {
+  content: "IA";
+  background: var(--tinta-panama);
+  color: var(--ink);
+}
+
+.barista-punto {
+  fill: currentColor;
+  stroke: none;
+  animation: escribiendo 1.4s var(--ease-out) infinite;
+}
+
+.barista-punto:nth-of-type(2) {
+  animation-delay: 0.15s;
+}
+
+.barista-punto:nth-of-type(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes escribiendo {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barista-punto {
+    animation: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .saco-cara > .portada-ctas {
+    order: 1;
+    flex-direction: column;
+    align-items: stretch;
+    margin: 4px 0 22px;
+  }
+
+  .portada-ctas .escanear-cta {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 720px) {
+  .portada-ctas {
+    width: 100%;
+  }
+
+  .portada-ctas .escanear-cta {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    rotate: 0deg;
+  }
+
+  .portada-ctas .escanear-cta::after {
+    right: 8px;
+  }
+
+  .portada-ctas .escanear-texto {
+    min-width: 0;
+  }
+
+  .portada-ctas .escanear-texto .stencil {
+    font-size: clamp(20px, 6.2vw, 26px);
+  }
+
+  .portada-ctas .escanear-texto .dato {
+    font-size: 11px;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 720px) {
+  .portada-ctas .escanear-flecha {
+    display: none;
+  }
+}
