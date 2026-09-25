@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CAFES, METODOS, type Cafe, type Perfil } from "@/lib/cafes";
+import { texturaArpillera } from "@/lib/arpillera";
 import MetodoIcono from "./MetodoIcono";
 
 const FILTROS: { id: "todos" | Perfil | "leche"; nombre: string }[] = [
@@ -167,6 +168,12 @@ export default function Carta() {
   const [filtro, setFiltro] = useState<(typeof FILTROS)[number]["id"]>("todos");
   const [elegido, setElegido] = useState<string>(CAFES[0].id);
   const cafe = CAFES.find((c) => c.id === elegido) ?? CAFES[0];
+
+  // La trama de arpillera se genera una vez y la comparten todos los sacos.
+  useEffect(() => {
+    const url = texturaArpillera();
+    if (url) document.documentElement.style.setProperty("--arpillera", `url(${url})`);
+  }, []);
 
   useEffect(() => {
     const abrir = (e: Event) => {
