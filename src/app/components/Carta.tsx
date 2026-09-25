@@ -347,12 +347,12 @@ export default function Carta() {
                   {c.proceso.split(",")[0]} · {c.altitud.toLocaleString("es")} msnm
                   <br />
                   {c.notas[0]}
-                  {(meGusta.conteos[c.id] ?? 0) > 0 && (
-                    <span className="pila-megusta">
-                      <Corazon lleno={meGusta.mios.has(c.id)} /> {meGusta.conteos[c.id]}
-                    </span>
-                  )}
                 </span>
+                {(meGusta.conteos[c.id] ?? 0) > 0 && (
+                  <span className="pila-megusta dato" aria-label={`${meGusta.conteos[c.id]} me gusta`}>
+                    <Corazon lleno={meGusta.mios.has(c.id)} /> {meGusta.conteos[c.id]}
+                  </span>
+                )}
               </button>
             );
           })}
