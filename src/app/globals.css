@@ -1741,3 +1741,238 @@ main > section {
     white-space: nowrap;
   }
 }
+
+/* ——— Temporizador de preparación ——— */
+.receta-preparar {
+  margin-top: 14px;
+  padding: 10px 16px;
+  font-size: 15px;
+}
+
+.receta-sin-reloj {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--paper-dim);
+}
+
+.preparar {
+  margin: auto;
+  inset: 0;
+  width: min(960px, calc(100vw - 24px));
+  max-height: calc(100svh - 24px);
+  padding: 0;
+  border: 2px solid var(--bodega-line);
+  background: var(--bodega);
+  color: var(--paper);
+  overflow: auto;
+}
+
+.preparar::backdrop {
+  background: rgba(10, 8, 5, 0.82);
+}
+
+.preparar-cabeza {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: clamp(18px, 3vw, 28px);
+  border-bottom: 2px solid var(--bodega-line);
+}
+
+.preparar-cabeza h2 {
+  margin: 0 0 6px;
+  font-size: clamp(38px, 6vw, 64px);
+  color: var(--tinta);
+}
+
+.preparar-cabeza p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--paper-dim);
+}
+
+.preparar-cerrar {
+  padding: 8px 14px;
+  border: 2px solid var(--paper-dim);
+  background: transparent;
+  color: var(--paper);
+  cursor: pointer;
+}
+
+.preparar-cerrar:hover {
+  border-color: var(--paper);
+}
+
+.preparar-cuerpo {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) minmax(0, 1.1fr);
+  gap: clamp(20px, 4vw, 48px);
+  align-items: center;
+  padding: clamp(18px, 3vw, 32px);
+}
+
+.preparar-reloj {
+  position: relative;
+  aspect-ratio: 1;
+  max-width: 380px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.preparar-reloj svg {
+  width: 100%;
+  height: 100%;
+}
+
+.aro-fondo {
+  fill: none;
+  stroke: var(--bodega-line);
+  stroke-width: 5;
+}
+
+.aro {
+  fill: none;
+  stroke: var(--tinta);
+  stroke-width: 5;
+}
+
+.aro-marca {
+  stroke: var(--paper);
+  stroke-width: 1.5;
+}
+
+.preparar-centro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.preparar-cafetera {
+  position: relative;
+  width: 34%;
+  aspect-ratio: 1;
+  margin-bottom: 6px;
+}
+
+.preparar-liquido {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: 8%;
+  height: 62%;
+  background: linear-gradient(180deg, #b87a45, #4a2410);
+  transform-origin: bottom;
+  transition: transform 0.4s var(--ease-out);
+  opacity: 0.85;
+}
+
+.preparar-icono {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  color: var(--paper);
+}
+
+.preparar-tiempo {
+  font-size: clamp(52px, 9vw, 88px);
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+
+.preparar-centro .dato {
+  font-size: 14px;
+  color: var(--paper-dim);
+}
+
+.preparar-etapa h3 {
+  margin: 0 0 10px;
+  font-size: clamp(36px, 5vw, 56px);
+  color: var(--tinta);
+}
+
+.preparar-etapa > p {
+  margin: 0 0 14px;
+  font-size: 18px;
+  max-width: 42ch;
+}
+
+.preparar-agua {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 14px;
+  border: 2px solid var(--tinta);
+  font-size: 15px;
+}
+
+.preparar-agua strong {
+  font-size: 34px;
+  color: var(--paper);
+}
+
+.preparar-pasos {
+  list-style: none;
+  margin: 22px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.preparar-pasos li {
+  display: flex;
+  gap: 12px;
+  font-size: 15px;
+  color: var(--paper-dim);
+}
+
+.preparar-pasos li span {
+  width: 3.2em;
+  font-variant-numeric: tabular-nums;
+}
+
+.preparar-pasos li[data-estado="hecho"] {
+  text-decoration: line-through;
+  text-decoration-color: var(--tinta);
+}
+
+.preparar-pasos li[data-estado="actual"] {
+  color: var(--paper);
+}
+
+.preparar-pasos li[data-estado="actual"]::after {
+  content: "←";
+  color: var(--tinta);
+}
+
+.preparar-acciones {
+  display: flex;
+  gap: 10px;
+  padding: 0 clamp(18px, 3vw, 32px) clamp(18px, 3vw, 28px);
+}
+
+.preparar .sello[data-lleno="true"] {
+  background: var(--tinta);
+  border-color: var(--tinta);
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .preparar-cuerpo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .preparar-reloj {
+    max-width: 260px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preparar-liquido {
+    transition: none;
+  }
+}

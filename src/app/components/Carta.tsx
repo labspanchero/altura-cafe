@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { METODOS, type Cafe, type Perfil } from "@/lib/cafes";
 import { useCarta } from "./CartaContexto";
+import Temporizador from "./Temporizador";
+import { etapasDe } from "@/lib/etapas";
 import { texturaArpillera } from "@/lib/arpillera";
 import MetodoIcono from "./MetodoIcono";
 
@@ -98,6 +100,7 @@ function useMeGusta(): MeGusta {
 }
 
 export function Ficha({ cafe, meGusta }: { cafe: Cafe; meGusta?: MeGusta }) {
+  const [preparando, setPreparando] = useState<Cafe["recetas"][number] | null>(null);
   return (
     <article
       className="ficha"
@@ -206,11 +209,19 @@ export function Ficha({ cafe, meGusta }: { cafe: Cafe; meGusta?: MeGusta }) {
                   <dt className="dato">Tiempo</dt>
                   <dd>{r.tiempo}</dd>
                 </dl>
+                {etapasDe(r) ? (
+                  <button type="button" className="sello sello-claro receta-preparar" onClick={() => setPreparando(r)}>
+                    Preparar ahora
+                  </button>
+                ) : (
+                  <p className="dato receta-sin-reloj">Se prepara de un día para otro: sin temporizador.</p>
+                )}
               </div>
             ))}
           </div>
         </section>
       </div>
+      {preparando && <Temporizador cafe={cafe} receta={preparando} alCerrar={() => setPreparando(null)} />}
     </article>
   );
 }
