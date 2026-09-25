@@ -165,8 +165,114 @@ function Molinillo() {
   );
 }
 
+// Boca del saco: mismos comandos abierta y cerrada para poder interpolar.
+const BOCA_ABIERTA = [
+  [40, 60], [45, 40], [70, 28], [110, 36], [110, 36], [240, 40], [370, 36], [370, 36], [410, 28], [435, 40], [440, 60],
+];
+const BOCA_CERRADA = [
+  [40, 150], [40, 108], [182, 96], [207, 48], [194, 14], [240, -8], [286, 14], [273, 48], [298, 96], [440, 108], [440, 150],
+];
+
+function pathSaco(c: number) {
+  const p = BOCA_ABIERTA.map(([x, y], i) => {
+    const [x2, y2] = BOCA_CERRADA[i];
+    return `${(x + (x2 - x) * c).toFixed(1)} ${(y + (y2 - y) * c).toFixed(1)}`;
+  });
+  return `M${p[0]} C${p[1]} ${p[2]} ${p[3]} L${p[4]} Q${p[5]} ${p[6]} L${p[7]} C${p[8]} ${p[9]} ${p[10]} L452 660 Q450 700 410 704 L70 704 Q30 700 28 660Z`;
+}
+
+// Trama de arpillera generada una vez: hilos irregulares, fibras y relieve.
+function texturaArpillera() {
+  const T = 192;
+  const cv = document.createElement("canvas");
+  cv.width = cv.height = T;
+  const g = cv.getContext("2d");
+  if (!g) return "";
+  let sem = 11;
+  const r = () => ((sem = (sem * 16807) % 2147483647) / 2147483647);
+  g.fillStyle = "#6e4f25";
+  g.fillRect(0, 0, T, T);
+  const paso = 8;
+  const n = T / paso;
+  const tonos = Array.from({ length: n }, () => 150 + r() * 40);
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      const encima = (i + j) % 2 === 0;
+      const t = (encima ? tonos[j] : tonos[i]) + (r() - 0.5) * 18;
+      const x = i * paso;
+      const y = j * paso;
+      const grad = encima ? g.createLinearGradient(x, y, x, y + paso) : g.createLinearGradient(x, y, x + paso, y);
+      grad.addColorStop(0, `rgb(${t * 0.78},${t * 0.58},${t * 0.33})`);
+      grad.addColorStop(0.5, `rgb(${t * 1.02},${t * 0.78},${t * 0.47})`);
+      grad.addColorStop(1, `rgb(${t * 0.7},${t * 0.51},${t * 0.29})`);
+      g.fillStyle = grad;
+      const grosor = paso - 1.4 - r() * 1.2;
+      if (encima) g.fillRect(x + 0.4, y + (paso - grosor) / 2, paso - 0.8, grosor);
+      else g.fillRect(x + (paso - grosor) / 2, y + 0.4, grosor, paso - 0.8);
+    }
+  }
+  g.lineWidth = 0.6;
+  for (let k = 0; k < 260; k++) {
+    const x = r() * T;
+    const y = r() * T;
+    const a = r() * Math.PI;
+    const l = 3 + r() * 9;
+    g.strokeStyle = r() < 0.6 ? "rgba(235,200,140,0.35)" : "rgba(60,38,14,0.35)";
+    g.beginPath();
+    g.moveTo(x, y);
+    g.quadraticCurveTo(x + Math.cos(a) * l * 0.5 + (r() - 0.5) * 3, y + Math.sin(a) * l * 0.5, x + Math.cos(a) * l, y + Math.sin(a) * l);
+    g.stroke();
+  }
+  return cv.toDataURL("image/png");
+}
+
 function Saco({ activa }: { activa: number }) {
   const tira = useRef<HTMLDivElement>(null);
+  const cuerpo = useRef<SVGPathElement>(null);
+  const volumen = useRef<SVGPathElement>(null);
+  const costura = useRef<SVGPathElement>(null);
+  const atadura = useRef<SVGGElement>(null);
+  const pliegues = useRef<SVGGElement>(null);
+  const marca = useRef<SVGGElement>(null);
+  const [trama, setTrama] = useState("");
+
+  useEffect(() => setTrama(texturaArpillera()), []);
+
+  // Cierre continuo: abierto al empezar la historia, atado en "Trilla y saco".
+  useEffect(() => {
+    let raf = 0;
+    const actualizar = () => {
+      raf = 0;
+      const ini = document.getElementById("etapa-planta");
+      const fin = document.getElementById("etapa-saco");
+      if (!ini || !fin) return;
+      const centro = window.innerHeight / 2;
+      const a = ini.getBoundingClientRect().top + ini.offsetHeight / 2 - centro;
+      const b = fin.getBoundingClientRect().top + fin.offsetHeight / 2 - centro;
+      const t = Math.min(1, Math.max(0, a / (a - b || 1)));
+      const c = t * t * (3 - 2 * t);
+      const d = pathSaco(c);
+      cuerpo.current?.setAttribute("d", d);
+      volumen.current?.setAttribute("d", d);
+      costura.current?.setAttribute("opacity", String(Math.max(0, 1 - c * 2.5)));
+      pliegues.current?.setAttribute("opacity", String(Math.max(0, (c - 0.35) / 0.65)));
+      const nudo = Math.max(0, (c - 0.82) / 0.18);
+      atadura.current?.setAttribute("opacity", String(nudo));
+      atadura.current?.setAttribute("transform", `translate(0 ${(1 - nudo) * -18})`);
+      marca.current?.setAttribute("transform", `translate(0 ${c * 16})`);
+    };
+    const pedir = () => {
+      if (!raf) raf = requestAnimationFrame(actualizar);
+    };
+    actualizar();
+    window.addEventListener("scroll", pedir, { passive: true });
+    window.addEventListener("resize", pedir);
+    return () => {
+      window.removeEventListener("scroll", pedir);
+      window.removeEventListener("resize", pedir);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
   useEffect(() => {
     const t = tira.current;
     const chip = t?.querySelector<HTMLElement>('[data-activa="true"]');
@@ -176,25 +282,40 @@ function Saco({ activa }: { activa: number }) {
     <div className="saco" aria-hidden="true">
       <svg viewBox="0 0 480 720">
         <defs>
-          <pattern id="trama" width="8" height="8" patternUnits="userSpaceOnUse">
-            <rect width="8" height="8" fill="#a67f47" />
-            <path d="M0 2h8M0 6h8" stroke="#3a260c" strokeOpacity=".28" strokeWidth="1.6" />
-            <path d="M2 0v8M6 0v8" stroke="#ffecc4" strokeOpacity=".12" strokeWidth="1.4" />
+          <pattern id="trama" width="96" height="96" patternUnits="userSpaceOnUse">
+            <rect width="96" height="96" fill="#a67f47" />
+            {trama && <image href={trama} width="96" height="96" />}
           </pattern>
+          <radialGradient id="volumen" cx="45%" cy="40%" r="75%">
+            <stop offset="0" stopColor="#fff3dc" stopOpacity="0.16" />
+            <stop offset="0.6" stopColor="#000" stopOpacity="0" />
+            <stop offset="1" stopColor="#1c1710" stopOpacity="0.4" />
+          </radialGradient>
           <filter id="tinta-gastada">
             <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" />
             <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.8 1.4" />
             <feComposite in="SourceGraphic" operator="in" />
           </filter>
         </defs>
-        <path
-          d="M40 60 Q60 20 110 36 L370 36 Q420 20 440 60 L452 660 Q450 700 410 704 L70 704 Q30 700 28 660Z"
-          fill="url(#trama)"
-          stroke="var(--ink)"
-          strokeWidth="4"
-        />
-        <path d="M40 92 Q240 110 440 92" stroke="var(--ink)" strokeWidth="3" strokeDasharray="10 8" fill="none" />
-        <g filter="url(#tinta-gastada)">
+        <path ref={cuerpo} d={pathSaco(0)} fill="url(#trama)" stroke="var(--ink)" strokeWidth="4" />
+        <path ref={volumen} d={pathSaco(0)} fill="url(#volumen)" pointerEvents="none" />
+        <path ref={costura} d="M40 92 Q240 110 440 92" stroke="var(--ink)" strokeWidth="3" strokeDasharray="10 8" fill="none" />
+        <g ref={pliegues} opacity="0" stroke="var(--ink)" strokeWidth="2.5" fill="none" strokeLinecap="round">
+          <path d="M214 52 Q170 90 96 118" opacity="0.55" />
+          <path d="M224 54 Q205 100 168 134" opacity="0.45" />
+          <path d="M240 55 Q240 100 238 140" opacity="0.4" />
+          <path d="M256 54 Q276 100 312 134" opacity="0.45" />
+          <path d="M266 52 Q310 90 384 118" opacity="0.55" />
+          <path d="M200 26 Q210 36 206 48 M280 26 Q270 36 274 48 M226 12 Q232 30 228 46 M254 12 Q248 30 252 46" opacity="0.6" />
+        </g>
+        <g ref={atadura} opacity="0">
+          <path d="M200 46 Q240 60 280 46 L282 58 Q240 72 198 58Z" fill="#3b2a14" stroke="var(--ink)" strokeWidth="2.5" />
+          <path d="M205 50 Q240 62 275 50" stroke="#c9a15c" strokeWidth="1.5" strokeDasharray="4 3" fill="none" />
+          <path d="M276 56 Q300 84 292 118" stroke="#3b2a14" strokeWidth="6" strokeLinecap="round" fill="none" />
+          <path d="M276 56 Q318 70 330 104" stroke="#3b2a14" strokeWidth="6" strokeLinecap="round" fill="none" />
+          <circle cx="278" cy="54" r="8" fill="#3b2a14" stroke="var(--ink)" strokeWidth="2" />
+        </g>
+        <g ref={marca} filter="url(#tinta-gastada)">
           <text x="240" y="160" textAnchor="middle" className="stencil" fontSize="84" fill="var(--ink)">
             ALTURA
           </text>
