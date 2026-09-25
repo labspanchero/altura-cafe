@@ -12,6 +12,7 @@ export default function GranoTueste() {
 
   useEffect(() => {
     tueste.current = valor;
+    window.dispatchEvent(new CustomEvent("altura:tueste", { detail: valor }));
   }, [valor]);
 
   useEffect(() => {

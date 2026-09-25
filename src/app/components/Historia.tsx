@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { METODOS, METODOS_ORDEN } from "@/lib/cafes";
 import dynamic from "next/dynamic";
-import { Cereza, Cosecha, Planta, Procesos, Secado, Taza } from "./Ilustraciones";
+import { Cereza, Cosecha, Planta, Procesos, Secado } from "./Ilustraciones";
 
 const GranoTueste = dynamic(() => import("./three/GranoTueste"), { ssr: false });
+const TazaLlena = dynamic(() => import("./three/TazaLlena"), { ssr: false });
 
 type Etapa = {
   id: string;
@@ -111,7 +112,7 @@ const ETAPAS: Etapa[] = [
       "Con una buena extracción, entre el 18% y el 22% del café se disuelve en el agua, y la taza llega equilibrada.",
       "Arriba de 80 puntos en la escala de cata SCA un café se considera de especialidad. Lo que viene después es la carta: cada lote con su ficha completa.",
     ],
-    ilustracion: <Taza />,
+    ilustracion: <TazaLlena />,
     estampa: { texto: ["88,5 PTS"], x: 282, y: 592, giro: -4, ancho: 158 },
   },
 ];
