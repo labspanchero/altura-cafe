@@ -52,7 +52,7 @@ export default function ArmaTuLote() {
   const pf = perfil(c);
   const nt = notas(c);
   const receta = recetaDe(c);
-  const nombre = c.nombre.trim() || "Mi lote";
+  const nombre = c.nombre.trim() || "Mi café";
   const comoCafe = {
     id: "mi-lote",
     lote: "MI LOTE",
@@ -85,7 +85,7 @@ export default function ArmaTuLote() {
     <section className="arma" id="arma" aria-labelledby="arma-titulo" style={{ "--tinta": o.tinta } as React.CSSProperties}>
       <div className="arma-interior">
         <h2 id="arma-titulo" className="stencil titulo-seccion">
-          Arma tu lote
+          Arma tu café
         </h2>
         <p className="bajada">
           Elige la cereza, el proceso y el tueste. Te mostramos cómo va a saber y cómo prepararlo, y lo embolsamos con tu nombre.
@@ -102,7 +102,7 @@ export default function ArmaTuLote() {
                 Orden <strong className="stencil">{pedido.numero}</strong>
               </p>
               <p>
-                Tu lote <strong>{pedido.config.nombre}</strong>: {ORIGENES[pedido.config.origen].nombre}, proceso{" "}
+                Tu café <strong>{pedido.config.nombre}</strong>: {ORIGENES[pedido.config.origen].nombre}, proceso{" "}
                 {PROCESOS[pedido.config.proceso].nombre.toLowerCase()}, tueste {TUESTES[pedido.config.tueste].nombre.toLowerCase()},{" "}
                 molido para {METODOS[pedido.config.metodo].nombre} · {pedido.config.cantidad >= 1000 ? "1 kg" : `${pedido.config.cantidad} g`}.
               </p>
@@ -120,7 +120,7 @@ export default function ArmaTuLote() {
                   </button>
                 )}
                 <button type="button" className="sello" onClick={() => setPedido(null)}>
-                  Armar otro lote
+                  Armar otro café
                 </button>
               </div>
             </div>
@@ -183,8 +183,8 @@ export default function ArmaTuLote() {
                   opciones={CANTIDADES.map((q) => ({ v: String(q), n: q >= 1000 ? "1 kg" : `${q} g` }))}
                 />
                 <label className="arma-nombre">
-                  <span className="dato">Nombre de tu lote</span>
-                  <input type="text" value={c.nombre} maxLength={22} onChange={(e) => set("nombre", e.target.value)} placeholder="Ej.: Lote Nerdearla" />
+                  <span className="dato">Nombre de tu café</span>
+                  <input type="text" value={c.nombre} maxLength={22} onChange={(e) => set("nombre", e.target.value)} placeholder="Ej.: Café Nerdearla" />
                 </label>
               </fieldset>
             </div>

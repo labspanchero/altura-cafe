@@ -21,7 +21,7 @@ type Props = {
   lema?: string;
 };
 
-export default function BolsaDorada({ nombre, titulo, subtitulo, datos, pie, tinta, sellos, compacta = false, lema = "Altura · Lote a pedido" }: Props) {
+export default function BolsaDorada({ nombre, titulo, subtitulo, datos, pie, tinta, sellos, compacta = false, lema = "Altura · Café a pedido" }: Props) {
   const u = useId().replace(/:/g, "");
   const giro = useRef<HTMLDivElement>(null);
   const id = (k: string) => `${k}-${u}`;

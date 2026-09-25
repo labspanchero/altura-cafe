@@ -80,5 +80,5 @@ export function validarConfig(b: unknown): Config | null {
     !CANTIDADES.includes(o.cantidad as never)
   )
     return null;
-  return { ...(o as unknown as Config), nombre: nombre || "Mi lote" };
+  return { ...(o as unknown as Config), nombre: nombre || "Mi café" };
 }

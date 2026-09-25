@@ -54,7 +54,7 @@ export default async function Home() {
             <a className="nav-link" href="#carta">Carta</a>
           </li>
           <li>
-            <a className="nav-link" href="#arma">Arma</a>
+            <a className="nav-link" href="#arma">Arma tu café</a>
           </li>
           <li>
             <a className="nav-link" href="#pedido">Tu café</a>
