@@ -170,7 +170,7 @@ function Saco({ activa }: { activa: number }) {
   useEffect(() => {
     const t = tira.current;
     const chip = t?.querySelector<HTMLElement>('[data-activa="true"]');
-    if (t && chip) t.scrollTo({ left: chip.offsetLeft - 8, behavior: "smooth" });
+    if (t && chip) t.scrollTo({ left: t.scrollLeft + chip.getBoundingClientRect().left - t.getBoundingClientRect().left - 8, behavior: "smooth" });
   }, [activa]);
   return (
     <div className="saco" aria-hidden="true">

@@ -197,6 +197,7 @@ export default function MapaAltura() {
         renderer.setSize(ancho, alto, false);
         camara.aspect = ancho / alto;
         radio = camara.aspect < 1 ? 17 : 12.5;
+        objetivo.y = camara.aspect < 1 ? 2.1 : 1.1;
         camara.updateProjectionMatrix();
       };
       const ro = new ResizeObserver(ajustar);

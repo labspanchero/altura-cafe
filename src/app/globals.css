@@ -375,9 +375,11 @@ main > section {
   margin: 0 auto clamp(40px, 6vw, 72px);
 }
 
-.historia-cabeza .bajada {
-  background-color: var(--jute);
-  box-shadow: 0 0 0 12px var(--jute);
+@media (min-width: 861px) {
+  .historia-cabeza .bajada {
+    background-color: var(--jute);
+    box-shadow: 0 0 0 12px var(--jute);
+  }
 }
 
 .titulo-seccion {
@@ -482,6 +484,7 @@ main > section {
   .etapa {
     min-height: auto;
     padding: 56px 0;
+    opacity: 1;
   }
 }
 
@@ -632,8 +635,9 @@ main > section {
 
 .molinillo-lectura {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 12px;
+  gap: 4px 12px;
   align-items: baseline;
   margin-top: 6px;
 }
