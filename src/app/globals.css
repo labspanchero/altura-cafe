@@ -943,6 +943,90 @@ a {
   }
 }
 
+/* Comparador */
+.comparador {
+  margin-top: 24px;
+  border: 2px solid var(--bodega-line);
+  padding: clamp(18px, 2.5vw, 28px);
+}
+
+.comparador-cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 24px;
+}
+
+.comparador-cabeza h3 {
+  margin: 0;
+  font-size: clamp(28px, 3.5vw, 40px);
+}
+
+.comparador .filtro[aria-pressed="true"] {
+  background: var(--tinta);
+  border-color: var(--tinta);
+  color: #fff;
+}
+
+.comparacion {
+  margin-top: 24px;
+  animation: ficha-entra 0.6s var(--ease-out) both;
+}
+
+.comparacion-fila {
+  display: grid;
+  grid-template-columns: 110px 1fr 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--bodega-line);
+}
+
+.comparacion-titulos .stencil {
+  font-size: clamp(30px, 4vw, 48px);
+  filter: brightness(1.25);
+}
+
+.comparacion-medidor .medidor-escala span[data-lleno="true"] {
+  background: var(--lote);
+  border-color: var(--lote);
+}
+
+@media (max-width: 640px) {
+  .comparacion-fila {
+    grid-template-columns: 76px 1fr 1fr;
+    gap: 10px;
+    font-size: 15px;
+  }
+}
+
+.lote-link {
+  display: inline;
+  padding: 0 6px;
+  margin: 0 2px;
+  border: 0;
+  background: var(--tinta);
+  color: #fff;
+  font-size: 0.9em;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.lote-link:hover {
+  filter: brightness(1.15);
+}
+
+.sello-claro {
+  border-color: var(--paper);
+  color: var(--paper);
+}
+
+.sello-claro:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+
 /* ——— Quiz y barista ——— */
 .pedido {
   padding: clamp(72px, 10vw, 140px) var(--gutter);

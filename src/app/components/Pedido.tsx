@@ -1,7 +1,38 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { METODOS, type Cafe, type Metodo, type Receta } from "@/lib/cafes";
+import { CAFES, METODOS, type Cafe, type Metodo, type Receta } from "@/lib/cafes";
+
+export function abrirFicha(id: string) {
+  window.dispatchEvent(new CustomEvent("altura:abrir-ficha", { detail: id }));
+}
+
+const POR_LOTE = new Map(CAFES.map((c) => [c.lote, c]));
+
+function ConLotes({ texto }: { texto: string }) {
+  const partes = texto.split(/(ALT-\d{2})/g);
+  return (
+    <>
+      {partes.map((p, i) => {
+        const cafe = POR_LOTE.get(p);
+        return cafe ? (
+          <button
+            key={i}
+            type="button"
+            className="lote-link dato"
+            style={{ "--tinta": cafe.tinta } as React.CSSProperties}
+            onClick={() => abrirFicha(cafe.id)}
+            title={`Ver la ficha de ${cafe.pais}`}
+          >
+            {p} · {cafe.pais}
+          </button>
+        ) : (
+          <span key={i}>{p}</span>
+        );
+      })}
+    </>
+  );
+}
 
 type Resultado = {
   cafe: Cafe;
@@ -139,9 +170,12 @@ function Quiz() {
               proponemos el que mejor le queda.
             </p>
           )}
-          <p style={{ color: "var(--paper-dim)", marginBottom: 0 }}>
+          <p style={{ color: "var(--paper-dim)" }}>
             Si quieres otra opción, prueba el {resultado.alternativa.pais} {resultado.alternativa.lote}.
           </p>
+          <button type="button" className="sello sello-claro" onClick={() => abrirFicha(resultado.cafe.id)}>
+            Ver la ficha completa
+          </button>
         </div>
       )}
     </div>
@@ -184,10 +218,26 @@ function Barista() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mensajes: nuevos.slice(1) }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setMensajes((m) => [...m, { role: "assistant", content: data.respuesta }]);
-      requestAnimationFrame(() => lista.current?.scrollTo({ top: 1e6, behavior: "smooth" }));
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error);
+      }
+      setMensajes((m) => [...m, { role: "assistant", content: "" }]);
+      setCargando(false);
+      const lector = res.body.getReader();
+      const dec = new TextDecoder();
+      for (;;) {
+        const { done, value } = await lector.read();
+        if (done) break;
+        const trozo = dec.decode(value, { stream: true });
+        setMensajes((m) => {
+          const copia = m.slice();
+          const ult = copia[copia.length - 1];
+          copia[copia.length - 1] = { ...ult, content: ult.content + trozo };
+          return copia;
+        });
+        lista.current?.scrollTo({ top: 1e6 });
+      }
     } catch (e) {
       setError(e instanceof Error && e.message ? e.message : "El barista no pudo responder. Inténtalo de nuevo.");
     } finally {
@@ -205,7 +255,7 @@ function Barista() {
         {mensajes.map((m, i) => (
           <p key={i} className="burbuja" data-rol={m.role}>
             <span className="sr-only">{m.role === "user" ? "Tú: " : "Barista: "}</span>
-            {m.content}
+            {m.role === "assistant" ? <ConLotes texto={m.content} /> : m.content}
           </p>
         ))}
         {cargando && (

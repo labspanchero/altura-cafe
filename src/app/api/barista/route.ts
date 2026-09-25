@@ -92,22 +92,45 @@ export async function POST(request: Request) {
       model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
       max_tokens: 300,
       temperature: 0.6,
+      stream: true,
       messages: [{ role: "system", content: SISTEMA }, ...mensajes],
     }),
   });
 
-  if (!res.ok) {
+  if (!res.ok || !res.body) {
     return Response.json(
       { error: "El barista no pudo responder. Intenta de nuevo en un momento." },
       { status: 502 },
     );
   }
 
-  const data = (await res.json()) as {
-    choices?: { message?: { content?: string } }[];
-  };
-  const respuesta = data.choices?.[0]?.message?.content?.trim();
-  return Response.json({
-    respuesta: respuesta || "No tengo una buena respuesta para eso. ¿Probamos con otra pregunta?",
+  // Reenvía solo el texto de cada fragmento SSE de OpenAI.
+  const decoder = new TextDecoder();
+  const encoder = new TextEncoder();
+  let resto = "";
+  const texto = res.body.pipeThrough(
+    new TransformStream<Uint8Array, Uint8Array>({
+      transform(chunk, controller) {
+        resto += decoder.decode(chunk, { stream: true });
+        const lineas = resto.split("\n");
+        resto = lineas.pop() ?? "";
+        for (const linea of lineas) {
+          const dato = linea.trim();
+          if (!dato.startsWith("data:")) continue;
+          const json = dato.slice(5).trim();
+          if (json === "[DONE]") continue;
+          try {
+            const delta = JSON.parse(json).choices?.[0]?.delta?.content;
+            if (delta) controller.enqueue(encoder.encode(delta));
+          } catch {
+            // fragmento incompleto: se ignora
+          }
+        }
+      },
+    }),
+  );
+
+  return new Response(texto, {
+    headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
   });
 }

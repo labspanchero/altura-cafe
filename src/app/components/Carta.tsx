@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CAFES, METODOS, type Cafe, type Perfil } from "@/lib/cafes";
 
 const FILTROS: { id: "todos" | Perfil | "leche"; nombre: string }[] = [
@@ -147,6 +147,20 @@ export default function Carta() {
   const [elegido, setElegido] = useState<string>(CAFES[0].id);
   const cafe = CAFES.find((c) => c.id === elegido) ?? CAFES[0];
 
+  useEffect(() => {
+    const abrir = (e: Event) => {
+      const id = (e as CustomEvent<string>).detail;
+      if (!CAFES.some((c) => c.id === id)) return;
+      setFiltro("todos");
+      setElegido(id);
+      requestAnimationFrame(() =>
+        document.getElementById("ficha-ancla")?.scrollIntoView({ behavior: "smooth", block: "start" }),
+      );
+    };
+    window.addEventListener("altura:abrir-ficha", abrir);
+    return () => window.removeEventListener("altura:abrir-ficha", abrir);
+  }, []);
+
   return (
     <section className="bodega" id="carta" aria-labelledby="carta-titulo">
       <div className="bodega-interior">
@@ -214,7 +228,81 @@ export default function Carta() {
 
         <div id="ficha-ancla" style={{ scrollMarginTop: 80 }} />
         <Ficha key={cafe.id} cafe={cafe} />
+        <Comparador key={`cmp-${cafe.id}`} base={cafe} />
       </div>
+    </section>
+  );
+}
+
+function Comparador({ base }: { base: Cafe }) {
+  const [otroId, setOtroId] = useState<string | null>(null);
+  const otro = CAFES.find((c) => c.id === otroId) ?? null;
+  const filas: { n: string; v: (c: Cafe) => string }[] = [
+    { n: "Altitud", v: (c) => `${c.altitud.toLocaleString("es")} msnm` },
+    { n: "Variedad", v: (c) => c.variedad },
+    { n: "Proceso", v: (c) => c.proceso },
+    { n: "Tueste", v: (c) => c.tueste },
+    { n: "Puntaje", v: (c) => `${c.puntaje.toLocaleString("es")} pts` },
+    { n: "Notas", v: (c) => c.notas.join(", ") },
+    { n: "Métodos", v: (c) => c.recetas.map((r) => METODOS[r.metodo].nombre).join(", ") },
+  ];
+
+  return (
+    <section className="comparador" aria-labelledby="comparador-titulo">
+      <div className="comparador-cabeza">
+        <h3 id="comparador-titulo" className="stencil">
+          Comparar {base.pais} con
+        </h3>
+        <div className="filtros" role="group" aria-label="Elegir lote para comparar" style={{ margin: 0 }}>
+          {CAFES.filter((c) => c.id !== base.id).map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              className="filtro"
+              aria-pressed={otroId === c.id}
+              onClick={() => setOtroId(otroId === c.id ? null : c.id)}
+              style={{ "--tinta": c.tinta } as React.CSSProperties}
+            >
+              {c.pais}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {otro && (
+        <div className="comparacion" key={otro.id}>
+          <div className="comparacion-fila comparacion-titulos">
+            <span />
+            <span className="stencil" style={{ color: base.tinta }}>{base.pais}</span>
+            <span className="stencil" style={{ color: otro.tinta }}>{otro.pais}</span>
+          </div>
+          {filas.map((f) => (
+            <div className="comparacion-fila" key={f.n}>
+              <span className="dato">{f.n}</span>
+              <span>{f.v(base)}</span>
+              <span>{f.v(otro)}</span>
+            </div>
+          ))}
+          {SENSORIAL.map(({ k, n }) => (
+            <div className="comparacion-fila comparacion-medidor" key={k}>
+              <span className="dato">{n}</span>
+              {[base, otro].map((c) => (
+                <span
+                  key={c.id}
+                  className="medidor-escala"
+                  role="img"
+                  aria-label={`${c.pais}, ${n}: ${c.sensorial[k]} de 5`}
+                  style={{ "--lote": c.tinta } as React.CSSProperties}
+                >
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i} data-lleno={i < c.sensorial[k]} style={{ "--i": i } as React.CSSProperties} />
+                  ))}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
