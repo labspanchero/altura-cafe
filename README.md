@@ -19,6 +19,7 @@ Altura es una tostadería **ficticia**. La app sigue un lote de café verde desd
 | **Mapa de altura** | Relieve 3D con curvas de nivel y una bandera por lote a su altitud real. | Terreno procedural con bandas de elevación y etiquetas HTML proyectadas desde el 3D. |
 | **La carta** | Seis sacos que se inclinan en 3D y se voltean para abrir su ficha. Comparador de lotes lado a lado y **"me gusta" compartidos**. | CSS 3D, máscara SVG con la silueta del saco y contador en SQLite. |
 | **Encuentra tu café** | Quiz de cuatro preguntas que recomienda un lote, su molienda y su receta. Genera una **tarjeta para compartir**. | `POST /api/recomendar` y canvas + Web Share API. |
+| **Arma tu café** | Eliges cereza, proceso, tueste, método y cantidad; ves tu bolsa dorada con tu nombre, el perfil estimado y la receta, y haces un pedido de demostración guardado en SQLite. | `src/lib/armar.ts`, `POST /api/pedido`. |
 | **Trae tu café** | Le sacas una foto al paquete de tu casa (o escribes la etiqueta): la IA la lee, arma la ficha de **tu** café, calcula la receta para tu método, abre el temporizador guiado y te dice qué ajustar según cómo te salió la taza. | `POST /api/escanear` con un modelo con visión y salida JSON; receta y calibración deterministas en `src/lib/tucafe.ts`; límite en KV; la foto se achica en el navegador y no se guarda. |
 | **Temporizador** | "Preparar ahora" en cada receta: cronómetro, etapas de vertido, agua objetivo en la balanza, aviso con sonido y vibración, pantalla encendida. | `src/lib/etapas.ts` deriva las etapas de la receta; Wake Lock y Web Audio. |
 | **Barista IA** | Chat que responde solo sobre la carta, en streaming, y convierte los lotes que menciona en links a su ficha. | `POST /api/barista` con la API de OpenAI (SSE → texto plano) y límite de uso en KV. |
@@ -44,6 +45,16 @@ src/app/components/Pedido.tsx    quiz, tarjeta para compartir, barista
 src/app/api/*                    recomendar, barista, megusta, cafes
 src/lib/cafes.ts                 datos de la carta (lotes de muestra)
 DESIGN.md · PRODUCT.md           sistema de diseño y producto
+```
+
+## Calidad y CI/CD
+
+- **CD:** Webflow Cloud despliega `main` automáticamente en cada push.
+- **CI (GitHub Actions, `.github/workflows/ci.yml`):** en cada push y PR corre lint, chequeo de tipos, tests (Vitest) y build. En `main`, además espera el deploy y hace una prueba de humo de las rutas y la API en producción.
+- **Tests (`tests/logica.test.ts`):** recomendador, etapas del temporizador, normalización de la lectura con IA, recetas y calibración, perfil de "Arma tu café", validaciones y el mapeo de ítems del CMS de Webflow.
+
+```bash
+npm run lint && npm run typecheck && npm test
 ```
 
 ## Desarrollo local

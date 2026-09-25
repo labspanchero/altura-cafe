@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { METODOS, type Cafe, type Receta } from "@/lib/cafes";
 import { etapasDe, mmss } from "@/lib/etapas";
 import MetodoIcono from "./MetodoIcono";
@@ -102,12 +102,12 @@ export default function Temporizador({ cafe, receta, alCerrar }: Props) {
     };
   }, [corriendo]);
 
-  const reiniciar = useCallback(() => {
+  const reiniciar = () => {
     setCorriendo(false);
     acumulado.current = 0;
     etapaPrevia.current = 0;
     setT(0);
-  }, []);
+  };
 
   const R = 46;
   const C = 2 * Math.PI * R;

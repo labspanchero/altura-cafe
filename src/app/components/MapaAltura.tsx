@@ -269,7 +269,7 @@ export default function MapaAltura() {
       cancelado = true;
       limpiar();
     };
-  }, []);
+  }, [CAFES]);
 
   return (
     <section className={estilos.mapa} id="mapa" aria-labelledby="mapa-titulo">

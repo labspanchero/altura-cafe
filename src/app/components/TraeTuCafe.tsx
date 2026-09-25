@@ -145,6 +145,7 @@ export default function TraeTuCafe() {
             }}
           >
             {vista ? (
+              // eslint-disable-next-line @next/next/no-img-element -- vista previa local (data URL), sin optimizar
               <img src={vista} alt="Imagen del paquete" />
             ) : (
               <span className="stencil">Tu paquete</span>

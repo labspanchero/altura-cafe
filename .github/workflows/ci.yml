@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    name: Lint, tipos, tests y build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Tipos
+        run: npm run typecheck
+      - name: Tests
+        run: npm test
+      - name: Build
+        run: npm run build
+
+  humo:
+    name: Prueba de humo en producción
+    needs: validar
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Esperar el deploy de Webflow Cloud y probar las rutas
+        run: |
+          U=https://altura-cafe.webflow.io
+          sleep 150
+          for r in / /api/cafes /api/contador /api/megusta /og.png; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$U$r")
+            echo "$r → $code"
+            [ "$code" = "200" ] || exit 1
+          done
+          curl -s -X POST "$U/api/recomendar" -H 'content-type: application/json' \
+            -d '{"metodo":"v60","perfil":"floral","acidez":"brillante","leche":false}' | grep -q '"lote"'
+          echo "recomendador OK"

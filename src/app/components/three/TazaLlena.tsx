@@ -249,7 +249,6 @@ export default function TazaLlena() {
       {
         const g = lienzoArte.getContext("2d")!;
         const leche = "rgb(255,249,236)";
-        const temblor = () => (azarL() - 0.5) * 6;
         // corazón: dos lóbulos redondeados, punta hacia quien mira y una
         // colita fina donde se cortó el vertido. Levemente asimétrico.
         const cy = C * 1.02;

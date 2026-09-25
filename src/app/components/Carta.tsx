@@ -25,10 +25,6 @@ const SENSORIAL: { k: keyof Cafe["sensorial"]; n: string }[] = [
   { k: "amargor", n: "Amargor" },
 ];
 
-function esClara(hex: string) {
-  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.45;
-}
 
 export function SiluetaSaco({ className = "pila-saco" }: { className?: string }) {
   return (
@@ -69,6 +65,8 @@ function useMeGusta(): MeGusta {
   const [mios, setMios] = useState<Set<string>>(new Set());
   useEffect(() => {
     try {
+      // Se lee después de hidratar para que el HTML del servidor y del cliente coincidan.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMios(new Set(JSON.parse(localStorage.getItem("altura:megusta") ?? "[]")));
     } catch {
       // sin almacenamiento local
