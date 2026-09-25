@@ -27,37 +27,151 @@ export default function TazaLlena() {
 
       const escena = new THREE.Scene();
       const camara = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
-      camara.position.set(0, 3.4, 5.2);
-      camara.lookAt(0, 0.35, 0);
+      camara.position.set(0, 2.3, 4.3);
+      camara.lookAt(0, 0.45, 0);
       luces(escena);
 
-      const loza = new THREE.MeshStandardMaterial({ color: "#efe4cf", roughness: 0.35 });
-      const tinta = new THREE.MeshStandardMaterial({ color: "#1c1710", roughness: 0.5 });
+      // Cerámica de gres artesanal: esmalte crema moteado, base de barro
+      // sin esmaltar con línea de inmersión irregular y el logo como calca.
+      const W = 4096;
+      const H = 2048;
+      const lienzoTex = document.createElement("canvas");
+      lienzoTex.width = W;
+      lienzoTex.height = H;
+      const ctx = lienzoTex.getContext("2d")!;
+      const lienzoRug = document.createElement("canvas");
+      lienzoRug.width = 1024;
+      lienzoRug.height = 512;
+      const rug = lienzoRug.getContext("2d")!;
+      let semilla = 7;
+      const azar = () => ((semilla = (semilla * 16807) % 2147483647) / 2147483647);
 
-      // Perfil de la taza (radio, altura) girado sobre el eje Y.
+      // v de la geometría → y del lienzo (flipY): la línea de inmersión va en v≈0.2
+      const yDe = (v: number) => (1 - v) * H;
+      ctx.fillStyle = "#ebe1cf";
+      ctx.fillRect(0, 0, W, H);
+      rug.fillStyle = "#8c8c8c";
+      rug.fillRect(0, 0, 1024, 512);
+      // base de barro con borde ondulado
+      ctx.fillStyle = "#b98a5c";
+      rug.fillStyle = "#e6e6e6";
+      ctx.beginPath();
+      rug.beginPath();
+      ctx.moveTo(0, H);
+      rug.moveTo(0, 512);
+      for (let x = 0; x <= W; x += 16) {
+        const v = 0.205 + 0.012 * Math.sin(x / 190) + 0.007 * Math.sin(x / 57 + 1.3) + (azar() - 0.5) * 0.002;
+        ctx.lineTo(x, yDe(v));
+        rug.lineTo((x / W) * 1024, (1 - v) * 512);
+      }
+      ctx.lineTo(W, H);
+      rug.lineTo(1024, 512);
+      ctx.fill();
+      rug.fill();
+      // interior y fondo esmaltados (v>0.5 es el interior del perfil)
+      // moteado de hierro sobre todo el esmalte
+      for (let i = 0; i < 26000; i++) {
+        const x = azar() * W;
+        const y = azar() * yDe(0.2);
+        const r = azar() < 0.9 ? 1 + azar() * 2.2 : 3 + azar() * 3;
+        ctx.fillStyle = `rgba(${60 + azar() * 40},${40 + azar() * 25},${25 + azar() * 15},${0.35 + azar() * 0.5})`;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      // grano del barro
+      for (let i = 0; i < 9000; i++) {
+        const x = azar() * W;
+        const y = yDe(0.2) + azar() * (H - yDe(0.2));
+        ctx.fillStyle = azar() < 0.5 ? "rgba(90,58,30,0.35)" : "rgba(240,210,170,0.25)";
+        ctx.fillRect(x, y, 2 + azar() * 3, 2 + azar() * 3);
+      }
+      // esmalte más grueso cerca de la inmersión
+      const g = ctx.createLinearGradient(0, yDe(0.3), 0, yDe(0.21));
+      g.addColorStop(0, "rgba(214,200,176,0)");
+      g.addColorStop(1, "rgba(200,182,152,0.55)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, yDe(0.3), W, yDe(0.21) - yDe(0.3));
+
+      const texEsmalte = new THREE.CanvasTexture(lienzoTex);
+      texEsmalte.colorSpace = THREE.SRGBColorSpace;
+      texEsmalte.anisotropy = 8;
+      const texRug = new THREE.CanvasTexture(lienzoRug);
+      const ceramica = new THREE.MeshStandardMaterial({ map: texEsmalte, roughnessMap: texRug, roughness: 1, metalness: 0 });
+
+      const logo = new Image();
+      logo.onload = () => {
+        const alto = (0.472 - 0.222) * H;
+        const ancho = 0.081 * W;
+        ctx.globalAlpha = 0.96;
+        ctx.drawImage(logo, 0.5 * W - ancho / 2, yDe(0.472), ancho, alto);
+        ctx.globalAlpha = 1;
+        texEsmalte.needsUpdate = true;
+      };
+      logo.src = new URL("nerd-logo.png", document.baseURI).href;
+
+      // Material liso moteado para asa y plato (sin el logo).
+      const lienzoLiso = document.createElement("canvas");
+      lienzoLiso.width = lienzoLiso.height = 512;
+      const liso = lienzoLiso.getContext("2d")!;
+      liso.fillStyle = "#ebe1cf";
+      liso.fillRect(0, 0, 512, 512);
+      for (let i = 0; i < 1400; i++) {
+        liso.fillStyle = `rgba(70,45,28,${0.3 + azar() * 0.5})`;
+        liso.beginPath();
+        liso.arc(azar() * 512, azar() * 512, 0.6 + azar() * 1.4, 0, Math.PI * 2);
+        liso.fill();
+      }
+      const texLiso = new THREE.CanvasTexture(lienzoLiso);
+      texLiso.colorSpace = THREE.SRGBColorSpace;
+      texLiso.wrapS = texLiso.wrapT = THREE.RepeatWrapping;
+      texLiso.repeat.set(3, 3);
+      const loza = new THREE.MeshStandardMaterial({ map: texLiso, roughness: 0.55 });
+      const barro = new THREE.MeshStandardMaterial({ color: "#8f6440", roughness: 0.9 });
+
+      // Perfil de la taza (radio, altura) girado sobre el eje Y. La pared
+      // exterior tiene puntos equiespaciados para que el logo no se deforme.
       const perfil = [
         [0, 0],
         [0.62, 0],
         [0.7, 0.05],
         [0.78, 0.3],
-        [0.95, 0.9],
-        [1.02, 1.12],
-        [0.96, 1.12],
-        [0.89, 0.92],
+        [0.8125, 0.45],
+        [0.845, 0.6],
+        [0.8775, 0.75],
+        [0.91, 0.9],
+        [0.96, 1.02],
+        [1.0, 1.12],
+        [0.95, 1.12],
+        [0.88, 0.92],
         [0.73, 0.34],
         [0.66, 0.1],
+        [0.3, 0.1],
         [0, 0.1],
       ].map(([x, y]) => new THREE.Vector2(x, y));
-      const taza = new THREE.Mesh(new THREE.LatheGeometry(perfil, 72), loza);
-      const borde = new THREE.Mesh(new THREE.TorusGeometry(0.99, 0.022, 8, 72), tinta);
+      const geoTaza = new THREE.LatheGeometry(perfil, 96);
+      // Irregularidad de torno: la pared ondula apenas.
+      const pos = geoTaza.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i);
+        const y = pos.getY(i);
+        const z = pos.getZ(i);
+        const th = Math.atan2(z, x);
+        const f = 1 + 0.012 * Math.sin(3 * th + y * 3) + 0.006 * Math.sin(7 * th + 1.1);
+        pos.setXYZ(i, x * f, y, z * f);
+      }
+      geoTaza.computeVertexNormals();
+      const taza = new THREE.Mesh(geoTaza, ceramica);
+      // El esmalte se corta en el borde y deja ver el barro.
+      const borde = new THREE.Mesh(new THREE.TorusGeometry(0.975, 0.024, 8, 96), barro);
       borde.rotation.x = Math.PI / 2;
-      borde.position.y = 1.12;
-      const asa = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.07, 16, 32, Math.PI * 1.25), loza);
-      asa.position.set(1.02, 0.62, 0);
-      asa.rotation.z = -Math.PI * 0.62;
-      const plato = new THREE.Mesh(new THREE.CylinderGeometry(1.7, 1.55, 0.08, 72), loza);
-      plato.position.y = -0.04;
-      const filete = new THREE.Mesh(new THREE.TorusGeometry(1.7, 0.02, 8, 72), tinta);
+      borde.position.y = 1.125;
+      const asa = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.075, 18, 40, Math.PI * 1.2), loza);
+      asa.position.set(0.98, 0.64, 0);
+      asa.rotation.z = -Math.PI * 0.6;
+      const plato = new THREE.Mesh(new THREE.CylinderGeometry(1.7, 1.5, 0.09, 96), loza);
+      plato.position.y = -0.045;
+      const filete = new THREE.Mesh(new THREE.TorusGeometry(1.7, 0.026, 8, 96), barro);
       filete.rotation.x = Math.PI / 2;
 
       // Café: un tronco de cono que crece hacia arriba, con la crema encima.
@@ -69,7 +183,9 @@ export default function TazaLlena() {
 
       const grupo = new THREE.Group();
       grupo.add(taza, borde, asa, plato, filete, cafe, crema);
-      grupo.rotation.y = -0.5;
+      const giroBase = Math.PI;
+      let reloj2 = 0;
+      grupo.rotation.y = giroBase;
       escena.add(grupo);
 
       let tueste = 1.6;
@@ -96,8 +212,8 @@ export default function TazaLlena() {
         const interior = [
           [0.1, 0.66],
           [0.34, 0.73],
-          [0.92, 0.89],
-          [1.1, 0.95],
+          [0.92, 0.88],
+          [1.1, 0.94],
         ];
         for (let i = 0; i < interior.length - 1; i++) {
           const [y0, r0] = interior[i];
@@ -136,7 +252,10 @@ export default function TazaLlena() {
         colorTueste(tueste, color);
         cafeMat.color.copy(color).multiplyScalar(0.45);
         cremaMat.color.copy(color).multiplyScalar(0.8).lerp(new THREE.Color("#c68a55"), Math.max(0.08, 0.4 - tueste * 0.09));
-        if (!quieto) grupo.rotation.y += dt * 0.15;
+        if (!quieto) {
+          reloj2 += dt;
+          grupo.rotation.y = giroBase + Math.sin(reloj2 * 0.45) * 0.45;
+        }
 
         const n = Math.round(lleno * 100);
         if (n !== ultimoNivel) {
@@ -156,7 +275,8 @@ export default function TazaLlena() {
           const m = o as InstanceType<typeof THREE.Mesh>;
           m.geometry?.dispose();
         });
-        [loza, tinta, cafeMat, cremaMat].forEach((m) => m.dispose());
+        [loza, barro, ceramica, cafeMat, cremaMat].forEach((m) => m.dispose());
+        [texEsmalte, texRug, texLiso].forEach((t) => t.dispose());
         renderer.dispose();
         renderer.domElement.remove();
       };
