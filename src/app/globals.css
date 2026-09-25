@@ -362,6 +362,53 @@ main > section {
   }
 }
 
+.contador-vivo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  padding: 8px 14px;
+  border: 2px dashed var(--ink);
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.contador-vivo:hover {
+  border-style: solid;
+}
+
+.contador-vivo strong {
+  font-size: 26px;
+  line-height: 1;
+  vertical-align: -2px;
+}
+
+.contador-punto {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  background: #c8202f;
+  animation: pulso 1.6s var(--ease-out) infinite;
+}
+
+@keyframes pulso {
+  0% {
+    box-shadow: 0 0 0 0 rgba(200, 32, 47, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(200, 32, 47, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(200, 32, 47, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contador-punto {
+    animation: none;
+  }
+}
+
 /* ——— Historia ——— */
 .historia {
   position: relative;

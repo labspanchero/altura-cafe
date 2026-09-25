@@ -126,12 +126,22 @@ async function tarjetaResultado(r: Resultado) {
   g.font = `700 54px ${dato}`;
   g.fillText("MI CAFÉ ES", 134, 420);
 
+  // Las tintas claras (amarillo, naranja) no se leen sobre yute: texto en tinta negra.
+  const [cr, cg, cb] = [1, 3, 5].map((i) => parseInt(r.cafe.tinta.slice(i, i + 2), 16) / 255);
+  const clara = 0.2126 * cr + 0.7152 * cg + 0.0722 * cb > 0.35;
+  const textoLote = clara ? tinta : r.cafe.tinta;
   g.fillStyle = r.cafe.tinta;
   let tam = 210;
   g.font = `900 ${tam}px ${stencil}`;
   while (g.measureText(r.cafe.pais.toUpperCase()).width > W - 260 && tam > 90) {
     tam -= 10;
     g.font = `900 ${tam}px ${stencil}`;
+  }
+  if (clara) {
+    g.strokeStyle = tinta;
+    g.lineWidth = 6;
+    g.lineJoin = "round";
+    g.strokeText(r.cafe.pais.toUpperCase(), 128, 420 + tam * 0.95);
   }
   g.fillText(r.cafe.pais.toUpperCase(), 128, 420 + tam * 0.95);
 
@@ -146,13 +156,43 @@ async function tarjetaResultado(r: Resultado) {
   const ys = y0 + 150;
   g.lineWidth = 8;
   g.strokeStyle = r.cafe.tinta;
-  g.strokeRect(128, ys, W - 256, 300);
-  g.fillStyle = r.cafe.tinta;
-  g.font = `900 92px ${stencil}`;
+  const anchoSello = W - 256 - 250;
+  g.strokeRect(128, ys, anchoSello, 300);
+  g.fillStyle = textoLote;
+  let tm = 92;
+  g.font = `900 ${tm}px ${stencil}`;
+  while (g.measureText(r.metodo.nombre.toUpperCase()).width > anchoSello - 80 && tm > 50) {
+    tm -= 4;
+    g.font = `900 ${tm}px ${stencil}`;
+  }
   g.fillText(r.metodo.nombre.toUpperCase(), 168, ys + 110);
-  g.font = `700 44px ${dato}`;
+  g.font = `700 40px ${dato}`;
   g.fillText(`MOLIENDA ${r.receta.molienda.toUpperCase()}`, 172, ys + 180);
   g.fillText(`${r.receta.dosis} · ${r.receta.agua} · ${r.receta.temperatura} · ${r.receta.tiempo}`.toUpperCase(), 172, ys + 245);
+
+  // QR que lleva a la app
+  try {
+    const QR = (await import("qrcode")).default;
+    const qr = await QR.toDataURL("https://altura-cafe.webflow.io/", {
+      margin: 1,
+      width: 190,
+      color: { dark: "#1c1710", light: "#efe4cf" },
+      errorCorrectionLevel: "M",
+    });
+    const img = new Image();
+    img.src = qr;
+    await img.decode();
+    const qx = W - 128 - 214;
+    const qy = ys + 62;
+    g.fillStyle = "#efe4cf";
+    g.fillRect(qx, qy, 214, 214);
+    g.drawImage(img, qx + 12, qy + 12, 190, 190);
+    g.fillStyle = tinta;
+    g.font = `700 26px ${dato}`;
+    g.fillText("ENCUENTRA EL TUYO", qx, qy - 20);
+  } catch {
+    // sin QR
+  }
 
   g.fillStyle = tinta;
   g.font = `600 36px ${dato}`;
@@ -204,6 +244,7 @@ function Quiz() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setResultado(data);
+      window.dispatchEvent(new Event("altura:encontrado"));
     } catch {
       setError("No pudimos armar tu recomendación. Revisa tu conexión e inténtalo de nuevo.");
     } finally {

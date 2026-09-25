@@ -2,6 +2,7 @@ import Carta from "./components/Carta";
 import Historia from "./components/Historia";
 import Pedido from "./components/Pedido";
 import Lluvia from "./components/Lluvia";
+import ContadorVivo from "./components/ContadorVivo";
 import MapaAltura from "./components/MapaAltura";
 import { SiluetaSaco } from "./components/Carta";
 
@@ -94,6 +95,7 @@ export default function Home() {
                 Ver la carta
               </a>
             </div>
+            <ContadorVivo />
           </div>
         </header>
 
