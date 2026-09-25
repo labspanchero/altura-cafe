@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { METODOS, METODOS_ORDEN } from "@/lib/cafes";
-import { texturaArpillera } from "@/lib/arpillera";
 import MetodoIcono from "./MetodoIcono";
 import dynamic from "next/dynamic";
 import { Cereza, Cosecha, Planta, Procesos, Secado } from "./Ilustraciones";
@@ -170,35 +169,49 @@ function Molinillo() {
   );
 }
 
-// Boca del saco: mismos comandos abierta y cerrada para poder interpolar.
-const BOCA_ABIERTA = [
-  [40, 60], [45, 40], [70, 28], [110, 36], [110, 36], [240, 40], [370, 36], [370, 36], [410, 28], [435, 40], [440, 60],
-];
-const BOCA_CERRADA = [
-  [40, 150], [40, 108], [182, 96], [207, 48], [194, 14], [240, -8], [286, 14], [273, 48], [298, 96], [440, 108], [440, 150],
-];
+// Sellos de la bolsa: uno por etapa, chicos y redondos.
+const SELLOS: Record<string, [string, string]> = {
+  planta: ["ORIGEN", "ETIOPÍA"],
+  cereza: ["VARIEDAD", "HEIRLOOM"],
+  cosecha: ["COSECHA", "25/26"],
+  proceso: ["PROCESO", "LAVADO"],
+  secado: ["HUMEDAD", "11%"],
+  saco: ["LOTE", "ALT-07"],
+  tueste: ["TUESTE", "CLARO"],
+  molienda: ["MOLIENDA", "M. FINA"],
+  taza: ["SCA", "88,5"],
+};
 
-function pathSaco(c: number) {
-  const p = BOCA_ABIERTA.map(([x, y], i) => {
-    const [x2, y2] = BOCA_CERRADA[i];
-    return `${(x + (x2 - x) * c).toFixed(1)} ${(y + (y2 - y) * c).toFixed(1)}`;
-  });
-  return `M${p[0]} C${p[1]} ${p[2]} ${p[3]} L${p[4]} Q${p[5]} ${p[6]} L${p[7]} C${p[8]} ${p[9]} ${p[10]} L452 660 Q450 700 410 704 L70 704 Q30 700 28 660Z`;
+// Bolsa de pie: cuerpo con leve cintura y fuelle abajo.
+const BOLSA = "M78 72 Q78 62 90 62 L390 62 Q402 62 402 72 L404 150 Q412 420 408 700 Q406 742 372 748 L108 748 Q74 742 72 700 Q68 420 76 150Z";
+const CURVAS = Array.from({ length: 9 }, (_, i) => {
+  const y = 520 + i * 26;
+  return `M40 ${y} C120 ${y - 18 - (i % 3) * 6} 180 ${y + 22} 250 ${y + 4} S380 ${y - 20 + (i % 2) * 10} 460 ${y + 6}`;
+});
+
+function Monograma({ tinta, y = 262 }: { tinta: string; y?: number }) {
+  return (
+    <g stroke={tinta} fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="240" cy={y} r="40" strokeWidth="2.5" />
+      <circle cx="240" cy={y} r="33" strokeWidth="1" opacity="0.6" />
+      <path d={`M214 ${y + 16} L234 ${y - 16} L244 ${y - 2} L251 ${y - 10} L267 ${y + 16}`} strokeWidth="3" />
+      <circle cx="258" cy={y - 18} r="4" strokeWidth="2" />
+      <path d={`M220 ${y + 16} H261`} strokeWidth="2" />
+    </g>
+  );
 }
 
 function Saco({ activa }: { activa: number }) {
   const tira = useRef<HTMLDivElement>(null);
-  const cuerpo = useRef<SVGPathElement>(null);
-  const volumen = useRef<SVGPathElement>(null);
-  const costura = useRef<SVGPathElement>(null);
-  const atadura = useRef<SVGGElement>(null);
-  const pliegues = useRef<SVGGElement>(null);
-  const marca = useRef<SVGGElement>(null);
-  const [trama, setTrama] = useState("");
+  const solapa = useRef<SVGGElement>(null);
+  const boca = useRef<SVGPathElement>(null);
+  const cierre = useRef<SVGGElement>(null);
+  const zipAbierto = useRef<SVGPathElement>(null);
+  const zipCerrado = useRef<SVGPathElement>(null);
+  const giro = useRef<HTMLDivElement>(null);
+  const [volteada, setVolteada] = useState(false);
 
-  useEffect(() => setTrama(texturaArpillera()), []);
-
-  // Cierre continuo: abierto al empezar la historia, atado en "Trilla y saco".
+  // Cierre continuo: abierta al empezar la historia, doblada y sellada en "Trilla y saco".
   useEffect(() => {
     let raf = 0;
     const actualizar = () => {
@@ -211,15 +224,14 @@ function Saco({ activa }: { activa: number }) {
       const b = fin.getBoundingClientRect().top + fin.offsetHeight / 2 - centro;
       const t = Math.min(1, Math.max(0, a / (a - b || 1)));
       const c = t * t * (3 - 2 * t);
-      const d = pathSaco(c);
-      cuerpo.current?.setAttribute("d", d);
-      volumen.current?.setAttribute("d", d);
-      costura.current?.setAttribute("opacity", String(Math.max(0, 1 - c * 2.5)));
-      pliegues.current?.setAttribute("opacity", String(Math.max(0, (c - 0.35) / 0.65)));
-      const nudo = Math.max(0, (c - 0.82) / 0.18);
-      atadura.current?.setAttribute("opacity", String(nudo));
-      atadura.current?.setAttribute("transform", `translate(0 ${(1 - nudo) * -18})`);
-      marca.current?.setAttribute("transform", `translate(0 ${c * 16})`);
+      boca.current?.setAttribute("opacity", String(Math.max(0, 1 - c * 1.6)));
+      const doblez = Math.max(0, (c - 0.3) / 0.7);
+      solapa.current?.setAttribute("transform", `translate(0 62) scale(1 ${doblez.toFixed(3)}) translate(0 -62)`);
+      solapa.current?.setAttribute("opacity", doblez > 0.02 ? "1" : "0");
+      const sello = Math.max(0, (c - 0.82) / 0.18);
+      cierre.current?.setAttribute("opacity", String(sello));
+      zipAbierto.current?.setAttribute("opacity", String(1 - sello));
+      zipCerrado.current?.setAttribute("opacity", String(sello));
     };
     const pedir = () => {
       if (!raf) raf = requestAnimationFrame(actualizar);
@@ -238,81 +250,189 @@ function Saco({ activa }: { activa: number }) {
     const chip = t?.querySelector<HTMLElement>('[data-activa="true"]');
     if (t && chip) t.scrollTo({ left: t.scrollLeft + chip.getBoundingClientRect().left - t.getBoundingClientRect().left, behavior: "smooth" });
   }, [activa]);
+
+  const inclinar = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== "mouse" || !giro.current) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    giro.current.style.setProperty("--ry", `${((e.clientX - r.left) / r.width - 0.5) * 18}deg`);
+    giro.current.style.setProperty("--rx", `${-((e.clientY - r.top) / r.height - 0.5) * 12}deg`);
+  };
+  const soltar = () => {
+    giro.current?.style.setProperty("--ry", "0deg");
+    giro.current?.style.setProperty("--rx", "0deg");
+  };
+
   return (
     <div className="saco" aria-hidden="true">
-      <svg viewBox="0 0 480 720">
-        <defs>
-          <pattern id="trama" width="96" height="96" patternUnits="userSpaceOnUse">
-            <rect width="96" height="96" fill="#a67f47" />
-            {trama && <image href={trama} width="96" height="96" />}
-          </pattern>
-          <radialGradient id="volumen" cx="45%" cy="40%" r="75%">
-            <stop offset="0" stopColor="#fff3dc" stopOpacity="0.16" />
-            <stop offset="0.6" stopColor="#000" stopOpacity="0" />
-            <stop offset="1" stopColor="#1c1710" stopOpacity="0.4" />
-          </radialGradient>
-          <filter id="tinta-gastada">
-            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" />
-            <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.8 1.4" />
-            <feComposite in="SourceGraphic" operator="in" />
-          </filter>
-        </defs>
-        <path ref={cuerpo} d={pathSaco(0)} fill="url(#trama)" stroke="var(--ink)" strokeWidth="4" />
-        <path ref={volumen} d={pathSaco(0)} fill="url(#volumen)" pointerEvents="none" />
-        <path ref={costura} d="M40 92 Q240 110 440 92" stroke="var(--ink)" strokeWidth="3" strokeDasharray="10 8" fill="none" />
-        <g ref={pliegues} opacity="0" stroke="var(--ink)" strokeWidth="2.5" fill="none" strokeLinecap="round">
-          <path d="M214 52 Q170 90 96 118" opacity="0.55" />
-          <path d="M224 54 Q205 100 168 134" opacity="0.45" />
-          <path d="M240 55 Q240 100 238 140" opacity="0.4" />
-          <path d="M256 54 Q276 100 312 134" opacity="0.45" />
-          <path d="M266 52 Q310 90 384 118" opacity="0.55" />
-          <path d="M200 26 Q210 36 206 48 M280 26 Q270 36 274 48 M226 12 Q232 30 228 46 M254 12 Q248 30 252 46" opacity="0.6" />
-        </g>
-        <g ref={atadura} opacity="0">
-          <path d="M200 46 Q240 60 280 46 L282 58 Q240 72 198 58Z" fill="#3b2a14" stroke="var(--ink)" strokeWidth="2.5" />
-          <path d="M205 50 Q240 62 275 50" stroke="#c9a15c" strokeWidth="1.5" strokeDasharray="4 3" fill="none" />
-          <path d="M276 56 Q300 84 292 118" stroke="#3b2a14" strokeWidth="6" strokeLinecap="round" fill="none" />
-          <path d="M276 56 Q318 70 330 104" stroke="#3b2a14" strokeWidth="6" strokeLinecap="round" fill="none" />
-          <circle cx="278" cy="54" r="8" fill="#3b2a14" stroke="var(--ink)" strokeWidth="2" />
-        </g>
-        <g ref={marca} filter="url(#tinta-gastada)">
-          <text x="240" y="160" textAnchor="middle" className="stencil" fontSize="84" fill="var(--ink)">
-            ALTURA
-          </text>
-        </g>
-        {ETAPAS.map((e, i) => (
-          <g
-            key={e.id}
-            className="estampa"
-            data-puesta={i <= activa}
-            style={{ "--giro": `${e.estampa.giro}deg` } as React.CSSProperties}
-            filter="url(#tinta-gastada)"
-          >
-            <rect
-              x={e.estampa.x}
-              y={e.estampa.y}
-              width={e.estampa.ancho}
-              height={e.estampa.texto.length * 36 + 16}
-              fill="none"
-              stroke="var(--lote)"
-              strokeWidth="5"
-            />
-            {e.estampa.texto.map((t, j) => (
-              <text
-                key={t}
-                x={e.estampa.x + e.estampa.ancho / 2}
-                y={e.estampa.y + 42 + j * 36}
-                textAnchor="middle"
-                className="stencil"
-                fontSize="32"
-                fill="var(--lote)"
-              >
-                {t}
+      <div className="bolsa" onPointerMove={inclinar} onPointerLeave={soltar} onClick={() => setVolteada((v) => !v)}>
+        <div className="bolsa-giro" ref={giro} data-volteada={volteada}>
+          <svg className="bolsa-cara" viewBox="0 0 480 780">
+            <defs>
+              <linearGradient id="bolsa-luz" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stopColor="#1c1710" stopOpacity="0.16" />
+                <stop offset="0.18" stopColor="#1c1710" stopOpacity="0" />
+                <stop offset="0.62" stopColor="#fff" stopOpacity="0.14" />
+                <stop offset="1" stopColor="#1c1710" stopOpacity="0.2" />
+              </linearGradient>
+              <filter id="papel" x="0" y="0" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="7" />
+                <feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.26  0 0 0 0 0.15  0 0 0 0.5 0" />
+              </filter>
+              <clipPath id="bolsa-recorte">
+                <path d={BOLSA} />
+              </clipPath>
+            </defs>
+            <ellipse cx="240" cy="760" rx="170" ry="14" fill="#1c1710" opacity="0.22" />
+            <path d={BOLSA} fill="#ece2cf" />
+            <g clipPath="url(#bolsa-recorte)">
+              <rect x="60" y="60" width="360" height="700" filter="url(#papel)" opacity="0.35" />
+              {CURVAS.map((d) => (
+                <path key={d} d={d} fill="none" stroke="#1c1710" strokeWidth="1" opacity="0.1" />
+              ))}
+              {/* sellado térmico de arriba */}
+              {Array.from({ length: 40 }).map((_, i) => (
+                <path key={i} d={`M${84 + i * 8} 66 V98`} stroke="#1c1710" strokeWidth="1" opacity="0.1" />
+              ))}
+              <path d="M78 100 H402" stroke="#1c1710" strokeWidth="1" opacity="0.18" />
+              <rect x="60" y="60" width="360" height="700" fill="url(#bolsa-luz)" />
+            </g>
+            {/* boca abierta: se ve el interior mientras no está doblada */}
+            <path ref={boca} d="M90 64 Q240 96 390 64 Q240 78 90 64Z" fill="#3a2a18" opacity="1" />
+            <path d={BOLSA} fill="none" stroke="#1c1710" strokeWidth="2.5" />
+            {/* muescas de corte */}
+            <path d="M76 120 l8 4 l-8 4 M404 120 l-8 4 l8 4" stroke="#1c1710" strokeWidth="1.5" fill="none" />
+            {/* cierre zip */}
+            <path ref={zipAbierto} d="M86 140 H394" stroke="#1c1710" strokeWidth="2" strokeDasharray="6 5" opacity="0.5" />
+            <path ref={zipCerrado} d="M86 138 H394 M86 143 H394" stroke="#1c1710" strokeWidth="1.5" opacity="0" />
+            {/* válvula */}
+            <circle cx="240" cy="182" r="11" fill="none" stroke="#1c1710" strokeWidth="1.6" opacity="0.7" />
+            <circle cx="240" cy="182" r="5" fill="none" stroke="#1c1710" strokeWidth="1.2" opacity="0.7" />
+
+            <Monograma tinta="#1c1710" />
+            <text x="240" y="346" textAnchor="middle" className="dato" fontSize="30" fill="#1c1710" letterSpacing="12">
+              ALTURA
+            </text>
+            <text x="240" y="366" textAnchor="middle" className="dato" fontSize="10.5" fill="#1c1710" letterSpacing="3" opacity="0.7">
+              CAFÉ DE ESPECIALIDAD · DE LA PLANTA A LA TAZA
+            </text>
+
+            {/* banda de etiqueta en la tinta del lote */}
+            <g>
+              <rect x="76" y="388" width="328" height="118" fill="var(--lote)" />
+              <text x="96" y="432" className="stencil" fontSize="38" fill="#f4ecdc">
+                ETIOPÍA
               </text>
-            ))}
-          </g>
-        ))}
-      </svg>
+              <text x="97" y="456" className="dato" fontSize="13" fill="#f4ecdc" letterSpacing="1.5">
+                GUJI · HAMBELA · LAVADO
+              </text>
+              <path d="M270 402 V492" stroke="#f4ecdc" strokeWidth="1" opacity="0.6" />
+              {[
+                ["ALTITUD", "2.150 MSNM"],
+                ["VARIEDAD", "HEIRLOOM"],
+                ["NOTAS", "JAZMÍN · DURAZNO"],
+              ].map(([k, v], i) => (
+                <g key={k}>
+                  <text x="282" y={414 + i * 30} className="dato" fontSize="8.5" fill="#f4ecdc" opacity="0.75" letterSpacing="1.2">
+                    {k}
+                  </text>
+                  <text x="282" y={427 + i * 30} className="dato" fontSize="11.5" fill="#f4ecdc" letterSpacing="0.5">
+                    {v}
+                  </text>
+                </g>
+              ))}
+              <text x="97" y="492" className="dato" fontSize="10.5" fill="#f4ecdc" letterSpacing="2" opacity="0.85">
+                LOTE ALT-07 · 250 G · GRANO
+              </text>
+            </g>
+
+            {/* sellos: uno por etapa */}
+            {ETAPAS.map((e, i) => {
+              const cx = 156 + (i % 3) * 84;
+              const cy = 566 + Math.floor(i / 3) * 70;
+              const [arriba, valor] = SELLOS[e.id];
+              return (
+                <g key={e.id} className="estampa" data-puesta={i <= activa} style={{ "--giro": `${((i * 37) % 17) - 8}deg` } as React.CSSProperties}>
+                  <circle cx={cx} cy={cy} r="30" fill="#ece2cf" stroke="var(--lote)" strokeWidth="2.2" />
+                  <circle cx={cx} cy={cy} r="25" fill="none" stroke="var(--lote)" strokeWidth="0.8" strokeDasharray="2 2.5" />
+                  <text x={cx} y={cy - 5} textAnchor="middle" className="dato" fontSize="7.5" fill="var(--lote)" letterSpacing="1">
+                    {arriba}
+                  </text>
+                  <text x={cx} y={cy + 9} textAnchor="middle" className="stencil" fontSize={valor.length > 6 ? 12 : 15} fill="var(--lote)">
+                    {valor}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* solapa doblada y cinta de cierre (aparecen con el scroll) */}
+            <g ref={solapa} opacity="0">
+              <path d="M78 62 H402 V150 Q240 158 78 150Z" fill="#e1d5bd" stroke="#1c1710" strokeWidth="2" />
+              <path d="M80 150 Q240 160 400 150" stroke="#1c1710" strokeWidth="5" opacity="0.12" fill="none" />
+              <path d="M96 118 H384" stroke="#1c1710" strokeWidth="1" opacity="0.15" />
+            </g>
+            <g ref={cierre} opacity="0">
+              <rect x="70" y="100" width="340" height="12" fill="#2b2118" />
+              <path d="M70 100 l-10 -6 v24 l10 -6 M410 100 l10 -6 v24 l-10 -6" fill="#2b2118" />
+              <text x="240" y="138" textAnchor="middle" className="dato" fontSize="10" fill="#1c1710" letterSpacing="4" opacity="0.8">
+                SELLADO EN ORIGEN
+              </text>
+            </g>
+          </svg>
+
+          <svg className="bolsa-dorso" viewBox="0 0 480 780">
+            <defs>
+              <clipPath id="dorso-recorte">
+                <path d={BOLSA} />
+              </clipPath>
+            </defs>
+            <ellipse cx="240" cy="760" rx="170" ry="14" fill="#1c1710" opacity="0.22" />
+            <path d={BOLSA} fill="#1f1a14" stroke="#0e0b08" strokeWidth="2.5" />
+            <g clipPath="url(#dorso-recorte)">
+              {Array.from({ length: 16 }, (_, i) => {
+                const y = 90 + i * 42;
+                return (
+                  <path
+                    key={i}
+                    d={`M40 ${y} C130 ${y - 30 + (i % 3) * 8} 190 ${y + 26} 250 ${y + 2} S390 ${y - 24 + (i % 2) * 12} 470 ${y + 8}`}
+                    fill="none"
+                    stroke="#f4ecdc"
+                    strokeWidth="1"
+                    opacity="0.12"
+                  />
+                );
+              })}
+            </g>
+            <Monograma tinta="#f4ecdc" y={200} />
+            <text x="240" y="310" textAnchor="middle" className="dato" fontSize="22" fill="#f4ecdc" letterSpacing="5">
+              CAFÉ DE ESPECIALIDAD
+            </text>
+            <text x="240" y="340" textAnchor="middle" className="dato" fontSize="22" fill="#f4ecdc" letterSpacing="5">
+              TOSTADO EN ALTURA
+            </text>
+            <g fill="#f4ecdc" className="dato">
+              {[
+                ["FINCA", "Estación de lavado Buku"],
+                ["COSECHA", "2025/26 · a mano"],
+                ["SECADO", "Camas africanas, 12 días"],
+                ["RECETA", "V60 · 15 g · 250 g · 94 °C"],
+              ].map(([k, v], i) => (
+                <g key={k}>
+                  <text x="110" y={420 + i * 48} fontSize="10" opacity="0.6" letterSpacing="2">
+                    {k}
+                  </text>
+                  <text x="110" y={438 + i * 48} fontSize="15" letterSpacing="0.5" style={{ textTransform: "none" }}>
+                    {v}
+                  </text>
+                </g>
+              ))}
+            </g>
+            <text x="240" y="690" textAnchor="middle" className="dato" fontSize="11" fill="#f4ecdc" letterSpacing="3" opacity="0.7">
+              ALTURA-CAFE.WEBFLOW.IO
+            </text>
+          </svg>
+        </div>
+        <span className="bolsa-ayuda dato">{volteada ? "Toca para ver el frente" : "Toca la bolsa para darla vuelta"}</span>
+      </div>
       <div className="saco-movil">
         <p className="saco-etapa">
           <span className="stencil">{activa >= 0 ? ETAPAS[activa].titulo : "Saco abierto"}</span>

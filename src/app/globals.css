@@ -2893,3 +2893,97 @@ body::after {
     display: none;
   }
 }
+
+/* ——— Bolsa de pie interactiva ——— */
+.bolsa {
+  position: relative;
+  height: 100%;
+  max-height: 680px;
+  aspect-ratio: 480 / 780;
+  perspective: 1400px;
+  cursor: pointer;
+}
+
+.bolsa-giro {
+  --rx: 0deg;
+  --ry: 0deg;
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.25s var(--ease-out);
+}
+
+.bolsa-giro[data-volteada="true"] {
+  transform: rotateX(var(--rx)) rotateY(calc(180deg + var(--ry)));
+  transition: transform 0.8s var(--ease-out);
+}
+
+.bolsa-cara,
+.bolsa-dorso {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: visible;
+  filter: drop-shadow(0 24px 22px rgba(28, 23, 16, 0.28));
+}
+
+.bolsa-dorso {
+  transform: rotateY(180deg);
+}
+
+.saco .bolsa-cara,
+.saco .bolsa-dorso {
+  max-height: none;
+}
+
+.bolsa-ayuda {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -26px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--ink-soft);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+}
+
+.bolsa:hover .bolsa-ayuda {
+  opacity: 1;
+}
+
+.bolsa .estampa circle:first-child {
+  filter: drop-shadow(0 1px 0 rgba(28, 23, 16, 0.15));
+}
+
+@media (max-width: 860px) {
+  .saco > .bolsa {
+    display: block;
+    width: 96px;
+    height: 156px;
+    max-height: none;
+  }
+
+  .bolsa-cara,
+  .bolsa-dorso {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    filter: drop-shadow(0 6px 6px rgba(28, 23, 16, 0.25));
+  }
+
+  .bolsa-ayuda {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bolsa-giro,
+  .bolsa-giro[data-volteada="true"] {
+    transition: none;
+  }
+}
