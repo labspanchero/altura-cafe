@@ -1,0 +1,565 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-25T02:03:28+00:00",
+  "title": "Design System: Altura",
+  "extensions": {
+    "colorMeta": {
+      "jute": {
+        "role": "neutral",
+        "displayName": "Yute",
+        "canonical": "#b08a52",
+        "tonalRamp": [
+          "#352918",
+          "#5b472a",
+          "#82653b",
+          "#a8834d",
+          "#bd9e6f",
+          "#cfb896",
+          "#e2d4c0",
+          "#f7f3ed"
+        ]
+      },
+      "jute-deep": {
+        "role": "neutral",
+        "displayName": "Yute tostado",
+        "canonical": "#97723e",
+        "tonalRamp": [
+          "#362916",
+          "#5e4727",
+          "#866537",
+          "#ae8347",
+          "#c29e6b",
+          "#d2b893",
+          "#e4d4be",
+          "#f8f3ed"
+        ]
+      },
+      "ink": {
+        "role": "primary",
+        "displayName": "Tinta de embarque",
+        "canonical": "#1c1710",
+        "tonalRamp": [
+          "#31281c",
+          "#544530",
+          "#786345",
+          "#9c8059",
+          "#b39b7a",
+          "#c7b69e",
+          "#ded3c5",
+          "#f6f3ef"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Tinta gastada",
+        "canonical": "#3b2f1e",
+        "tonalRamp": [
+          "#33281a",
+          "#58462d",
+          "#7d6440",
+          "#a28153",
+          "#b99c74",
+          "#cbb79a",
+          "#e0d4c2",
+          "#f6f3ee"
+        ]
+      },
+      "bodega": {
+        "role": "neutral",
+        "displayName": "Bodega",
+        "canonical": "#17140f",
+        "tonalRamp": [
+          "#2e281e",
+          "#504634",
+          "#72634a",
+          "#948161",
+          "#ac9c80",
+          "#c3b7a2",
+          "#dbd4c7",
+          "#f5f3f0"
+        ]
+      },
+      "bodega-2": {
+        "role": "neutral",
+        "displayName": "Bodega interior",
+        "canonical": "#221d16",
+        "tonalRamp": [
+          "#2e281e",
+          "#514534",
+          "#73624a",
+          "#957f60",
+          "#ad9a80",
+          "#c3b5a2",
+          "#dbd3c7",
+          "#f5f3f0"
+        ]
+      },
+      "bodega-line": {
+        "role": "neutral",
+        "displayName": "Hilo de bodega",
+        "canonical": "rgba(232, 214, 180, 0.14)",
+        "tonalRamp": [
+          "rgba(232,214,180,0.04)",
+          "rgba(232,214,180,0.08)",
+          "rgba(232,214,180,0.14)",
+          "rgba(232,214,180,0.24)",
+          "rgba(232,214,180,0.36)",
+          "rgba(232,214,180,0.5)",
+          "rgba(232,214,180,0.7)",
+          "rgba(232,214,180,0.9)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Papel de embarque",
+        "canonical": "#efe4cf",
+        "tonalRamp": [
+          "#392c13",
+          "#634d21",
+          "#8e6d2f",
+          "#b88e3d",
+          "#cba762",
+          "#d9be8c",
+          "#e8d8ba",
+          "#f9f4ec"
+        ]
+      },
+      "paper-dim": {
+        "role": "neutral",
+        "displayName": "Papel gastado",
+        "canonical": "#c9b894",
+        "tonalRamp": [
+          "#332b1a",
+          "#584a2c",
+          "#7d693f",
+          "#a38952",
+          "#b9a374",
+          "#ccbc99",
+          "#e0d7c2",
+          "#f6f4ee"
+        ]
+      },
+      "tinta-etiopia": {
+        "role": "secondary",
+        "displayName": "Tinta Etiopía",
+        "canonical": "#1f4fd1",
+        "tonalRamp": [
+          "#0a1943",
+          "#112c73",
+          "#183ea4",
+          "#2051d5",
+          "#4973e4",
+          "#7a98eb",
+          "#afc1f3",
+          "#e9eefc"
+        ]
+      },
+      "tinta-etiopia-clara": {
+        "role": "secondary",
+        "displayName": "Tinta Etiopía clara",
+        "canonical": "#7a9bff",
+        "tonalRamp": [
+          "#00134c",
+          "#002185",
+          "#002fbd",
+          "#003df5",
+          "#2e62ff",
+          "#668cff",
+          "#a3baff",
+          "#e5ecff"
+        ]
+      },
+      "tinta-kenia": {
+        "role": "secondary",
+        "displayName": "Tinta Kenia",
+        "canonical": "#c8202f",
+        "tonalRamp": [
+          "#420b0f",
+          "#72121b",
+          "#a31a26",
+          "#d32232",
+          "#e24b58",
+          "#ea7b85",
+          "#f2b0b6",
+          "#fbe9eb"
+        ]
+      },
+      "tinta-kenia-clara": {
+        "role": "secondary",
+        "displayName": "Tinta Kenia clara",
+        "canonical": "#ff6b76",
+        "tonalRamp": [
+          "#4c0006",
+          "#85000a",
+          "#bd000e",
+          "#f50012",
+          "#ff2e3d",
+          "#ff6671",
+          "#ffa3aa",
+          "#ffe5e7"
+        ]
+      },
+      "tinta-panama": {
+        "role": "secondary",
+        "displayName": "Tinta Panamá",
+        "canonical": "#e5601c",
+        "tonalRamp": [
+          "#451c08",
+          "#77310e",
+          "#a94613",
+          "#dc5b19",
+          "#ea7c43",
+          "#ef9f76",
+          "#f6c5ad",
+          "#fcefe8"
+        ]
+      },
+      "tinta-panama-clara": {
+        "role": "secondary",
+        "displayName": "Tinta Panamá clara",
+        "canonical": "#ff9a5c",
+        "tonalRamp": [
+          "#4c1d00",
+          "#853200",
+          "#bd4800",
+          "#f55d00",
+          "#ff7d2e",
+          "#ffa066",
+          "#ffc6a3",
+          "#ffefe5"
+        ]
+      },
+      "tinta-colombia": {
+        "role": "secondary",
+        "displayName": "Tinta Colombia",
+        "canonical": "#0f7a3a",
+        "tonalRamp": [
+          "#084420",
+          "#0f7638",
+          "#15a850",
+          "#1bda68",
+          "#45e886",
+          "#77eea7",
+          "#adf5ca",
+          "#e8fcf0"
+        ]
+      },
+      "tinta-colombia-clara": {
+        "role": "secondary",
+        "displayName": "Tinta Colombia clara",
+        "canonical": "#4fcf7e",
+        "tonalRamp": [
+          "#103c20",
+          "#1c6838",
+          "#289450",
+          "#34c068",
+          "#5bd287",
+          "#87dea7",
+          "#b7ebca",
+          "#ebfaf0"
+        ]
+      },
+      "tinta-guatemala": {
+        "role": "secondary",
+        "displayName": "Tinta Guatemala",
+        "canonical": "#6b2fb3",
+        "tonalRamp": [
+          "#24103d",
+          "#3f1c69",
+          "#592795",
+          "#7433c2",
+          "#9159d4",
+          "#ae86df",
+          "#cfb6ec",
+          "#f2ebfa"
+        ]
+      },
+      "tinta-guatemala-clara": {
+        "role": "secondary",
+        "displayName": "Tinta Guatemala clara",
+        "canonical": "#bb95f5",
+        "tonalRamp": [
+          "#200746",
+          "#370b79",
+          "#4e10ac",
+          "#6515e0",
+          "#8440ed",
+          "#a573f2",
+          "#c9abf7",
+          "#f0e8fd"
+        ]
+      },
+      "tinta-brasil": {
+        "role": "secondary",
+        "displayName": "Tinta Brasil",
+        "canonical": "#d9a90b",
+        "tonalRamp": [
+          "#493904",
+          "#7e6206",
+          "#b48c09",
+          "#e9b50c",
+          "#f5c938",
+          "#f8d76d",
+          "#fbe7a8",
+          "#fef8e7"
+        ]
+      },
+      "tinta-brasil-clara": {
+        "role": "secondary",
+        "displayName": "Tinta Brasil clara",
+        "canonical": "#f2c94c",
+        "tonalRamp": [
+          "#473705",
+          "#7c5f09",
+          "#b0880d",
+          "#e4b011",
+          "#f1c43c",
+          "#f5d470",
+          "#f9e5a9",
+          "#fdf8e7"
+        ]
+      },
+      "error": {
+        "role": "neutral",
+        "displayName": "Rojo de rechazo",
+        "canonical": "#8a1a12",
+        "tonalRamp": [
+          "#440d09",
+          "#75160f",
+          "#a71f16",
+          "#d9291c",
+          "#e75146",
+          "#ed7f78",
+          "#f4b2ae",
+          "#fceae8"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display esténcil",
+        "purpose": "Solo la marca ALTURA en la cara del saco de la portada."
+      },
+      "headline": {
+        "displayName": "Título de sección",
+        "purpose": "Títulos de sección y nombre de origen en la ficha."
+      },
+      "title": {
+        "displayName": "Título de etapa",
+        "purpose": "Etapas de la historia, puntajes SCA, títulos del comparador y del resultado."
+      },
+      "lede": {
+        "displayName": "Entrada condensada",
+        "purpose": "H1 de la portada bajo la marca."
+      },
+      "body": {
+        "displayName": "Cuerpo",
+        "purpose": "Texto corrido, 58 a 60ch."
+      },
+      "bajada": {
+        "displayName": "Bajada",
+        "purpose": "Introducción de cada sección, máx. 60ch."
+      },
+      "label": {
+        "displayName": "Dato",
+        "purpose": "Datos del lote, tablas, navegación, medidores; 13 a 22px, mayúsculas, cifras tabulares."
+      },
+      "button": {
+        "displayName": "Sello",
+        "purpose": "Texto de sellos (botones)."
+      }
+    },
+    "shadows": [
+      {
+        "name": "saco-reposo",
+        "value": "drop-shadow(0 14px 16px rgba(0, 0, 0, 0.55))",
+        "purpose": "Sacos de la pared de la carta en reposo (propiedad filter)."
+      },
+      {
+        "name": "saco-levantado",
+        "value": "drop-shadow(0 24px 22px rgba(0, 0, 0, 0.7))",
+        "purpose": "Saco al pasar el cursor, junto con translateZ(24px) (propiedad filter)."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Curva de salida para toda transición de estado."
+      },
+      {
+        "name": "sello",
+        "value": "0.2s",
+        "purpose": "Relleno de sellos y chips; scale(0.97) al presionar."
+      },
+      {
+        "name": "estampa",
+        "value": "opacity 0.35s, transform 0.45s desde scale(1.35)",
+        "purpose": "Estampa que cae sobre el saco en cada etapa de la historia."
+      },
+      {
+        "name": "ficha-entra",
+        "value": "0.8s rotateY(-90deg) a plano, origen izquierdo",
+        "purpose": "Apertura de la ficha al elegir un saco (0.6s en el comparador)."
+      },
+      {
+        "name": "asentar",
+        "value": "0.5s scaleY 0.2 → 1.12 → 1, 60ms por celda",
+        "purpose": "Celdas llenas del medidor sensorial."
+      },
+      {
+        "name": "etapa-foco",
+        "value": "opacity 0.6s, 0.35 fuera de foco",
+        "purpose": "Etapa activa de la historia."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "navegacion",
+        "value": "640px"
+      },
+      {
+        "name": "portada",
+        "value": "720px"
+      },
+      {
+        "name": "historia",
+        "value": "860px"
+      },
+      {
+        "name": "ficha-pedido",
+        "value": "900px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Sello lleno",
+      "kind": "button",
+      "refersTo": "sello-lleno",
+      "description": "Acción principal: sello de tinta lleno que toma la tinta del lote al pasar el cursor.",
+      "html": "<div class=\"ds-yute\"><a class=\"ds-sello ds-sello-lleno\" href=\"#\">Seguir el lote</a></div>",
+      "css": ":host{--jute:#b08a52;--jute-deep:#97723e;--ink:#1c1710;--bodega:#17140f;--bodega-2:#221d16;--bodega-line:rgba(232,214,180,0.14);--paper:#efe4cf;--paper-dim:#c9b894;--ease-out:cubic-bezier(0.16,1,0.3,1);--lote:#1f4fd1;} .ds-yute{background-color:var(--jute);background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cpath d='M0 1.5h6M0 4.5h6' stroke='%233a260c' stroke-opacity='.16' stroke-width='1.2'/%3E%3Cpath d='M1.5 0v6M4.5 0v6' stroke='%23ffecc4' stroke-opacity='.09' stroke-width='1'/%3E%3C/svg%3E\");padding:24px;} .ds-sello{display:inline-flex;align-items:center;padding:14px 22px;border:3px solid var(--ink);background:transparent;color:var(--ink);font-family:var(--font-condensed, 'Barlow Condensed'), sans-serif;font-weight:700;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;cursor:pointer;border-radius:0;transition:background .2s var(--ease-out),color .2s var(--ease-out),transform .2s var(--ease-out);} .ds-sello:hover{background:var(--ink);color:var(--paper);} .ds-sello:active{transform:scale(0.97);} .ds-sello:focus-visible{outline:3px solid var(--ink);outline-offset:3px;} .ds-sello-lleno{background:var(--ink);color:var(--paper);} .ds-sello-lleno:hover{background:var(--lote);border-color:var(--lote);color:var(--paper);}"
+    },
+    {
+      "name": "Sello",
+      "kind": "button",
+      "refersTo": "sello",
+      "description": "Acción secundaria sobre yute: rectángulo de borde de tinta que se llena al pasar el cursor.",
+      "html": "<div class=\"ds-yute\"><a class=\"ds-sello\" href=\"#\">Ver la carta</a></div>",
+      "css": ":host{--jute:#b08a52;--jute-deep:#97723e;--ink:#1c1710;--bodega:#17140f;--bodega-2:#221d16;--bodega-line:rgba(232,214,180,0.14);--paper:#efe4cf;--paper-dim:#c9b894;--ease-out:cubic-bezier(0.16,1,0.3,1);--lote:#1f4fd1;} .ds-yute{background-color:var(--jute);background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cpath d='M0 1.5h6M0 4.5h6' stroke='%233a260c' stroke-opacity='.16' stroke-width='1.2'/%3E%3Cpath d='M1.5 0v6M4.5 0v6' stroke='%23ffecc4' stroke-opacity='.09' stroke-width='1'/%3E%3C/svg%3E\");padding:24px;} .ds-sello{display:inline-flex;align-items:center;padding:14px 22px;border:3px solid var(--ink);background:transparent;color:var(--ink);font-family:var(--font-condensed, 'Barlow Condensed'), sans-serif;font-weight:700;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;cursor:pointer;border-radius:0;transition:background .2s var(--ease-out),color .2s var(--ease-out),transform .2s var(--ease-out);} .ds-sello:hover{background:var(--ink);color:var(--paper);} .ds-sello:active{transform:scale(0.97);} .ds-sello:focus-visible{outline:3px solid var(--ink);outline-offset:3px;}"
+    },
+    {
+      "name": "Sello en bodega",
+      "kind": "button",
+      "refersTo": "sello-bodega",
+      "description": "Sello sobre fondo oscuro: borde y texto papel, se llena de papel al activarse.",
+      "html": "<div class=\"ds-bodega\"><button class=\"ds-sello ds-sello-b\" type=\"button\">Ver la ficha</button></div>",
+      "css": ":host{--jute:#b08a52;--jute-deep:#97723e;--ink:#1c1710;--bodega:#17140f;--bodega-2:#221d16;--bodega-line:rgba(232,214,180,0.14);--paper:#efe4cf;--paper-dim:#c9b894;--ease-out:cubic-bezier(0.16,1,0.3,1);--lote:#1f4fd1;} .ds-bodega{background:var(--bodega);padding:24px;} .ds-sello{display:inline-flex;align-items:center;padding:14px 22px;border:3px solid var(--ink);background:transparent;color:var(--ink);font-family:var(--font-condensed, 'Barlow Condensed'), sans-serif;font-weight:700;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;cursor:pointer;border-radius:0;transition:background .2s var(--ease-out),color .2s var(--ease-out),transform .2s var(--ease-out);} .ds-sello:hover{background:var(--ink);color:var(--paper);} .ds-sello:active{transform:scale(0.97);} .ds-sello:focus-visible{outline:3px solid var(--paper);outline-offset:3px;} .ds-sello-b{border-color:var(--paper);color:var(--paper);} .ds-sello-b:hover{background:var(--paper);color:var(--bodega);}"
+    },
+    {
+      "name": "Filtros de la carta",
+      "kind": "chip",
+      "refersTo": "filtro",
+      "description": "Filtros de perfil en la bodega; activo se llena de papel.",
+      "html": "<div class=\"ds-bodega\"><button class=\"ds-filtro\" aria-pressed=\"true\" type=\"button\">Todos</button><button class=\"ds-filtro\" aria-pressed=\"false\" type=\"button\">Frutal</button><button class=\"ds-filtro\" aria-pressed=\"false\" type=\"button\">Chocolate</button></div>",
+      "css": ":host{--jute:#b08a52;--jute-deep:#97723e;--ink:#1c1710;--bodega:#17140f;--bodega-2:#221d16;--bodega-line:rgba(232,214,180,0.14);--paper:#efe4cf;--paper-dim:#c9b894;--ease-out:cubic-bezier(0.16,1,0.3,1);--lote:#1f4fd1;} .ds-bodega{background:var(--bodega);padding:24px;display:flex;flex-wrap:wrap;gap:8px;} .ds-filtro{padding:8px 14px;border:2px solid var(--bodega-line);background:transparent;color:var(--paper);font-family:var(--font-condensed, 'Barlow Condensed'), sans-serif;font-weight:600;font-size:16px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border-radius:0;transition:border-color .2s,background .2s,color .2s;} .ds-filtro:hover{border-color:var(--paper);} .ds-filtro[aria-pressed=\"true\"]{background:var(--paper);color:var(--bodega);border-color:var(--paper);} .ds-filtro:focus-visible{outline:3px solid var(--paper);outline-offset:3px;}"
+    },
+    {
+      "name": "Opciones del cuestionario",
+      "kind": "chip",
+      "refersTo": "opcion",
+      "description": "Opciones de radio como sellos sobre yute; marcada se llena de tinta.",
+      "html": "<div class=\"ds-yute\"><label class=\"ds-opcion\"><input type=\"radio\" name=\"m\" checked><span>V60</span></label><label class=\"ds-opcion\"><input type=\"radio\" name=\"m\"><span>Espresso</span></label><label class=\"ds-opcion\"><input type=\"radio\" name=\"m\"><span>Prensa</span></label></div>",
+      "css": ":host{--jute:#b08a52;--jute-deep:#97723e;--ink:#1c1710;--bodega:#17140f;--bodega-2:#221d16;--bodega-line:rgba(232,214,180,0.14);--paper:#efe4cf;--paper-dim:#c9b894;--ease-out:cubic-bezier(0.16,1,0.3,1);--lote:#1f4fd1;} .ds-yute{background-color:var(--jute);background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cpath d='M0 1.5h6M0 4.5h6' stroke='%233a260c' stroke-opacity='.16' stroke-width='1.2'/%3E%3Cpath d='M1.5 0v6M4.5 0v6' stroke='%23ffecc4' stroke-opacity='.09' stroke-width='1'/%3E%3C/svg%3E\");padding:24px;display:flex;flex-wrap:wrap;gap:8px;} .ds-opcion{position:relative;} .ds-opcion input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0;} .ds-opcion span{display:block;padding:8px 14px;border:2px solid var(--ink);color:var(--ink);font-family:var(--font-condensed, 'Barlow Condensed'), sans-serif;font-weight:600;font-size:17px;text-transform:uppercase;letter-spacing:0.05em;transition:background .2s,color .2s;} .ds-opcion input:checked + span{background:var(--ink);color:var(--jute);} .ds-opcion input:focus-visible + span{outline:3px solid var(--ink);outline-offset:3px;}"
+    },
+    {
+      "name": "Navegación",
+      "kind": "nav",
+      "description": "Barra fija sobre yute con marca en esténcil y enlaces en condensada con borde de tinta al pasar el cursor.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-marca\" href=\"#\">Altura</a><ul><li><a href=\"#\">Historia</a></li><li><a href=\"#\">Carta</a></li><li><a href=\"#\">Tu café</a></li><li><a href=\"#\">Barista</a></li></ul></nav>",
+      "css": ":host{--jute:#b08a52;--jute-deep:#97723e;--ink:#1c1710;--bodega:#17140f;--bodega-2:#221d16;--bodega-line:rgba(232,214,180,0.14);--paper:#efe4cf;--paper-dim:#c9b894;--ease-out:cubic-bezier(0.16,1,0.3,1);--lote:#1f4fd1;} .ds-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 24px;background-color:var(--jute);background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Cpath d='M0 1.5h6M0 4.5h6' stroke='%233a260c' stroke-opacity='.16' stroke-width='1.2'/%3E%3Cpath d='M1.5 0v6M4.5 0v6' stroke='%23ffecc4' stroke-opacity='.09' stroke-width='1'/%3E%3C/svg%3E\");border-bottom:2px solid var(--ink);color:var(--ink);} .ds-marca{font-family:var(--font-stencil, 'Big Shoulders Stencil'), sans-serif;font-weight:900;font-size:26px;line-height:.92;text-transform:uppercase;color:inherit;text-decoration:none;} .ds-nav ul{display:flex;gap:4px;list-style:none;margin:0;padding:0;} .ds-nav ul a{display:block;padding:6px 12px;border:2px solid transparent;font-family:var(--font-condensed, 'Barlow Condensed'), sans-serif;font-weight:600;font-size:15px;letter-spacing:0.04em;text-transform:uppercase;color:inherit;text-decoration:none;} .ds-nav ul a:hover{border-color:var(--ink);} .ds-nav a:focus-visible{outline:3px solid var(--ink);outline-offset:3px;}"
+    },
+    {
+      "name": "Saco de la pared",
+      "kind": "custom",
+      "description": "Módulo de la carta: silueta de saco en yute con borde de la tinta del lote, etiqueta de lote llena y origen en esténcil; se levanta con sombra difusa.",
+      "html": "<div class=\"ds-bodega\"><button class=\"ds-pila\" type=\"button\" style=\"--tinta:#0f7a3a\"><svg class=\"ds-pila-saco\" viewBox=\"0 0 300 400\" preserveAspectRatio=\"none\" aria-hidden=\"true\"><path class=\"c\" d=\"M24 30 Q40 6 80 18 L220 18 Q260 6 276 30 L288 370 Q288 394 262 396 L38 396 Q12 394 12 370Z\"/><path class=\"s\" d=\"M14 50 Q150 62 286 50\"/></svg><span class=\"ds-lote\">ALT-12</span><span class=\"ds-pais\">Colombia</span><span class=\"ds-pie\">Huila · 1.850 msnm</span></button></div>",
+      "css": ":host{--jute:#b08a52;--jute-deep:#97723e;--ink:#1c1710;--bodega:#17140f;--bodega-2:#221d16;--bodega-line:rgba(232,214,180,0.14);--paper:#efe4cf;--paper-dim:#c9b894;--ease-out:cubic-bezier(0.16,1,0.3,1);--lote:#1f4fd1;} .ds-bodega{background:var(--bodega);padding:32px;} .ds-pila{position:relative;isolation:isolate;width:190px;aspect-ratio:3/4;padding:30px 14px 16px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;border:0;background:transparent;color:var(--ink);cursor:pointer;filter:drop-shadow(0 14px 16px rgba(0,0,0,0.55));transition:transform .35s var(--ease-out),filter .35s var(--ease-out);} .ds-pila:hover{transform:perspective(700px) translateZ(24px);filter:drop-shadow(0 24px 22px rgba(0,0,0,0.7));} .ds-pila:focus-visible{outline:3px solid var(--paper);outline-offset:3px;} .ds-pila-saco{position:absolute;inset:0;width:100%;height:100%;z-index:-1;} .ds-pila-saco .c{fill:var(--jute);stroke:var(--tinta);stroke-width:3;vector-effect:non-scaling-stroke;} .ds-pila-saco .s{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:6 5;vector-effect:non-scaling-stroke;} .ds-lote{align-self:flex-start;padding:2px 8px;background:var(--tinta);color:#fff;font-family:var(--font-condensed, 'Barlow Condensed'), sans-serif;font-weight:600;font-size:14px;letter-spacing:.04em;} .ds-pais{font-family:var(--font-stencil, 'Big Shoulders Stencil'), sans-serif;font-weight:900;font-size:36px;line-height:.92;text-transform:uppercase;} .ds-pie{font-family:var(--font-condensed, 'Barlow Condensed'), sans-serif;font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase;line-height:1.3;}"
+    },
+    {
+      "name": "Medidor sensorial",
+      "kind": "custom",
+      "description": "Cinco celdas rectas; las llenas toman la tinta clara del lote y se asientan con rebote escalonado.",
+      "html": "<div class=\"ds-ficha\" style=\"--lote:#7a9bff\"><div class=\"ds-medidor\"><span class=\"ds-dato\">Acidez</span><span class=\"ds-escala\"><span data-lleno=\"true\" style=\"--i:0\"></span><span data-lleno=\"true\" style=\"--i:1\"></span><span data-lleno=\"true\" style=\"--i:2\"></span><span data-lleno=\"true\" style=\"--i:3\"></span><span></span></span><span class=\"ds-dato\">4</span></div><ul class=\"ds-notas\"><li>Jazmín</li><li>Durazno</li></ul></div>",
+      "css": ":host{--jute:#b08a52;--jute-deep:#97723e;--ink:#1c1710;--bodega:#17140f;--bodega-2:#221d16;--bodega-line:rgba(232,214,180,0.14);--paper:#efe4cf;--paper-dim:#c9b894;--ease-out:cubic-bezier(0.16,1,0.3,1);--lote:#1f4fd1;} .ds-ficha{background:var(--bodega-2);border:2px solid var(--bodega-line);color:var(--paper);padding:24px;} .ds-dato{font-family:var(--font-condensed, 'Barlow Condensed'), sans-serif;font-weight:600;letter-spacing:.04em;text-transform:uppercase;font-variant-numeric:tabular-nums;} .ds-medidor{display:grid;grid-template-columns:90px 1fr 24px;gap:12px;align-items:center;margin-bottom:16px;} .ds-escala{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;} .ds-escala span{height:16px;border:2px solid var(--paper-dim);transform-origin:bottom;} .ds-escala span[data-lleno=\"true\"]{background:var(--lote);border-color:var(--lote);animation:ds-asentar .5s var(--ease-out) both;animation-delay:calc(var(--i)*60ms);} @keyframes ds-asentar{0%{transform:scaleY(.2);opacity:0}70%{transform:scaleY(1.12);opacity:1}100%{transform:scaleY(1)}} @media (prefers-reduced-motion: reduce){.ds-escala span[data-lleno=\"true\"]{animation:none;}} .ds-notas{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0;} .ds-notas li{padding:6px 12px;border:2px solid var(--lote);font-family:var(--font-condensed, 'Barlow Condensed'), sans-serif;font-weight:600;font-size:18px;text-transform:uppercase;letter-spacing:.04em;}"
+    },
+    {
+      "name": "Campo del barista",
+      "kind": "input",
+      "refersTo": "campo-barista",
+      "description": "Campo de texto sobre el bloque de tinta del barista, con sello de envío.",
+      "html": "<form class=\"ds-barista\" onsubmit=\"return false\"><input type=\"text\" placeholder=\"¿Qué molienda uso para V60?\" aria-label=\"Pregunta\"><button class=\"ds-sello-p\" type=\"submit\">Enviar</button></form>",
+      "css": ":host{--jute:#b08a52;--jute-deep:#97723e;--ink:#1c1710;--bodega:#17140f;--bodega-2:#221d16;--bodega-line:rgba(232,214,180,0.14);--paper:#efe4cf;--paper-dim:#c9b894;--ease-out:cubic-bezier(0.16,1,0.3,1);--lote:#1f4fd1;} .ds-barista{display:flex;gap:8px;padding:12px;background:var(--ink);border-top:2px solid var(--bodega-line);} .ds-barista input{flex:1;min-width:0;padding:12px;border:2px solid var(--paper-dim);background:transparent;color:var(--paper);font:inherit;font-family:var(--font-body,'Barlow'),system-ui,sans-serif;caret-color:var(--paper);border-radius:0;} .ds-barista input::placeholder{color:var(--paper-dim);} .ds-barista input:focus-visible{outline:3px solid var(--paper);outline-offset:3px;} .ds-sello-p{padding:14px 22px;border:3px solid var(--paper);background:transparent;color:var(--paper);font-family:var(--font-condensed, 'Barlow Condensed'), sans-serif;font-weight:700;font-size:18px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background .2s var(--ease-out),color .2s var(--ease-out);} .ds-sello-p:hover{background:var(--paper);color:var(--ink);} .ds-sello-p:focus-visible{outline:3px solid var(--paper);outline-offset:3px;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "El lote de exportación",
+    "overview": "**Creative North Star: \"El lote de exportación\"**\n\nAltura trata el café como un saco de café verde que viaja, no como el ambiente de una cafetería. Todo el sistema sale de dos materiales: el yute del saco (un campo tejido, nunca un beige plano) y la tinta de estarcido con la que se marca el lote. La tipografía es la del esténcil y la de la etiqueta de carga: una display con puentes de plantilla, grande y precisa, y una grotesca condensada para los datos del lote, siempre en mayúsculas y con cifras tabulares.\n\nEl ritmo alterna dos campos. Arriba y abajo, el yute con tinta casi negra. En el centro, la bodega: un fondo oscuro donde viven la carta, la ficha y el comparador, y donde las tintas de lote pasan a su variante clara. Cada lote es dueño de una tinta saturada y esa tinta recolorea todo lo que le pertenece: el borde del saco, los medidores, las notas, la marca de molienda y el título de la ficha.\n\nLa densidad es de ficha técnica: retículas estrictas, divisores de tinta de 2 a 3px, cero radios. La textura se mantiene sutil (trama de 6px a baja opacidad) para que el yute no caiga en lo rústico. Se rechazan explícitamente la cafetería de fondo crema con serif y terracota, y la fotografía oscura y dramática de granos.",
+    "keyCharacteristics": [
+      "Campo de yute tejido con tinta casi negra; bodega oscura como contrapunto para la carta.",
+      "Una tinta saturada por lote, con variante clara para el fondo de bodega.",
+      "Display esténcil enorme; datos en condensada mayúscula con cifras tabulares.",
+      "Controles como sellos rectangulares con borde de tinta; activo = tinta llena.",
+      "Esquinas rectas en todo; la profundidad sale de la tinta y de la sombra física del saco, no de tarjetas elevadas."
+    ],
+    "rules": [
+      {
+        "name": "La Regla de Una Tinta por Lote",
+        "body": "Cada lote posee una sola tinta y todo lo que le pertenece la hereda a través de `--lote`. Nunca se mezclan dos tintas de origen en el mismo elemento; el comparador es el único lugar donde dos tintas conviven, cada una en su propia columna.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla del Campo",
+        "body": "Sobre yute, las tintas de origen son marca: estampas, bordes y rellenos detrás de texto. Las estampas llevan palabras en esténcil, pero son sellos decorativos que repiten lo que ya dice el texto de la etapa; ningún contenido de lectura se escribe en tinta de origen sobre yute, porque ninguna llega a 2,5:1. Sobre bodega se usa siempre la variante clara.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de la Bodega",
+        "body": "La carta, la ficha y el comparador viven en fondo oscuro de bodega; el resto de la página vive en yute. No se inventan campos intermedios.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla del Esténcil",
+        "body": "La display esténcil es para nombres (marca, secciones, etapas, orígenes, métodos) y cifras protagonistas (puntaje SCA). Nunca para párrafos ni para datos tabulados.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla del Dato",
+        "body": "Todo dato del lote (código, altitud, proceso, dosis, temperatura) va en la condensada mayúscula con cifras tabulares, para que la historia y la ficha compartan el mismo vocabulario visual.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla del Objeto Físico",
+        "body": "Solo los objetos físicos (sacos) proyectan sombra, y siempre difusa sobre fondo oscuro. Paneles, fichas, sellos y formularios son planos y se separan con bordes.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** asignar a cada lote nueva una tinta de origen y su variante clara, y propagarla con `--lote` a todo lo que le pertenece.",
+      "**Do** mantener la trama tejida sobre todo campo de yute, a baja opacidad (trama de 6px, hilos al 16% y 9%).",
+      "**Do** usar la tinta clara del lote sobre bodega y verificar al menos 3:1 para marcas y 4,5:1 para texto.",
+      "**Do** separar paneles con bordes de tinta de 2 a 3px sobre yute y con hilo de bodega sobre fondo oscuro.",
+      "**Do** desactivar estampas, giros de ficha, asentamiento de medidores y granos 3D con `prefers-reduced-motion`; el contenido debe leerse igual sin movimiento.",
+      "**Do** usar la curva de salida del sistema (`cubic-bezier(0.16, 1, 0.3, 1)`) para toda transición de estado."
+    ],
+    "donts": [
+      "**Don't** usar fondo crema, serif y terracota de cafetería, ni fotografía oscura y dramática de granos.",
+      "**Don't** escribir contenido de lectura en tinta de origen sobre yute; ninguna llega a 2,5:1. Las estampas del saco quedan fuera de esta regla porque son marca y repiten texto ya presente.",
+      "**Don't** usar tinta gastada ni opacidades reducidas para texto de lectura sobre yute; ambas quedan por debajo de 4,5:1.",
+      "**Don't** redondear esquinas; la única curva es la silueta del saco.",
+      "**Don't** agregar sombras a paneles, fichas ni sellos; solo los sacos proyectan sombra.",
+      "**Don't** agregar rótulos sobre los títulos de sección; el título en esténcil abre cada sección solo."
+    ]
+  }
+}

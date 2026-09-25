@@ -7,7 +7,7 @@
   --jute-thread: rgba(58, 38, 12, 0.22);
   --jute-light: rgba(255, 236, 196, 0.16);
   --ink: #1c1710;
-  --ink-soft: #3b2f1e;
+  --ink-soft: #2c2215;
   --bodega: #17140f;
   --bodega-2: #221d16;
   --bodega-line: rgba(232, 214, 180, 0.14);
@@ -331,7 +331,7 @@ main > .pedido {
 
 .portada-datos dt {
   font-size: 13px;
-  opacity: 0.75;
+  color: var(--ink-soft);
 }
 
 .portada-datos dd {
@@ -515,16 +515,32 @@ main > .pedido {
   transform: scale(1) rotate(var(--giro, 0deg));
 }
 
-.saco-tira {
+.saco-movil {
   display: none;
 }
 
 @media (max-width: 860px) {
-  .saco svg {
+  .saco > svg {
     display: none;
   }
 
+  .saco-movil {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .saco-movil .mini-saco {
+    flex: 0 0 auto;
+    width: 38px;
+    height: 56px;
+    overflow: visible;
+  }
+
   .saco-tira {
+    flex: 1;
+    min-width: 0;
     display: flex;
     gap: 6px;
     width: 100%;
@@ -666,7 +682,7 @@ main > .pedido {
 .tostador-ayuda {
   font-size: 13px;
   margin: 6px 0 0;
-  opacity: 0.8;
+  color: var(--ink-soft);
 }
 
 /* ——— Bodega: la carta ——— */
