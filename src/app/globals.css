@@ -1602,20 +1602,6 @@ main > section {
 }
 
 /* ——— Pie ——— */
-.pie {
-  padding: 40px var(--gutter);
-  border-top: 3px solid var(--ink);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 16px;
-  font-size: 15px;
-}
-
-.pie .stencil {
-  font-size: 40px;
-}
-
 .unidad {
   text-transform: none;
 }
@@ -1975,5 +1961,154 @@ main > section {
 @media (prefers-reduced-motion: reduce) {
   .preparar-liquido {
     transition: none;
+  }
+}
+
+/* ——— Fondo con materia: arpillera, luz y marcas de exportación ——— */
+body {
+  position: relative;
+  isolation: isolate;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* trama grande de arpillera, la misma de los sacos */
+body::before {
+  background-image: var(--arpillera, none);
+  background-size: 112px 112px;
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+}
+
+/* luz cálida desde arriba y bordes más oscuros */
+body::after {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 18%, rgba(255, 236, 196, 0.2), transparent 60%),
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 55%, rgba(40, 24, 8, 0.34));
+}
+
+.principal {
+  position: relative;
+}
+
+.marcas-fondo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.marca-fondo {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  line-height: 0.86;
+  white-space: nowrap;
+  color: var(--ink);
+  opacity: 0.06;
+  mix-blend-mode: multiply;
+  will-change: translate;
+}
+
+@media (max-width: 720px) {
+  .marca-fondo {
+    opacity: 0.05;
+  }
+}
+
+/* ——— Costuras de saco entre el yute y la bodega ——— */
+.bodega {
+  --deshilachado: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='18' viewBox='0 0 48 18'%3E%3Cpath d='M0 18V9l3-3 4 4 3-6 4 5 3-4 3 5 4-7 3 6 4-3 3 4 3-5 4 6 3-3 3 4v8z'/%3E%3C/svg%3E");
+}
+
+.bodega::before,
+.bodega::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 18px;
+  background: var(--bodega);
+  -webkit-mask: var(--deshilachado) 0 0 / 48px 18px repeat-x;
+  mask: var(--deshilachado) 0 0 / 48px 18px repeat-x;
+  pointer-events: none;
+}
+
+.bodega::before {
+  top: -17px;
+}
+
+.bodega::after {
+  bottom: -17px;
+  transform: scaleY(-1);
+}
+
+.bodega-interior {
+  position: relative;
+}
+
+.bodega-interior::before {
+  content: "";
+  position: absolute;
+  top: calc(clamp(72px, 10vw, 140px) * -1 + 22px);
+  left: calc(var(--gutter) * -1);
+  right: calc(var(--gutter) * -1);
+  border-top: 3px dashed rgba(239, 228, 207, 0.28);
+}
+
+/* ——— Pie: sello de despacho ——— */
+.pie {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(24px, 5vw, 64px);
+  align-items: center;
+  padding: clamp(56px, 8vw, 110px) var(--gutter) clamp(48px, 6vw, 80px);
+  border-top: 3px solid var(--ink);
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.pie-sello {
+  width: clamp(180px, 26vw, 300px);
+  color: var(--tinta-etiopia);
+  rotate: -8deg;
+  mix-blend-mode: multiply;
+}
+
+.pie-marca {
+  display: block;
+  font-size: clamp(64px, 10vw, 128px);
+  line-height: 0.85;
+  margin-bottom: 14px;
+}
+
+.pie-texto p {
+  margin: 0 0 12px;
+  max-width: 56ch;
+}
+
+.pie-links {
+  font-size: 15px;
+}
+
+.pie-links a {
+  text-decoration: none;
+  border-bottom: 2px solid currentColor;
+}
+
+@media (max-width: 720px) {
+  .pie {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
   }
 }

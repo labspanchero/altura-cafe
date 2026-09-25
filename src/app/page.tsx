@@ -3,6 +3,7 @@ import Historia from "./components/Historia";
 import Pedido from "./components/Pedido";
 import Lluvia from "./components/Lluvia";
 import ContadorVivo from "./components/ContadorVivo";
+import MarcasFondo from "./components/MarcasFondo";
 import { CartaProvider } from "./components/CartaContexto";
 import { obtenerCarta } from "@/lib/carta";
 
@@ -59,7 +60,8 @@ export default async function Home() {
         </ul>
       </nav>
 
-      <main>
+      <main className="principal">
+        <MarcasFondo />
         <header className="portada">
           <Lluvia />
           <div className="saco-cara">
@@ -112,11 +114,43 @@ export default async function Home() {
       </main>
 
       <footer className="pie">
-        <span className="stencil">Altura</span>
-        <p style={{ margin: 0, maxWidth: "60ch" }}>
-          Tostadería ficticia creada para Nerdearla 2026. Los lotes son de
-          muestra. Hecho con Next.js sobre Webflow Cloud.
-        </p>
+        <svg className="pie-sello" viewBox="0 0 420 420" aria-hidden="true">
+          <defs>
+            <filter id="sello-pie">
+              <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="21" />
+              <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.8 1.4" />
+              <feComposite in="SourceGraphic" operator="in" />
+            </filter>
+            <path id="arco-sello" d="M210 210 m-160 0 a160 160 0 1 1 320 0 a160 160 0 1 1 -320 0" />
+          </defs>
+          <g filter="url(#sello-pie)" fill="none" stroke="currentColor">
+            <circle cx="210" cy="210" r="196" strokeWidth="10" />
+            <circle cx="210" cy="210" r="132" strokeWidth="4" strokeDasharray="8 7" />
+            <text className="stencil" fontSize="30" fill="currentColor" stroke="none" letterSpacing="3">
+              <textPath href="#arco-sello" startOffset="0">
+                ALTURA · LOTE DESPACHADO · NERDEARLA 2026 · CIUDAD CULTURAL KONEX ·
+              </textPath>
+            </text>
+            <text x="210" y="196" textAnchor="middle" className="stencil" fontSize="74" fill="currentColor" stroke="none">
+              ALT-07
+            </text>
+            <text x="210" y="252" textAnchor="middle" className="dato" fontSize="30" fill="currentColor" stroke="none">
+              22–26 SEPT
+            </text>
+          </g>
+        </svg>
+        <div className="pie-texto">
+          <span className="stencil pie-marca">Altura</span>
+          <p>
+            Tostadería ficticia creada para Nerdearla 2026. Los lotes son de
+            muestra. Hecho con Next.js sobre Webflow Cloud, con la carta en el
+            CMS de Webflow.
+          </p>
+          <p className="dato pie-links">
+            <a href="#historia">Historia</a> · <a href="#carta">Carta</a> · <a href="#pedido">Tu café</a> ·{" "}
+            <a href="https://github.com/labspanchero/altura-cafe">Código</a>
+          </p>
+        </div>
       </footer>
     </CartaProvider>
   );
