@@ -2,6 +2,7 @@ import Carta from "./components/Carta";
 import Historia from "./components/Historia";
 import Pedido from "./components/Pedido";
 import Lluvia from "./components/Lluvia";
+import MapaAltura from "./components/MapaAltura";
 import { SiluetaSaco } from "./components/Carta";
 
 function Estampa() {
@@ -97,6 +98,7 @@ export default function Home() {
         </header>
 
         <Historia />
+        <MapaAltura />
         <Carta />
         <Pedido />
       </main>
