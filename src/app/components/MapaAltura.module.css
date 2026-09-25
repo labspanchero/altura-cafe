@@ -1,0 +1,160 @@
+.mapa {
+  position: relative;
+  z-index: 1;
+  padding: clamp(72px, 10vw, 140px) var(--gutter) 0;
+  max-width: 1180px;
+  margin: 0 auto;
+  box-sizing: content-box;
+}
+
+.cabeza {
+  margin-bottom: clamp(24px, 4vw, 40px);
+}
+
+.escenario {
+  position: relative;
+  height: clamp(360px, 62vh, 620px);
+  border-top: 3px solid var(--ink);
+  border-bottom: 3px solid var(--ink);
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.lienzo {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 1s var(--ease-out);
+}
+
+.lienzo[data-listo="true"] {
+  opacity: 1;
+}
+
+.lienzo:active {
+  cursor: grabbing;
+}
+
+.lienzo canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.capa {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.marca {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: -9px 0 0 8px;
+  font-size: 12px;
+  color: var(--ink);
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.etiqueta {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: stretch;
+  margin: -34px 0 0 -6px;
+  padding: 0;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  pointer-events: auto;
+  white-space: nowrap;
+  will-change: transform;
+  transition: box-shadow 0.25s var(--ease-out), background 0.25s var(--ease-out);
+}
+
+.etiqueta[data-activo="true"] {
+  background: var(--ink);
+  box-shadow: 0 8px 18px -6px rgba(28, 23, 16, 0.6);
+}
+
+.etiqueta[data-activo="true"] .etiquetaTexto {
+  color: var(--paper);
+}
+
+.etiquetaLote {
+  padding: 3px 7px;
+  font-size: 13px;
+}
+
+.etiquetaTexto {
+  padding: 3px 8px;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.escala {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 8px;
+}
+
+.peldano {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 2px solid var(--ink);
+  border-left-width: 2px;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out);
+}
+
+.peldano:hover,
+.peldano[data-activo="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.peldanoAlt {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.peldanoNombre {
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .escenario {
+    height: 360px;
+  }
+
+  .etiquetaTexto {
+    display: none;
+  }
+
+  .marca {
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lienzo,
+  .etiqueta,
+  .peldano {
+    transition: none;
+  }
+}
