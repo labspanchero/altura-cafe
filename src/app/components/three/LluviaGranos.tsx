@@ -16,7 +16,7 @@ export default function LluviaGranos() {
 
     (async () => {
       const THREE = await import("three");
-      const { crearGeometriaGrano, luces, prefiereMenosMovimiento, colorTueste } = await import("./grano");
+      const { crearGeometriaGrano, luces, prefiereMenosMovimiento, materialGrano } = await import("./grano");
       if (cancelado) return;
 
       const quieto = prefiereMenosMovimiento();
@@ -33,11 +33,7 @@ export default function LluviaGranos() {
       const geo = crearGeometriaGrano(40);
       const movil = window.innerWidth < 720;
       const N = movil ? 18 : 42;
-      const materiales = [0, 0.6, 1.3].map((t) => {
-        const c = new THREE.Color();
-        const { rugosidad } = colorTueste(t, c);
-        return new THREE.MeshStandardMaterial({ color: c, roughness: rugosidad });
-      });
+      const materiales = [0, 0.6, 1.3].map((t) => materialGrano(t));
 
       type Grano = { m: Mesh; vel: number; giro: Vector3; base: Vector3; hueco: Vector3; escala: number; emp: Vector3; empV: Vector3; tostado: number };
       const granos: Grano[] = [];
@@ -77,7 +73,7 @@ export default function LluviaGranos() {
       window.addEventListener("pointermove", alMover, { passive: true });
 
       // Física: los granos se apartan del puntero; un clic tuesta el grano.
-      const tostadoMat = new THREE.MeshStandardMaterial({ color: "#3a1f10", roughness: 0.3 });
+      const tostadoMat = materialGrano(3.5);
       const rayoPuntero = new THREE.Raycaster();
       const ndcPuntero = new THREE.Vector2();
       const puntoPuntero = new THREE.Vector3();

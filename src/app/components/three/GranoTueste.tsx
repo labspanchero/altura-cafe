@@ -23,7 +23,7 @@ export default function GranoTueste() {
 
     (async () => {
       const THREE = await import("three");
-      const { crearGeometriaGrano, luces, colorTueste, prefiereMenosMovimiento } = await import("./grano");
+      const { crearGeometriaGrano, luces, colorTueste, prefiereMenosMovimiento, materialGrano, ajustarMaterialGrano } = await import("./grano");
       if (cancelado) return;
 
       const quieto = prefiereMenosMovimiento();
@@ -39,7 +39,7 @@ export default function GranoTueste() {
       luces(escena);
 
       const geo = crearGeometriaGrano(96);
-      const mat = new THREE.MeshStandardMaterial({ color: "#8fa35c", roughness: 0.75 });
+      const mat = materialGrano(0);
       const grano = new THREE.Mesh(geo, mat);
       grano.rotation.set(-1.15, 0.3, 0.15);
       escena.add(grano);
@@ -86,9 +86,8 @@ export default function GranoTueste() {
         const dt = Math.min(reloj.getDelta(), 0.05);
         if (!visible || document.hidden) return;
         actual += (tueste.current - actual) * (quieto ? 1 : 0.08);
-        const { rugosidad, escala } = colorTueste(actual, color);
-        mat.color.copy(color);
-        mat.roughness = rugosidad;
+        const { escala } = colorTueste(actual, color);
+        ajustarMaterialGrano(mat, actual);
         grano.scale.setScalar(escala);
         if (!quieto && !arrastrando) grano.rotation.y += dt * 0.5;
         grano.rotation.y += giroManual;
