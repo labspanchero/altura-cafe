@@ -1,6 +1,7 @@
 import { recomendar, validarRespuestas } from "@/lib/recomendar";
 import { ipDe, superaLimite } from "@/lib/entorno";
 import { sumarEncontrado } from "@/lib/contador";
+import { obtenerCarta } from "@/lib/carta";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -17,5 +18,6 @@ export async function POST(request: Request) {
   } catch {
     // el contador no debe romper la recomendación
   }
-  return Response.json(recomendar(respuestas));
+  const { cafes } = await obtenerCarta();
+  return Response.json(recomendar(respuestas, cafes));
 }

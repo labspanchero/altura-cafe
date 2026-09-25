@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CAFES } from "@/lib/cafes";
+import { useCarta } from "./CartaContexto";
 import { abrirFicha } from "./Pedido";
 import estilos from "./MapaAltura.module.css";
 
@@ -10,7 +10,6 @@ const ALT_MIN = 800;
 const ALT_MAX = 2400;
 const ALTO = 3.2;
 const MARCAS = [1200, 1500, 1800, 2100];
-const POR_ALTITUD = [...CAFES].sort((a, b) => b.altitud - a.altitud);
 
 function aMundo(alt: number) {
   return ((alt - ALT_MIN) / (ALT_MAX - ALT_MIN)) * ALTO;
@@ -32,6 +31,8 @@ function esClara(hex: string) {
 }
 
 export default function MapaAltura() {
+  const { cafes: CAFES } = useCarta();
+  const POR_ALTITUD = [...CAFES].sort((a, b) => b.altitud - a.altitud);
   const lienzo = useRef<HTMLDivElement>(null);
   const etiquetas = useRef<Record<string, HTMLButtonElement | null>>({});
   const marcas = useRef<Record<number, HTMLSpanElement | null>>({});

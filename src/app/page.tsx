@@ -3,6 +3,11 @@ import Historia from "./components/Historia";
 import Pedido from "./components/Pedido";
 import Lluvia from "./components/Lluvia";
 import ContadorVivo from "./components/ContadorVivo";
+import { CartaProvider } from "./components/CartaContexto";
+import { obtenerCarta } from "@/lib/carta";
+
+// La carta llega del CMS de Webflow en cada request (con caché en KV).
+export const dynamic = "force-dynamic";
 import MapaAltura from "./components/MapaAltura";
 import { SiluetaSaco } from "./components/Carta";
 
@@ -30,9 +35,10 @@ function Estampa() {
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const { cafes, fuente } = await obtenerCarta();
   return (
-    <>
+    <CartaProvider cafes={cafes} fuente={fuente}>
       <nav className="nav" aria-label="Principal">
         <a href="#" className="stencil nav-marca">
           Altura
@@ -112,6 +118,6 @@ export default function Home() {
           muestra. Hecho con Next.js sobre Webflow Cloud.
         </p>
       </footer>
-    </>
+    </CartaProvider>
   );
 }

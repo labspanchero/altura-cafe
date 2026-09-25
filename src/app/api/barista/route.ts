@@ -1,4 +1,5 @@
-import { CAFES, METODOS } from "@/lib/cafes";
+import { METODOS, type Cafe } from "@/lib/cafes";
+import { obtenerCarta } from "@/lib/carta";
 import { ipDe, superaLimite } from "@/lib/entorno";
 
 type Mensaje = { role: "user" | "assistant"; content: string };
@@ -8,25 +9,26 @@ const MAX_CARACTERES = 500;
 const LIMITE_POR_VENTANA = 15;
 const VENTANA_SEG = 10 * 60;
 
-const CARTA = CAFES.map((c) => ({
-  lote: c.lote,
-  cafe: `${c.pais} ${c.region}`,
-  altitud: `${c.altitud} msnm`,
-  variedad: c.variedad,
-  proceso: c.proceso,
-  tueste: c.tueste,
-  notas: c.notas,
-  aroma: c.aroma,
-  sensorial: c.sensorial,
-  recetas: c.recetas.map((r) => ({ ...r, metodo: METODOS[r.metodo].nombre })),
-}));
-
-const SISTEMA = `Eres el barista de Altura, una tostadería ficticia de café de especialidad.
+function sistema(cafes: Cafe[]) {
+  const carta = cafes.map((c) => ({
+    lote: c.lote,
+    cafe: `${c.pais} ${c.region}`,
+    altitud: `${c.altitud} msnm`,
+    variedad: c.variedad,
+    proceso: c.proceso,
+    tueste: c.tueste,
+    notas: c.notas,
+    aroma: c.aroma,
+    sensorial: c.sensorial,
+    recetas: c.recetas.map((r) => ({ ...r, metodo: METODOS[r.metodo].nombre })),
+  }));
+  return `Eres el barista de Altura, una tostadería ficticia de café de especialidad.
 Respondes en español neutro, breve (máximo 120 palabras), con precisión técnica para alguien que sabe de café. Escribe texto plano, sin markdown: nada de asteriscos, almohadillas ni negritas. Para listas usa guiones simples.
 Solo hablas de la carta de Altura, del café en general y de cómo prepararlo. Si te preguntan otra cosa, vuelves amablemente al café.
 Cuando recomiendes, nombra el lote (ej. ALT-07), la molienda y una receta de la carta.
 Los lotes son de muestra y ficticios; si te preguntan si existen, dilo.
-Carta: ${JSON.stringify(CARTA)}`;
+Carta: ${JSON.stringify(carta)}`;
+}
 
 function validar(body: unknown): Mensaje[] | null {
   if (!body || typeof body !== "object") return null;
@@ -68,6 +70,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "Mensaje no válido." }, { status: 400 });
   }
 
+  const { cafes } = await obtenerCarta();
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -79,7 +82,7 @@ export async function POST(request: Request) {
       max_tokens: 300,
       temperature: 0.6,
       stream: true,
-      messages: [{ role: "system", content: SISTEMA }, ...mensajes],
+      messages: [{ role: "system", content: sistema(cafes) }, ...mensajes],
     }),
   });
 

@@ -1,16 +1,17 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { CAFES, METODOS, type Cafe, type Metodo, type Receta } from "@/lib/cafes";
+import { METODOS, type Cafe, type Metodo, type Receta } from "@/lib/cafes";
+import { useCarta } from "./CartaContexto";
 import MetodoIcono from "./MetodoIcono";
 
 export function abrirFicha(id: string) {
   window.dispatchEvent(new CustomEvent("altura:abrir-ficha", { detail: id }));
 }
 
-const POR_LOTE = new Map(CAFES.map((c) => [c.lote, c]));
-
 function ConLotes({ texto }: { texto: string }) {
+  const { cafes } = useCarta();
+  const POR_LOTE = new Map(cafes.map((c) => [c.lote, c]));
   const partes = texto.split(/(ALT-\d{2})/g);
   return (
     <>

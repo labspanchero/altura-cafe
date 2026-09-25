@@ -778,6 +778,15 @@ main > section {
   margin: 0 auto;
 }
 
+.fuente-cms {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 0;
+  color: var(--paper-dim);
+  font-size: 14px;
+}
+
 .aviso-ficticio {
   display: inline-block;
   margin: 20px 0 0;

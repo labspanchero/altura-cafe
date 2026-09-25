@@ -26,7 +26,8 @@ Altura es una tostadería **ficticia**. La app sigue un lote de café verde desd
 - **Runtime:** Next.js 16 (App Router) sobre Cloudflare Workers mediante OpenNext, desplegado desde GitHub en Webflow Cloud.
 - **SQLite (`DB`):** contador de "me gusta" por lote (`migraciones/0001_me_gusta.sql`).
 - **Key Value Store (`LIMITES`):** límite de uso del barista IA y un "me gusta" por visitante cada 24 h.
-- **Variables de entorno:** `OPENAI_API_KEY` es un secreto del entorno y `OPENAI_MODEL` es opcional. Nunca se guardan en el repo.
+- **CMS de Webflow + MCP de Webflow:** la carta vive en la colección **"Lotes"** del sitio `altura-cms`. La colección, sus 24 campos y los seis lotes se crearon con el **MCP de Webflow** desde Claude Code. La app lee la carta con la **Data API** en cada request (`src/lib/carta.ts`) y la cachea 5 minutos en KV: si se edita un café en el CMS, la app se actualiza sin redeploy. Si el CMS no responde o falta el token, usa la carta local y la página no se rompe. Cuando la carta viene del CMS, la sección muestra "Carta servida en vivo desde el CMS de Webflow".
+- **Variables de entorno:** `OPENAI_API_KEY` y `WEBFLOW_API_TOKEN` (token del sitio con lectura de CMS) son secretos del entorno; `OPENAI_MODEL` y `WEBFLOW_COLLECTION_ID` son opcionales. Nunca se guardan en el repo.
 - Los bindings se declaran en `wrangler.json`. Si la app corre fuera del runtime de Workers, las API caen a memoria.
 
 ## Estructura

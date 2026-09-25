@@ -9,8 +9,8 @@ export type Respuestas = {
 
 const ACIDEZ_OBJETIVO = { brillante: 5, equilibrada: 3, baja: 1 } as const;
 
-export function recomendar(r: Respuestas) {
-  const puntuados = CAFES.map((cafe) => {
+export function recomendar(r: Respuestas, cafes: Cafe[] = CAFES) {
+  const puntuados = cafes.map((cafe) => {
     let score = 0;
     if (cafe.perfil.includes(r.perfil)) score += 4;
     score -= Math.abs(cafe.sensorial.acidez - ACIDEZ_OBJETIVO[r.acidez]) * 1.2;

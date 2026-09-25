@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CAFES, METODOS, type Cafe, type Perfil } from "@/lib/cafes";
+import { METODOS, type Cafe, type Perfil } from "@/lib/cafes";
+import { useCarta } from "./CartaContexto";
 import { texturaArpillera } from "@/lib/arpillera";
 import MetodoIcono from "./MetodoIcono";
 
@@ -232,6 +233,7 @@ function soltar(e: React.PointerEvent<HTMLButtonElement>) {
 
 export default function Carta() {
   const [filtro, setFiltro] = useState<(typeof FILTROS)[number]["id"]>("todos");
+  const { cafes: CAFES, fuente } = useCarta();
   const [elegido, setElegido] = useState<string>(CAFES[0].id);
   const cafe = CAFES.find((c) => c.id === elegido) ?? CAFES[0];
   const meGusta = useMeGusta();
@@ -254,7 +256,7 @@ export default function Carta() {
     };
     window.addEventListener("altura:abrir-ficha", abrir);
     return () => window.removeEventListener("altura:abrir-ficha", abrir);
-  }, []);
+  }, [CAFES]);
 
   return (
     <section className="bodega" id="carta" aria-labelledby="carta-titulo">
@@ -266,6 +268,11 @@ export default function Carta() {
           Seis lotes en la bodega. Elige un saco para ver su ficha completa:
           origen, proceso, notas, perfil sensorial, molienda y receta.
         </p>
+        {fuente === "cms" && (
+          <p className="fuente-cms dato">
+            <span className="contador-punto" aria-hidden="true" /> Carta servida en vivo desde el CMS de Webflow
+          </p>
+        )}
         <p className="aviso-ficticio">
           Lotes de muestra, ficticios. Orígenes, variedades y procesos son
           reales; fincas, productores y puntajes son ilustrativos.
@@ -350,6 +357,7 @@ export default function Carta() {
 }
 
 function Comparador({ base }: { base: Cafe }) {
+  const { cafes: CAFES } = useCarta();
   const [otroId, setOtroId] = useState<string | null>(null);
   const otro = CAFES.find((c) => c.id === otroId) ?? null;
   const filas: { n: string; v: (c: Cafe) => string }[] = [
