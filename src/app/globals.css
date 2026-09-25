@@ -2987,3 +2987,45 @@ body::after {
     transition: none;
   }
 }
+
+/* Bolsa dorada y más grande */
+.historia-grilla {
+  grid-template-columns: minmax(320px, 6fr) 6fr;
+}
+
+.historia-saco {
+  height: calc(100svh - 104px);
+  max-height: 820px;
+  top: 80px;
+}
+
+.bolsa {
+  max-height: 800px;
+}
+
+.bolsa-brillo {
+  transform: translateX(var(--brillo, 160px)) skewX(-14deg);
+  transition: transform 0.3s var(--ease-out);
+  mix-blend-mode: soft-light;
+}
+
+@media (max-width: 860px) {
+  .historia-grilla {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .historia-saco {
+    height: auto;
+    max-height: none;
+    top: 62px;
+  }
+
+  .historia-saco .saco {
+    grid-template-columns: 116px minmax(0, 1fr);
+  }
+
+  .saco > .bolsa {
+    width: 116px;
+    height: 188px;
+  }
+}

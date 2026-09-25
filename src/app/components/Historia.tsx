@@ -256,6 +256,7 @@ function Saco({ activa }: { activa: number }) {
     const r = e.currentTarget.getBoundingClientRect();
     giro.current.style.setProperty("--ry", `${((e.clientX - r.left) / r.width - 0.5) * 18}deg`);
     giro.current.style.setProperty("--rx", `${-((e.clientY - r.top) / r.height - 0.5) * 12}deg`);
+    giro.current.style.setProperty("--brillo", `${((e.clientX - r.left) / r.width) * 420}px`);
   };
   const soltar = () => {
     giro.current?.style.setProperty("--ry", "0deg");
@@ -281,24 +282,47 @@ function Saco({ activa }: { activa: number }) {
               <clipPath id="bolsa-recorte">
                 <path d={BOLSA} />
               </clipPath>
+              <linearGradient id="oro" x1="0" y1="0" x2="1" y2="0.35">
+                <stop offset="0" stopColor="#9c7630" />
+                <stop offset="0.22" stopColor="#e8cf8a" />
+                <stop offset="0.4" stopColor="#c9a04f" />
+                <stop offset="0.58" stopColor="#f6e6b4" />
+                <stop offset="0.78" stopColor="#b88c3c" />
+                <stop offset="1" stopColor="#7d5a22" />
+              </linearGradient>
+              <linearGradient id="oro-texto" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stopColor="#c9a04f" />
+                <stop offset="0.5" stopColor="#f3dfa2" />
+                <stop offset="1" stopColor="#b88c3c" />
+              </linearGradient>
+              <linearGradient id="brillo" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stopColor="#fff" stopOpacity="0" />
+                <stop offset="0.5" stopColor="#fff" stopOpacity="0.55" />
+                <stop offset="1" stopColor="#fff" stopOpacity="0" />
+              </linearGradient>
             </defs>
             <ellipse cx="240" cy="760" rx="170" ry="14" fill="#1c1710" opacity="0.22" />
-            <path d={BOLSA} fill="#ece2cf" />
+            <path d={BOLSA} fill="url(#oro)" />
             <g clipPath="url(#bolsa-recorte)">
-              <rect x="60" y="60" width="360" height="700" filter="url(#papel)" opacity="0.35" />
+              <rect x="60" y="60" width="360" height="700" filter="url(#papel)" opacity="0.18" />
+              {/* panel negro de abajo, como las bolsas metalizadas */}
+              <path d="M60 520 Q240 500 420 520 V760 H60Z" fill="#17120c" />
+              <path d="M60 520 Q240 500 420 520" stroke="url(#oro-texto)" strokeWidth="2.5" fill="none" />
               {CURVAS.map((d) => (
-                <path key={d} d={d} fill="none" stroke="#1c1710" strokeWidth="1" opacity="0.1" />
+                <path key={d} d={d} fill="none" stroke="#e8cf8a" strokeWidth="1" opacity="0.14" />
               ))}
+              {/* reflejo que se mueve con la inclinación */}
+              <rect className="bolsa-brillo" x="-60" y="60" width="140" height="460" fill="url(#brillo)"/>
               {/* sellado térmico de arriba */}
               {Array.from({ length: 40 }).map((_, i) => (
                 <path key={i} d={`M${84 + i * 8} 66 V98`} stroke="#1c1710" strokeWidth="1" opacity="0.1" />
               ))}
               <path d="M78 100 H402" stroke="#1c1710" strokeWidth="1" opacity="0.18" />
-              <rect x="60" y="60" width="360" height="700" fill="url(#bolsa-luz)" />
+              <rect x="60" y="60" width="360" height="700" fill="url(#bolsa-luz)" opacity="0.8" />
             </g>
             {/* boca abierta: se ve el interior mientras no está doblada */}
             <path ref={boca} d="M90 64 Q240 96 390 64 Q240 78 90 64Z" fill="#3a2a18" opacity="1" />
-            <path d={BOLSA} fill="none" stroke="#1c1710" strokeWidth="2.5" />
+            <path d={BOLSA} fill="none" stroke="#5a3f14" strokeWidth="2.5" />
             {/* muescas de corte */}
             <path d="M76 120 l8 4 l-8 4 M404 120 l-8 4 l8 4" stroke="#1c1710" strokeWidth="1.5" fill="none" />
             {/* cierre zip */}
@@ -348,16 +372,16 @@ function Saco({ activa }: { activa: number }) {
             {/* sellos: uno por etapa */}
             {ETAPAS.map((e, i) => {
               const cx = 156 + (i % 3) * 84;
-              const cy = 566 + Math.floor(i / 3) * 70;
+              const cy = 584 + Math.floor(i / 3) * 62;
               const [arriba, valor] = SELLOS[e.id];
               return (
                 <g key={e.id} className="estampa" data-puesta={i <= activa} style={{ "--giro": `${((i * 37) % 17) - 8}deg` } as React.CSSProperties}>
-                  <circle cx={cx} cy={cy} r="30" fill="#ece2cf" stroke="var(--lote)" strokeWidth="2.2" />
-                  <circle cx={cx} cy={cy} r="25" fill="none" stroke="var(--lote)" strokeWidth="0.8" strokeDasharray="2 2.5" />
-                  <text x={cx} y={cy - 5} textAnchor="middle" className="dato" fontSize="7.5" fill="var(--lote)" letterSpacing="1">
+                  <circle cx={cx} cy={cy} r="27" fill="#17120c" stroke="url(#oro-texto)" strokeWidth="2" />
+                  <circle cx={cx} cy={cy} r="22.5" fill="none" stroke="#e8cf8a" strokeWidth="0.8" strokeDasharray="2 2.5" opacity="0.8" />
+                  <text x={cx} y={cy - 5} textAnchor="middle" className="dato" fontSize="7" fill="#e8cf8a" letterSpacing="1">
                     {arriba}
                   </text>
-                  <text x={cx} y={cy + 9} textAnchor="middle" className="stencil" fontSize={valor.length > 6 ? 12 : 15} fill="var(--lote)">
+                  <text x={cx} y={cy + 9} textAnchor="middle" className="stencil" fontSize={valor.length > 6 ? 11.5 : 14} fill="#f3dfa2">
                     {valor}
                   </text>
                 </g>
@@ -366,7 +390,7 @@ function Saco({ activa }: { activa: number }) {
 
             {/* solapa doblada y cinta de cierre (aparecen con el scroll) */}
             <g ref={solapa} opacity="0">
-              <path d="M78 62 H402 V150 Q240 158 78 150Z" fill="#e1d5bd" stroke="#1c1710" strokeWidth="2" />
+              <path d="M78 62 H402 V150 Q240 158 78 150Z" fill="url(#oro)" stroke="#5a3f14" strokeWidth="2" />
               <path d="M80 150 Q240 160 400 150" stroke="#1c1710" strokeWidth="5" opacity="0.12" fill="none" />
               <path d="M96 118 H384" stroke="#1c1710" strokeWidth="1" opacity="0.15" />
             </g>
