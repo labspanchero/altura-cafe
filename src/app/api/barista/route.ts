@@ -1,6 +1,6 @@
 import { METODOS, type Cafe } from "@/lib/cafes";
 import { obtenerCarta } from "@/lib/carta";
-import { ipDe, superaLimite } from "@/lib/entorno";
+import { ipDe, leerJson, superaLimite, superaTopeDiario } from "@/lib/entorno";
 
 type Mensaje = { role: "user" | "assistant"; content: string };
 
@@ -65,7 +65,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const mensajes = validar(await request.json().catch(() => null));
+  const cuerpo = await leerJson(request, 20_000);
+  if (cuerpo === "grande") return Response.json({ error: "El mensaje es demasiado grande." }, { status: 413 });
+  if (await superaTopeDiario("barista", 1500)) {
+    return Response.json({ error: "El barista atendió muchas consultas hoy. Vuelve mañana." }, { status: 429 });
+  }
+  const mensajes = validar(cuerpo);
   if (!mensajes) {
     return Response.json({ error: "Mensaje no válido." }, { status: 400 });
   }

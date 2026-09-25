@@ -1,4 +1,4 @@
-import { bindings, ipDe, superaLimite } from "@/lib/entorno";
+import { bindings, ipDe, leerJson, superaLimite, superaTopeDiario } from "@/lib/entorno";
 import { validarConfig } from "@/lib/armar";
 
 // Pedido de demostración: se guarda en SQLite, no se cobra ni se envía.
@@ -8,7 +8,12 @@ export async function POST(request: Request) {
   if (await superaLimite(`pedido:${ipDe(request)}`, 6, 600)) {
     return Response.json({ error: "Hiciste varios pedidos seguidos. Espera unos minutos." }, { status: 429 });
   }
-  const config = validarConfig(await request.json().catch(() => null));
+  const cuerpo = await leerJson(request, 4_000);
+  if (cuerpo === "grande") return Response.json({ error: "El mensaje es demasiado grande." }, { status: 413 });
+  if (await superaTopeDiario("pedidos", 2000)) {
+    return Response.json({ error: "Hoy recibimos muchos pedidos de demostración. Vuelve mañana." }, { status: 429 });
+  }
+  const config = validarConfig(cuerpo);
   if (!config) return Response.json({ error: "Falta elegir alguna opción de tu lote." }, { status: 400 });
 
   const { DB } = bindings();

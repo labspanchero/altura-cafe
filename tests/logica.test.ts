@@ -129,3 +129,23 @@ describe("arma tu café", () => {
     expect(notas({ ...base, tueste: "oscuro" })).toContain("Cacao amargo");
   });
 });
+
+describe("seguridad", () => {
+  it("el límite cae a memoria sin base y bloquea al pasar el máximo", async () => {
+    const { superaLimite } = await import("@/lib/entorno");
+    const clave = `prueba:${Math.random()}`;
+    expect(await superaLimite(clave, 2, 60)).toBe(false);
+    expect(await superaLimite(clave, 2, 60)).toBe(false);
+    expect(await superaLimite(clave, 2, 60)).toBe(true);
+  });
+
+  it("rechaza cuerpos grandes antes de parsearlos", async () => {
+    const { leerJson } = await import("@/lib/entorno");
+    const grande = new Request("http://x", { method: "POST", body: "x".repeat(2000), headers: { "content-length": "2000" } });
+    expect(await leerJson(grande, 1000)).toBe("grande");
+    const bien = new Request("http://x", { method: "POST", body: '{"a":1}' });
+    expect(await leerJson(bien, 1000)).toEqual({ a: 1 });
+    const roto = new Request("http://x", { method: "POST", body: "{no-json" });
+    expect(await leerJson(roto, 1000)).toBeNull();
+  });
+});

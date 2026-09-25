@@ -57,6 +57,14 @@ DESIGN.md · PRODUCT.md           sistema de diseño y producto
 npm run lint && npm run typecheck && npm test
 ```
 
+## Seguridad
+
+- **Secretos** solo del lado del servidor (variables secretas de Webflow Cloud); nada en el repo ni en el bundle del cliente.
+- **Límites** atómicos en SQLite por visitante y **topes diarios globales** para lo que cuesta dinero (IA); si la base falla, caen a memoria y la ruta sigue funcionando.
+- **Tamaño máximo de cuerpo** en todas las API (413 antes de parsear).
+- **Headers:** CSP, `frame-ancestors 'none'`, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, HSTS y `Permissions-Policy` (`next.config.ts`).
+- Sin CORS abierto, sin `dangerouslySetInnerHTML`; la entrada de usuario se valida y se sanea en el servidor.
+
 ## Desarrollo local
 
 ```bash

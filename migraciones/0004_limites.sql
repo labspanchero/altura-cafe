@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS limites (
+  clave TEXT PRIMARY KEY,
+  n INTEGER NOT NULL,
+  hasta INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS limites_hasta ON limites (hasta);

@@ -1,10 +1,11 @@
 import { recomendar, validarRespuestas } from "@/lib/recomendar";
-import { ipDe, superaLimite } from "@/lib/entorno";
+import { ipDe, leerJson, superaLimite } from "@/lib/entorno";
 import { sumarEncontrado } from "@/lib/contador";
 import { obtenerCarta } from "@/lib/carta";
 
 export async function POST(request: Request) {
-  const body = await request.json().catch(() => null);
+  const body = await leerJson(request, 1_000);
+  if (body === "grande") return Response.json({ error: "Solicitud demasiado grande." }, { status: 413 });
   const respuestas = validarRespuestas(body);
   if (!respuestas) {
     return Response.json(

@@ -1,4 +1,4 @@
-import { ipDe, superaLimite } from "@/lib/entorno";
+import { ipDe, leerJson, superaLimite, superaTopeDiario } from "@/lib/entorno";
 import { normalizar } from "@/lib/tucafe";
 
 // Lee la etiqueta de un paquete de café (foto o texto) con un modelo con visión.
@@ -19,7 +19,12 @@ export async function POST(request: Request) {
     return Response.json({ error: "Probaste varias veces seguidas. Espera unos minutos." }, { status: 429 });
   }
 
-  const body = (await request.json().catch(() => null)) as { imagen?: unknown; texto?: unknown } | null;
+  const entrada = await leerJson(request, 3_000_000);
+  if (entrada === "grande") return Response.json({ error: "La foto es muy pesada." }, { status: 413 });
+  if (await superaTopeDiario("escanear", 400)) {
+    return Response.json({ error: "Hoy leímos muchos paquetes. Vuelve mañana o escribe lo que dice la etiqueta." }, { status: 429 });
+  }
+  const body = entrada as { imagen?: unknown; texto?: unknown } | null;
   const imagen = typeof body?.imagen === "string" && body.imagen.startsWith("data:image/") ? body.imagen : null;
   const texto = typeof body?.texto === "string" ? body.texto.slice(0, 1500).trim() : "";
   if (!imagen && !texto) return Response.json({ error: "Envía una foto del paquete o escribe lo que dice." }, { status: 400 });
@@ -28,7 +33,7 @@ export async function POST(request: Request) {
   const contenido = imagen
     ? [
         { type: "text", text: "Lee la etiqueta de este paquete de café." },
-        { type: "image_url", image_url: { url: imagen, detail: "high" } },
+        { type: "image_url", image_url: { url: imagen, detail: "low" } },
       ]
     : [{ type: "text", text: `Texto de la etiqueta:\n${texto}` }];
 
