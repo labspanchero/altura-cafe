@@ -188,69 +188,153 @@ export default function TazaLlena() {
       grupo.rotation.y = giroBase;
       escena.add(grupo);
 
-      // Latte art: rosetta de espuma sobre la crema. Va fuera del grupo para
-      // que la hoja siempre apunte hacia la cámara aunque la taza se balancee.
-      const lienzoArte = document.createElement("canvas");
-      lienzoArte.width = lienzoArte.height = 512;
-      const arteCtx = lienzoArte.getContext("2d")!;
-      {
-        const g = arteCtx;
-        const cx = 256;
-        g.clearRect(0, 0, 512, 512);
-        g.fillStyle = "#fbf3e4";
-        g.strokeStyle = "#fbf3e4";
-        g.shadowColor = "rgba(251,243,228,0.9)";
-        g.shadowBlur = 10;
-        g.lineCap = "round";
-        // hojas de la rosetta: de la base (cerca del borde) hacia la punta
-        const capas = 8;
-        for (let i = 0; i < capas; i++) {
-          const t = i / (capas - 1);
-          const y = 392 - t * 230;
-          const ancho = 150 - t * 92;
-          const caida = 62 - t * 26;
-          g.lineWidth = 22 - t * 9;
+      // Latte art realista. Dos capas: la crema (textura que sigue el tueste)
+      // y la leche (rosetta orgánica con microespuma) que aparece al final.
+      let semL = 97;
+      const azarL = () => ((semL = (semL * 16807) % 2147483647) / 2147483647);
+      const S = 1024;
+      const C = S / 2;
+
+      const lienzoCrema = document.createElement("canvas");
+      lienzoCrema.width = lienzoCrema.height = S;
+      const cremaCtx = lienzoCrema.getContext("2d")!;
+      const puntosCrema = Array.from({ length: 2600 }, () => {
+        const a = azarL() * Math.PI * 2;
+        const r = Math.sqrt(azarL()) * C * 0.98;
+        return { x: C + Math.cos(a) * r, y: C + Math.sin(a) * r, t: azarL(), s: azarL() };
+      });
+      const hex = (c: InstanceType<typeof THREE.Color>, k = 1) =>
+        `rgb(${Math.min(255, c.r * 255 * k) | 0},${Math.min(255, c.g * 255 * k) | 0},${Math.min(255, c.b * 255 * k) | 0})`;
+      const pintarCrema = (base: InstanceType<typeof THREE.Color>) => {
+        const g = cremaCtx;
+        // del borde oscuro (café que asoma) al centro acaramelado
+        const rad = g.createRadialGradient(C, C * 1.05, C * 0.05, C, C, C);
+        rad.addColorStop(0, hex(base, 1.55));
+        rad.addColorStop(0.55, hex(base, 1.35));
+        rad.addColorStop(0.86, hex(base, 1.0));
+        rad.addColorStop(1, hex(base, 0.6));
+        g.fillStyle = rad;
+        g.fillRect(0, 0, S, S);
+        // halo claro donde la leche se mezcla con la crema
+        const halo = g.createRadialGradient(C, C * 1.02, C * 0.2, C, C * 1.02, C * 0.72);
+        halo.addColorStop(0, "rgba(236,196,146,0.55)");
+        halo.addColorStop(1, "rgba(236,196,146,0)");
+        g.fillStyle = halo;
+        g.fillRect(0, 0, S, S);
+        // manchas atigradas y microburbujas
+        for (const p of puntosCrema) {
+          g.fillStyle = p.t < 0.5 ? `rgba(60,30,12,${0.05 + p.s * 0.1})` : `rgba(255,228,190,${0.05 + p.s * 0.12})`;
           g.beginPath();
-          g.moveTo(cx - ancho, y - caida * 0.7);
-          g.bezierCurveTo(cx - ancho * 0.7, y + caida * 0.6, cx - ancho * 0.25, y + caida * 0.9, cx, y + caida * 0.55);
-          g.bezierCurveTo(cx + ancho * 0.25, y + caida * 0.9, cx + ancho * 0.7, y + caida * 0.6, cx + ancho, y - caida * 0.7);
-          g.stroke();
+          g.arc(p.x, p.y, 1 + p.s * (p.t < 0.15 ? 9 : 2.5), 0, Math.PI * 2);
+          g.fill();
         }
-        // corazón en la punta
+        // brillo del borde del líquido contra la taza
+        g.strokeStyle = "rgba(30,14,6,0.55)";
+        g.lineWidth = 14;
         g.beginPath();
-        g.moveTo(cx, 150);
-        g.bezierCurveTo(cx - 44, 118, cx - 34, 76, cx, 96);
-        g.bezierCurveTo(cx + 34, 76, cx + 44, 118, cx, 150);
-        g.fill();
-        // corte central que arrastra la espuma
-        g.shadowBlur = 4;
-        g.lineWidth = 7;
-        g.beginPath();
-        g.moveTo(cx, 110);
-        g.quadraticCurveTo(cx + 3, 280, cx, 440);
+        g.arc(C, C, C - 7, 0, Math.PI * 2);
         g.stroke();
-        // microespuma: puntos finos alrededor
-        g.shadowBlur = 0;
-        for (let i = 0; i < 500; i++) {
-          const a = Math.random() * Math.PI * 2;
-          const r = 200 + Math.random() * 50;
-          g.fillStyle = `rgba(251,243,228,${Math.random() * 0.25})`;
-          g.fillRect(256 + Math.cos(a) * r, 256 + Math.sin(a) * r, 2, 2);
+      };
+      const texCrema = new THREE.CanvasTexture(lienzoCrema);
+      texCrema.colorSpace = THREE.SRGBColorSpace;
+      cremaMat.map = texCrema;
+      cremaMat.color.set("#ffffff");
+      cremaMat.roughness = 0.42;
+
+      const lienzoArte = document.createElement("canvas");
+      lienzoArte.width = lienzoArte.height = S;
+      {
+        const g = lienzoArte.getContext("2d")!;
+        const leche = "rgb(255,249,236)";
+        const temblor = () => (azarL() - 0.5) * 6;
+        // hojas: medialunas finas, levemente asimétricas, más anchas abajo
+        const capas = 9;
+        g.lineCap = "round";
+        g.lineJoin = "round";
+        for (let k = 0; k < capas; k++) {
+          const t = k / (capas - 1);
+          const y = C * 1.62 - t * C * 0.95;
+          const ancho = C * (0.62 - t * 0.4) * (1 + (azarL() - 0.5) * 0.06);
+          const caida = C * (0.24 - t * 0.1);
+          const grosor = C * (0.085 - t * 0.04);
+          const sesgo = (azarL() - 0.5) * 10;
+          const hoja = () => {
+            g.beginPath();
+            g.moveTo(C - ancho + temblor(), y - caida * 0.75);
+            g.bezierCurveTo(C - ancho * 0.72, y + caida * 0.5 + temblor(), C - ancho * 0.24 + sesgo, y + caida * 0.95, C + sesgo * 0.4, y + caida * 0.6);
+            g.bezierCurveTo(C + ancho * 0.24 + sesgo, y + caida * 0.95, C + ancho * 0.72, y + caida * 0.5 + temblor(), C + ancho + temblor(), y - caida * 0.8);
+          };
+          // borde difuso: varias pasadas cada vez más finas y opacas
+          for (const [f, a] of [
+            [1.35, 0.18],
+            [1.15, 0.35],
+            [1, 0.95],
+          ] as const) {
+            g.strokeStyle = leche;
+            g.globalAlpha = a;
+            g.lineWidth = grosor * f;
+            hoja();
+            g.stroke();
+          }
+          g.globalAlpha = 1;
         }
+        // corazón de la punta, algo irregular
+        const yc = C * 0.6;
+        g.fillStyle = leche;
+        for (const [f, a] of [
+          [1.15, 0.25],
+          [1, 1],
+        ] as const) {
+          g.globalAlpha = a;
+          g.beginPath();
+          g.moveTo(C, yc + 70 * f);
+          g.bezierCurveTo(C - 82 * f, yc + 20 * f, C - 62 * f, yc - 62 * f, C + 2, yc - 16 * f);
+          g.bezierCurveTo(C + 64 * f, yc - 60 * f, C + 80 * f, yc + 24 * f, C, yc + 70 * f);
+          g.fill();
+        }
+        g.globalAlpha = 1;
+        // corte central: arrastra la espuma y deja un surco fino de café
+        g.globalCompositeOperation = "destination-out";
+        g.lineWidth = 5;
+        g.beginPath();
+        g.moveTo(C, yc - 10);
+        g.bezierCurveTo(C + 4, C * 0.95, C - 3, C * 1.35, C + 1, C * 1.8);
+        g.stroke();
+        g.globalCompositeOperation = "source-over";
+        g.strokeStyle = leche;
+        g.lineWidth = 3;
+        g.beginPath();
+        g.moveTo(C + 1, C * 1.8);
+        g.lineTo(C + 1, C * 1.9);
+        g.stroke();
+        // microespuma y velo marrón dentro de la leche
+        g.globalCompositeOperation = "source-atop";
+        for (let k = 0; k < 5000; k++) {
+          g.fillStyle = azarL() < 0.55 ? `rgba(150,96,52,${azarL() * 0.06})` : `rgba(255,252,244,${azarL() * 0.3})`;
+          g.fillRect(azarL() * S, azarL() * S, 1.5 + azarL() * 2, 1.5 + azarL() * 2);
+        }
+        const velo = g.createRadialGradient(C, C * 1.1, C * 0.1, C, C * 1.1, C * 0.9);
+        velo.addColorStop(0, "rgba(180,120,70,0)");
+        velo.addColorStop(1, "rgba(180,120,70,0.12)");
+        g.fillStyle = velo;
+        g.fillRect(0, 0, S, S);
+        g.globalCompositeOperation = "source-over";
       }
       const texArte = new THREE.CanvasTexture(lienzoArte);
       texArte.colorSpace = THREE.SRGBColorSpace;
+      texArte.anisotropy = 8;
       const arteMat = new THREE.MeshStandardMaterial({
         map: texArte,
         transparent: true,
         opacity: 0,
-        roughness: 0.75,
+        roughness: 0.55,
         depthWrite: false,
       });
       const arte = new THREE.Mesh(new THREE.CircleGeometry(1, 64), arteMat);
       arte.rotation.x = -Math.PI / 2;
       arte.renderOrder = 2;
       escena.add(arte);
+      let tuesteCrema = -1;
 
       let tueste = 1.6;
       const alTueste = (e: Event) => (tueste = (e as CustomEvent<number>).detail);
@@ -320,7 +404,11 @@ export default function TazaLlena() {
 
         colorTueste(tueste, color);
         cafeMat.color.copy(color).multiplyScalar(0.45);
-        cremaMat.color.copy(color).multiplyScalar(0.8).lerp(new THREE.Color("#c68a55"), Math.max(0.08, 0.4 - tueste * 0.09));
+        if (Math.abs(tueste - tuesteCrema) > 0.08) {
+          tuesteCrema = tueste;
+          pintarCrema(color.clone().lerp(new THREE.Color("#a5663a"), 0.7));
+          texCrema.needsUpdate = true;
+        }
         if (!quieto) {
           reloj2 += dt;
           grupo.rotation.y = giroBase + Math.sin(reloj2 * 0.45) * 0.45;
@@ -346,6 +434,7 @@ export default function TazaLlena() {
         });
         [loza, barro, ceramica, cafeMat, cremaMat, arteMat].forEach((m) => m.dispose());
         texArte.dispose();
+        texCrema.dispose();
         [texEsmalte, texRug, texLiso].forEach((t) => t.dispose());
         renderer.dispose();
         renderer.domElement.remove();
