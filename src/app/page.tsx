@@ -99,6 +99,20 @@ export default async function Home() {
                 <dd>Jazmín, durazno</dd>
               </div>
             </dl>
+            <a className="escanear-cta" href="#tu-cafe">
+              <svg viewBox="0 0 48 48" aria-hidden="true" className="escanear-icono">
+                <path d="M6 16v-6a4 4 0 0 1 4-4h6M32 6h6a4 4 0 0 1 4 4v6M42 32v6a4 4 0 0 1-4 4h-6M16 42h-6a4 4 0 0 1-4-4v-6" />
+                <rect x="14" y="17" width="20" height="16" rx="2" />
+                <circle cx="24" cy="25" r="4.5" />
+                <path d="M19 17l2-3h6l2 3" />
+                <path className="escanear-barrido" d="M8 24h32" />
+              </svg>
+              <span className="escanear-texto">
+                <span className="stencil">Escanea tu café</span>
+                <span className="dato">Foto del paquete → tu receta</span>
+              </span>
+              <span className="escanear-flecha" aria-hidden="true">→</span>
+            </a>
             <div className="portada-acciones">
               <a className="sello" data-lleno="true" href="#historia">
                 Seguir el lote

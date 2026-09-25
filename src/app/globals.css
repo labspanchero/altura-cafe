@@ -2341,3 +2341,173 @@ body::after {
     display: none;
   }
 }
+
+/* ——— Llamada a escanear en la portada ——— */
+.escanear-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 22px;
+  padding: 14px 22px 14px 16px;
+  background: var(--tinta-etiopia);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 10px 24px -12px rgba(28, 23, 16, 0.7);
+  transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+  rotate: -1.5deg;
+}
+
+.escanear-cta::after {
+  content: "NUEVO";
+  position: absolute;
+  top: -12px;
+  right: -10px;
+  padding: 3px 8px;
+  background: var(--ink);
+  color: var(--jute);
+  font-family: var(--font-condensed), sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  rotate: 6deg;
+}
+
+.escanear-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 30px -14px rgba(28, 23, 16, 0.8);
+}
+
+.escanear-cta:focus-visible {
+  outline-color: var(--ink);
+}
+
+.escanear-icono {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.escanear-barrido {
+  stroke: #ffd166;
+  animation: barrido 2.4s var(--ease-out) infinite;
+}
+
+@keyframes barrido {
+  0%,
+  100% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  15%,
+  85% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+.escanear-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.escanear-texto .stencil {
+  font-size: clamp(26px, 3vw, 34px);
+  line-height: 1;
+}
+
+.escanear-texto .dato {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.escanear-flecha {
+  font-size: 26px;
+  transition: transform 0.25s var(--ease-out);
+}
+
+.escanear-cta:hover .escanear-flecha {
+  transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .escanear-barrido {
+    animation: none;
+  }
+
+  .escanear-cta,
+  .escanear-cta:hover {
+    transform: none;
+  }
+}
+
+/* Anclas: que la barra fija no tape el título de la sección */
+[id] {
+  scroll-margin-top: 72px;
+}
+
+@media (max-width: 720px) {
+  .saco-cara {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .saco-cara > .escanear-cta {
+    order: 1;
+    align-self: stretch;
+    margin: 4px 0 22px;
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
+  .saco-cara > .portada-datos {
+    order: 2;
+  }
+
+  .saco-cara > .portada-acciones {
+    order: 3;
+  }
+
+  .saco-cara > .contador-vivo {
+    order: 4;
+  }
+
+  .escanear-icono {
+    width: 36px;
+    height: 36px;
+  }
+
+  .escanear-texto .stencil {
+    font-size: 26px;
+    white-space: nowrap;
+  }
+
+  .escanear-texto .dato {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .escanear-flecha {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 420px) {
+  .nav ul {
+    gap: 0;
+  }
+
+  .nav a.nav-link {
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 12px;
+  }
+}
