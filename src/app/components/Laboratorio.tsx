@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
+import { conTransicion } from "@/lib/transicion";
 import Pedido from "./Pedido";
 import TraeTuCafe from "./TraeTuCafe";
 import RutaCafe from "./RutaCafe";
@@ -81,7 +82,8 @@ export default function Laboratorio() {
   }, []);
 
   function elegir(id: Id) {
-    setActiva(id);
+    if (id === activa) return;
+    conTransicion(() => setActiva(id));
     requestAnimationFrame(() => {
       const lab = document.getElementById("laboratorio");
       if (lab && lab.getBoundingClientRect().top < 0) lab.scrollIntoView({ behavior: "smooth", block: "start" });

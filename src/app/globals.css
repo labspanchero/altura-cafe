@@ -3596,8 +3596,9 @@ button.ruta-numero:hover {
   border-top: 3px dashed var(--ink);
 }
 
+/* Mismo borde izquierdo que las pestañas y el resto de las secciones. */
 .lab-cabeza {
-  max-width: 1180px;
+  max-width: calc(1180px + 2 * var(--gutter));
   margin: 0 auto;
   padding: 0 var(--gutter);
 }
@@ -3936,5 +3937,50 @@ button.ruta-numero:hover {
   .hecho-columna,
   .hecho-flecha {
     animation: none;
+  }
+}
+
+/* ——— Transiciones suaves (View Transitions) ———
+   Solo se animan el panel del laboratorio y la ficha; el resto de la página no parpadea. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+.lab-panel:not([hidden]) {
+  view-transition-name: lab-panel;
+}
+
+.ficha {
+  view-transition-name: ficha;
+}
+
+::view-transition-old(lab-panel),
+::view-transition-old(ficha) {
+  animation: vt-sale 0.18s var(--ease-out) both;
+}
+
+::view-transition-new(lab-panel),
+::view-transition-new(ficha) {
+  animation: vt-entra 0.34s var(--ease-out) both;
+}
+
+::view-transition-group(lab-panel),
+::view-transition-group(ficha) {
+  animation-duration: 0.34s;
+  animation-timing-function: var(--ease-out);
+}
+
+@keyframes vt-sale {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes vt-entra {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
   }
 }

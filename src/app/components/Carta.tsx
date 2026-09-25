@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { conTransicion, irA } from "@/lib/transicion";
 import { METODOS, type Cafe, type Perfil } from "@/lib/cafes";
 import { useCarta } from "./CartaContexto";
 import Temporizador from "./Temporizador";
@@ -251,10 +252,12 @@ export default function Carta() {
     const abrir = (e: Event) => {
       const id = (e as CustomEvent<string>).detail;
       if (!CAFES.some((c) => c.id === id)) return;
-      setFiltro("todos");
-      setElegido(id);
-      requestAnimationFrame(() =>
-        document.getElementById("ficha-ancla")?.scrollIntoView({ behavior: "smooth", block: "start" }),
+      // Primero se llega a la ficha y después cambia con la transición.
+      irA(document.getElementById("ficha-ancla")).then(() =>
+        conTransicion(() => {
+          setFiltro("todos");
+          setElegido(id);
+        }),
       );
     };
     window.addEventListener("altura:abrir-ficha", abrir);
@@ -303,14 +306,8 @@ export default function Carta() {
                 data-apagada={!visible}
                 disabled={!visible}
                 onClick={(e) => {
-                  const irAFicha = () => {
-                    setElegido(c.id);
-                    requestAnimationFrame(() =>
-                      document
-                        .getElementById("ficha-ancla")
-                        ?.scrollIntoView({ behavior: "smooth", block: "start" }),
-                    );
-                  };
+                  const irAFicha = () =>
+                    irA(document.getElementById("ficha-ancla")).then(() => conTransicion(() => setElegido(c.id)));
                   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return irAFicha();
                   e.currentTarget
                     .animate(
