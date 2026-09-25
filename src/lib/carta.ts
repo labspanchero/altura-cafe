@@ -5,7 +5,7 @@ import { bindings } from "./entorno";
 // cargada con el MCP de Webflow. Se lee con la Data API, se cachea en KV y,
 // si algo falla, se usa la carta local.
 const COLECCION = process.env.WEBFLOW_COLLECTION_ID ?? "6ab5febfaaaa32050b28006c";
-const CACHE_CLAVE = "carta:v1";
+const CACHE_CLAVE = "carta:v2";
 const CACHE_SEG = 300;
 
 const TUESTES: Record<string, Cafe["tueste"]> = {
@@ -92,6 +92,9 @@ async function desdeCms(): Promise<Cafe[] | null> {
     .filter((i) => !i.isArchived && !i.isDraft)
     .map(itemACafe)
     .filter((c): c is Cafe => c !== null);
+  // Orden estable: el de la carta original; los lotes nuevos del CMS van al final.
+  const orden = new Map(CAFES.map((c, i) => [c.id, i]));
+  cafes.sort((a, b) => (orden.get(a.id) ?? 99) - (orden.get(b.id) ?? 99) || a.lote.localeCompare(b.lote));
   return cafes.length ? cafes : null;
 }
 
