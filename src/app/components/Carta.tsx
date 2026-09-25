@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CAFES, METODOS, type Cafe, type Perfil } from "@/lib/cafes";
+import MetodoIcono from "./MetodoIcono";
 
 const FILTROS: { id: "todos" | Perfil | "leche"; nombre: string }[] = [
   { id: "todos", nombre: "Todos" },
@@ -119,7 +120,10 @@ export function Ficha({ cafe }: { cafe: Cafe }) {
           <div className="recetas">
             {cafe.recetas.map((r) => (
               <div className="receta" key={r.metodo}>
-                <p className="stencil receta-metodo">{METODOS[r.metodo].nombre}</p>
+                <p className="stencil receta-metodo metodo-con-icono">
+                  <MetodoIcono metodo={r.metodo} className="metodo-icono metodo-icono-grande" />
+                  {METODOS[r.metodo].nombre}
+                </p>
                 <span className="dato receta-molienda">
                   Molienda {r.molienda.toLowerCase()} ·{" "}
                   <span className="unidad">{METODOS[r.metodo].micras}</span>

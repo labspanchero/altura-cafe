@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { METODOS, METODOS_ORDEN } from "@/lib/cafes";
+import MetodoIcono from "./MetodoIcono";
 import dynamic from "next/dynamic";
 import { Cereza, Cosecha, Planta, Procesos, Secado } from "./Ilustraciones";
 
@@ -156,7 +157,10 @@ function Molinillo() {
         aria-valuetext={`${metodo.molienda} para ${metodo.nombre}`}
       />
       <div className="molinillo-lectura" aria-live="polite">
-        <span className="stencil">{metodo.nombre}</span>
+        <span className="metodo-con-icono">
+          <MetodoIcono metodo={METODOS_ORDEN[paso]} className="metodo-icono metodo-icono-grande" />
+          <span className="stencil">{metodo.nombre}</span>
+        </span>
         <span className="dato">
           {metodo.molienda} · <span className="unidad">{metodo.micras}</span>
         </span>

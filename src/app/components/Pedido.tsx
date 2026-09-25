@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { CAFES, METODOS, type Cafe, type Metodo, type Receta } from "@/lib/cafes";
+import MetodoIcono from "./MetodoIcono";
 
 export function abrirFicha(id: string) {
   window.dispatchEvent(new CustomEvent("altura:abrir-ficha", { detail: id }));
@@ -129,7 +130,10 @@ function Quiz() {
                     checked={resp[p.id] === o.v}
                     onChange={() => setResp((r) => ({ ...r, [p.id]: o.v }))}
                   />
-                  <span>{o.n}</span>
+                  <span className={p.id === "metodo" ? "opcion-metodo" : undefined}>
+                    {p.id === "metodo" && <MetodoIcono metodo={o.v as Metodo} />}
+                    {o.n}
+                  </span>
                 </label>
               ))}
             </div>
@@ -159,6 +163,10 @@ function Quiz() {
             {resultado.cafe.region} · {resultado.cafe.notas.join(", ")}
           </p>
           <p>
+            <span className="resultado-metodo">
+              <MetodoIcono metodo={resultado.receta.metodo} className="metodo-icono metodo-icono-grande" />
+              <span className="stencil">{resultado.metodo.nombre}</span>
+            </span>
             Prepáralo en <strong>{resultado.metodo.nombre}</strong> con molienda{" "}
             <strong>{resultado.receta.molienda.toLowerCase()}</strong> ({resultado.metodo.micras}):{" "}
             {resultado.receta.dosis} de café, {resultado.receta.agua} de agua a{" "}

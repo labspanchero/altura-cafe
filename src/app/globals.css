@@ -1196,6 +1196,47 @@ main > section {
   color: var(--ink);
 }
 
+/* Íconos de método */
+.metodo-icono {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+}
+
+.metodo-icono-grande {
+  width: 48px;
+  height: 48px;
+}
+
+.metodo-con-icono {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.receta-metodo.metodo-con-icono {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.opcion-metodo {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+}
+
+.resultado-metodo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0 10px;
+  color: var(--paper);
+}
+
+.resultado-metodo .stencil {
+  font-size: 32px;
+}
+
 /* ——— Quiz y barista ——— */
 .pedido {
   padding: clamp(72px, 10vw, 140px) var(--gutter);
