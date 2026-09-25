@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { texturaArpillera } from "@/lib/arpillera";
+import { useState } from "react";
+import BolsaDorada from "./BolsaDorada";
 import { METODOS, METODOS_ORDEN, type Cafe, type Metodo } from "@/lib/cafes";
 import { CANTIDADES, ORIGENES, PROCESOS, TUESTES, notas, perfil, recetaDe, type Config } from "@/lib/armar";
 import { etapasDe } from "@/lib/etapas";
@@ -230,50 +230,26 @@ export default function ArmaTuLote() {
 
 function SacoMiLote({ nombre, c }: { nombre: string; c: Config }) {
   const o = ORIGENES[c.origen];
-  const [trama, setTrama] = useState("");
-  useEffect(() => setTrama(texturaArpillera()), []);
-  const forma = "M14 34 Q24 6 58 18 L242 18 Q276 6 286 34 L292 352 Q292 376 266 378 L34 378 Q8 376 8 352Z";
-  const largo = nombre.length;
-  const tam = Math.min(56, Math.floor(420 / Math.max(largo, 1)));
+  const cantidad = c.cantidad >= 1000 ? "1 kg" : `${c.cantidad} g`;
   return (
-    <svg className="arma-saco" viewBox="0 0 300 380" role="img" aria-label={`Saco de ${nombre}`}>
-      <defs>
-        <pattern id="trama-arma" width="64" height="64" patternUnits="userSpaceOnUse">
-          <rect width="64" height="64" fill="#a67f47" />
-          {trama && <image href={trama} width="64" height="64" />}
-        </pattern>
-        <radialGradient id="volumen-arma" cx="45%" cy="38%" r="75%">
-          <stop offset="0" stopColor="#fff3dc" stopOpacity="0.18" />
-          <stop offset="0.6" stopColor="#000" stopOpacity="0" />
-          <stop offset="1" stopColor="#1c1710" stopOpacity="0.38" />
-        </radialGradient>
-      </defs>
-      <path d={forma} fill="url(#trama-arma)" />
-      <path d={forma} fill="url(#volumen-arma)" stroke="var(--ink)" strokeWidth="4" />
-      <path d="M14 50 Q150 62 286 50" stroke="var(--ink)" strokeWidth="2" strokeDasharray="8 6" fill="none" />
-      <text x="150" y="110" textAnchor="middle" className="stencil" fontSize={tam} fill="var(--ink)" textLength={largo > 8 ? 250 : undefined} lengthAdjust="spacingAndGlyphs">
-        {nombre.toUpperCase()}
-      </text>
-      <g stroke={o.tinta} fill="none" strokeWidth="4">
-        <rect x="36" y="140" width="228" height="54" />
-        <rect x="36" y="210" width="108" height="46" transform="rotate(-3 90 233)" />
-        <rect x="156" y="212" width="108" height="46" transform="rotate(3 210 235)" />
-      </g>
-      <text x="150" y="178" textAnchor="middle" className="stencil" fontSize="30" fill={o.tinta}>
-        {o.nombre.toUpperCase()}
-      </text>
-      <text x="90" y="241" textAnchor="middle" className="stencil" fontSize="20" fill={o.tinta} transform="rotate(-3 90 233)">
-        {PROCESOS[c.proceso].nombre.toUpperCase()}
-      </text>
-      <text x="210" y="243" textAnchor="middle" className="stencil" fontSize="20" fill={o.tinta} transform="rotate(3 210 235)">
-        {TUESTES[c.tueste].nombre.toUpperCase()}
-      </text>
-      <text x="150" y="312" textAnchor="middle" className="dato" fontSize="18" fill="var(--ink)">
-        {METODOS[c.metodo].nombre.toUpperCase()} · {c.cantidad >= 1000 ? "1 KG" : `${c.cantidad} G`}
-      </text>
-      <text x="150" y="340" textAnchor="middle" className="dato" fontSize="14" fill="var(--ink-soft)">
-        {o.region.toUpperCase()} · {o.altitud} MSNM
-      </text>
-    </svg>
+    <BolsaDorada
+      nombre={nombre}
+      titulo={o.nombre}
+      subtitulo={`${o.region} · ${PROCESOS[c.proceso].nombre}`}
+      datos={[
+        ["Altitud", `${o.altitud.toLocaleString("es")} msnm`],
+        ["Tueste", TUESTES[c.tueste].nombre],
+        ["Notas", notas(c).slice(0, 2).join(" · ")],
+      ]}
+      pie={`${METODOS[c.metodo].nombre} · ${cantidad} · molido ${METODOS[c.metodo].molienda.toLowerCase()}`}
+      tinta={o.tinta}
+      sellos={[
+        ["ORIGEN", o.nombre.toUpperCase()],
+        ["PROCESO", PROCESOS[c.proceso].nombre.toUpperCase()],
+        ["TUESTE", TUESTES[c.tueste].nombre.toUpperCase()],
+        ["MÉTODO", METODOS[c.metodo].nombre.toUpperCase()],
+        ["PESO", cantidad.toUpperCase()],
+      ]}
+    />
   );
 }
