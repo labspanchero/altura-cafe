@@ -1,12 +1,10 @@
 import Carta from "./components/Carta";
 import Historia from "./components/Historia";
-import Pedido from "./components/Pedido";
 import Lluvia from "./components/Lluvia";
 import ContadorVivo from "./components/ContadorVivo";
 import MarcasFondo from "./components/MarcasFondo";
-import TraeTuCafe from "./components/TraeTuCafe";
 import ArmaTuLote from "./components/ArmaTuLote";
-import RutaCafe from "./components/RutaCafe";
+import Laboratorio from "./components/Laboratorio";
 import { CartaProvider } from "./components/CartaContexto";
 import { obtenerCarta } from "@/lib/carta";
 
@@ -58,16 +56,13 @@ export default async function Home() {
             <a className="nav-link" href="#arma">Arma tu café</a>
           </li>
           <li>
-            <a className="nav-link" href="#pedido">Tu café</a>
+            <a className="nav-link" href="#ruta">Ruta</a>
           </li>
           <li>
             <a className="nav-link" href="#barista">Barista</a>
           </li>
           <li>
             <a className="nav-link" href="#tu-cafe">Escanear</a>
-          </li>
-          <li>
-            <a className="nav-link" href="#ruta">Ruta</a>
           </li>
         </ul>
       </nav>
@@ -164,9 +159,7 @@ export default async function Home() {
         <MapaAltura />
         <Carta />
         <ArmaTuLote />
-        <Pedido />
-        <TraeTuCafe />
-        <RutaCafe />
+        <Laboratorio />
       </main>
 
       <footer className="pie">

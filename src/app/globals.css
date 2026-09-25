@@ -131,8 +131,25 @@ a {
 }
 
 @media (max-width: 640px) {
-  .nav ul li:nth-child(n + 3) {
+  .nav {
+    gap: 10px;
+  }
+
+  /* En móvil los enlaces se deslizan en lugar de esconderse. */
+  .nav ul {
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    mask-image: linear-gradient(90deg, #000 85%, transparent);
+  }
+
+  .nav ul::-webkit-scrollbar {
     display: none;
+  }
+
+  .nav a.nav-link {
+    padding: 6px 9px;
+    white-space: nowrap;
   }
 }
 
@@ -457,7 +474,7 @@ main > section {
 }
 
 .etapa {
-  min-height: 78svh;
+  min-height: 60svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -524,7 +541,7 @@ main > section {
 
   .etapa {
     min-height: auto;
-    padding: 56px 0;
+    padding: 40px 0;
     opacity: 1;
   }
 }
@@ -3522,5 +3539,172 @@ button.ruta-numero:hover {
   .ruta-parada,
   .ruta-resultado {
     animation: none;
+  }
+}
+
+/* ——— El laboratorio: herramientas con IA en pestañas ——— */
+.laboratorio {
+  padding: clamp(56px, 8vw, 110px) 0 0;
+  border-top: 3px dashed var(--ink);
+}
+
+.lab-cabeza {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.lab-pestanas {
+  position: sticky;
+  top: 58px;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: clamp(20px, 3vw, 32px) 0 0;
+  padding: 10px max(var(--gutter), calc((100% - 1180px) / 2));
+  background: var(--jute);
+  border-bottom: 2px solid var(--ink);
+}
+
+.lab-corto {
+  display: none;
+}
+
+.lab-pestana {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px 16px;
+  border: 3px solid var(--ink);
+  background: rgba(255, 244, 222, 0.25);
+  color: var(--ink);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.2s var(--ease-out);
+}
+
+.lab-pestana svg {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lab-pestana-texto {
+  display: grid;
+  min-width: 0;
+}
+
+.lab-pestana-texto .stencil {
+  font-size: clamp(20px, 2.2vw, 26px);
+  line-height: 1;
+}
+
+.lab-pestana-texto .dato {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.lab-pestana:hover {
+  transform: translateY(-2px);
+}
+
+.lab-pestana[aria-selected="true"] {
+  background: var(--ink);
+  color: var(--jute);
+  box-shadow: 5px 5px 0 rgba(28, 23, 16, 0.35);
+}
+
+.lab-pestana:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* Las secciones dentro de una pestaña no repiten el separador ni el aire de arriba. */
+.lab-panel > section {
+  border-top: 0;
+  padding-top: clamp(28px, 4vw, 48px);
+}
+
+.lab-panel[hidden] {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .lab-pestanas {
+    top: 54px;
+    gap: 6px;
+    padding: 8px var(--gutter);
+  }
+
+  .lab-pestana {
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 4px;
+  }
+
+  .lab-pestana svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .lab-pestana-texto .stencil {
+    font-size: 18px;
+  }
+
+  .lab-largo {
+    display: none;
+  }
+
+  .lab-corto {
+    display: block;
+  }
+
+  .lab-pestana-texto .dato {
+    display: none;
+  }
+}
+
+/* ——— Carta en móvil: carrusel horizontal de bolsas ——— */
+@media (max-width: 640px) {
+  .pared {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 58%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    margin: 0 calc(var(--gutter) * -1);
+    padding: 6px var(--gutter) 16px;
+    scroll-padding: 0 var(--gutter);
+    scrollbar-width: thin;
+  }
+
+  .pila {
+    scroll-snap-align: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-pestana {
+    transition: none;
+  }
+}
+
+/* Los anclas dentro del laboratorio quedan debajo de la barra y de las pestañas fijas. */
+.lab-panel [id] {
+  scroll-margin-top: 170px;
+}
+
+@media (max-width: 720px) {
+  .lab-panel [id] {
+    scroll-margin-top: 130px;
   }
 }
