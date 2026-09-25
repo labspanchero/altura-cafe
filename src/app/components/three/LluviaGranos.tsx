@@ -28,8 +28,9 @@ export default function LluviaGranos() {
       if (cancelado) return;
 
       const quieto = prefiereMenosMovimiento();
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       const nivel = calidad();
+      // En celulares la pantalla ya tiene mucha densidad: sin antialias se ahorra memoria y tiempo de dibujo.
+      const renderer = new THREE.WebGLRenderer({ antialias: !nivel.movil && !nivel.baja, alpha: true, powerPreference: nivel.movil ? "low-power" : "high-performance" });
       renderer.setPixelRatio(nivel.dpr);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       cont.appendChild(renderer.domElement);
@@ -39,9 +40,9 @@ export default function LluviaGranos() {
       camara.position.set(0, 0, 14);
       luces(escena);
 
-      const geo = crearGeometriaGrano(nivel.baja ? 24 : 40);
       const movil = window.innerWidth < 720;
-      const N = nivel.baja ? (movil ? 16 : 36) : movil ? 26 : 64;
+      const geo = crearGeometriaGrano(nivel.baja || movil ? 24 : 40);
+      const N = nivel.baja ? (movil ? 14 : 36) : movil ? 20 : 64;
       const materiales = [0, 0.6, 1.3].map((t) => materialGrano(t, movil || nivel.baja));
 
       type Grano = { m: Mesh; vel: number; giro: Vector3; base: Vector3; hueco: Vector3; escala: number; emp: Vector3; empV: Vector3; tostado: number };

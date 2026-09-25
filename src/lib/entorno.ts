@@ -81,6 +81,11 @@ export async function leerJson(request: Request, maxBytes: number): Promise<unkn
   }
 }
 
+// IP real del visitante. Webflow Cloud la pone en x-wf-clientip (el visitante no la puede cambiar).
+// El primer valor de x-forwarded-for sí lo controla el visitante, así que nunca se usa:
+// si falta x-wf-clientip, se toma el último salto, que agrega el proxy.
 export function ipDe(request: Request) {
-  return request.headers.get("cf-connecting-ip") ?? request.headers.get("x-forwarded-for")?.split(",")[0] ?? "local";
+  const h = request.headers;
+  const xff = h.get("x-forwarded-for")?.split(",").map((s) => s.trim()).filter(Boolean);
+  return h.get("x-wf-clientip")?.trim() || h.get("cf-connecting-ip")?.trim() || xff?.[xff.length - 1] || "local";
 }

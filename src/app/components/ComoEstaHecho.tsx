@@ -32,7 +32,7 @@ const COLUMNAS: { etiqueta: string; nodos: Nodo[] }[] = [
 const CIFRAS = [
   ["~1 s", "de Webflow a tu pantalla"],
   ["0", "claves en el navegador"],
-  ["19", "pruebas automáticas en cada cambio"],
+  ["20", "pruebas automáticas en cada cambio"],
   ["24 h", "de caché por ruta armada"],
 ];
 

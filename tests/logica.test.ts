@@ -150,6 +150,16 @@ describe("seguridad", () => {
   });
 });
 
+describe("ip del visitante", async () => {
+  const { ipDe } = await import("@/lib/entorno");
+  it("usa la IP que pone Webflow y no la que manda el visitante", () => {
+    const r = (h: Record<string, string>) => new Request("https://x.test", { headers: h });
+    expect(ipDe(r({ "x-wf-clientip": "2800::1", "x-forwarded-for": "198.51.100.7, 2800::1" }))).toBe("2800::1");
+    expect(ipDe(r({ "x-forwarded-for": "198.51.100.7, 104.22.0.1, 2800::1" }))).toBe("2800::1");
+    expect(ipDe(r({}))).toBe("local");
+  });
+});
+
 describe("ruta del café", async () => {
   const { limpiarRuta, limpiarUrl, normalizarLugar, mapsRuta, distanciaKm, filtrarCercanas, ordenarParaCaminar } = await import("@/lib/ruta");
   it("ordena las paradas para caminar siempre hacia la más cercana", () => {
