@@ -216,6 +216,22 @@ a {
   opacity: 1;
 }
 
+.lluvia[data-modo="fijo"] {
+  position: fixed;
+  transition: none;
+}
+
+main > .historia,
+main > .pedido {
+  position: relative;
+  z-index: 1;
+}
+
+.bodega {
+  position: relative;
+  z-index: 1;
+}
+
 .lluvia canvas {
   width: 100%;
   height: 100%;
