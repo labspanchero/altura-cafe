@@ -32,7 +32,7 @@ export default function LluviaGranos() {
 
       const geo = crearGeometriaGrano(40);
       const movil = window.innerWidth < 720;
-      const N = movil ? 18 : 42;
+      const N = movil ? 26 : 64;
       const materiales = [0, 0.6, 1.3].map((t) => materialGrano(t));
 
       type Grano = { m: Mesh; vel: number; giro: Vector3; base: Vector3; hueco: Vector3; escala: number; emp: Vector3; empV: Vector3; tostado: number };
@@ -40,7 +40,7 @@ export default function LluviaGranos() {
       const alto = 9;
       for (let i = 0; i < N; i++) {
         const m = new THREE.Mesh(geo, materiales[i % 3 === 0 ? 1 : i % 7 === 0 ? 2 : 0]);
-        const s = 0.32 + Math.random() * 0.22;
+        const s = 0.17 + Math.random() * 0.11;
         m.scale.setScalar(s);
         const base = new THREE.Vector3(
           (movil ? 0 : 3.2) + (Math.random() - 0.5) * (movil ? 9 : 8),
@@ -199,8 +199,8 @@ export default function LluviaGranos() {
             const dx = g.m.position.x - puntoPuntero.x;
             const dy = g.m.position.y - puntoPuntero.y;
             const dist = Math.hypot(dx, dy);
-            if (dist < 1.8 && dist > 0.001) {
-              const fuerza = (1.8 - dist) * 14 * dt;
+            if (dist < 1.3 && dist > 0.001) {
+              const fuerza = (1.3 - dist) * 14 * dt;
               g.empV.x += (dx / dist) * fuerza;
               g.empV.y += (dy / dist) * fuerza;
             }
