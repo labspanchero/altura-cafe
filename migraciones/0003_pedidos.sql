@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS pedidos (
+  numero INTEGER PRIMARY KEY AUTOINCREMENT,
+  creado TEXT NOT NULL DEFAULT (datetime('now')),
+  config TEXT NOT NULL
+);

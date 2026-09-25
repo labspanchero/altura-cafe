@@ -2521,3 +2521,268 @@ body::after {
   border-right: 2px solid var(--ink);
   box-sizing: content-box;
 }
+
+/* ——— Arma tu lote ——— */
+.arma {
+  padding: clamp(80px, 11vw, 150px) var(--gutter) clamp(56px, 8vw, 110px);
+}
+
+.arma-interior {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.arma-grilla {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
+  margin-top: clamp(28px, 4vw, 44px);
+}
+
+.arma-pasos fieldset {
+  border: 0;
+  margin: 0 0 26px;
+  padding: 0;
+}
+
+.arma-pasos legend {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.arma-opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.arma-opcion {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  align-items: center;
+  padding: 10px 14px;
+  border: 2px solid var(--ink);
+  cursor: pointer;
+  transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+}
+
+.arma-opcion:hover {
+  background: rgba(28, 23, 16, 0.07);
+}
+
+.arma-opcion input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+
+.arma-opcion:has(input:focus-visible) {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.arma-opcion > :first-child:not(input) {
+  grid-row: span 2;
+}
+
+.arma-opcion .metodo-icono {
+  grid-row: span 2;
+  width: 26px;
+  height: 26px;
+}
+
+.arma-opcion[data-activa="true"] {
+  background: var(--ink);
+  color: var(--jute);
+  transform: translateY(-2px);
+}
+
+.arma-opcion-nombre {
+  font-size: 16px;
+}
+
+.arma-opcion-desc {
+  grid-column: 2;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.arma-punto {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--ink);
+}
+
+.arma-opcion[data-activa="true"] .arma-punto {
+  border-color: var(--jute);
+}
+
+.arma-tueste {
+  width: 16px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+}
+
+.arma-tueste-claro {
+  background: #b07a3e;
+}
+
+.arma-tueste-medio {
+  background: #6b3a1c;
+}
+
+.arma-tueste-oscuro {
+  background: #2e170b;
+}
+
+.arma-nombre {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+  max-width: 360px;
+}
+
+.arma-nombre span {
+  font-size: 14px;
+}
+
+.arma-nombre input {
+  padding: 12px;
+  border: 2px solid var(--ink);
+  background: rgba(255, 244, 222, 0.35);
+  color: var(--ink);
+  font: inherit;
+}
+
+.arma-vista {
+  position: sticky;
+  top: 88px;
+  padding: 20px;
+  border: 4px solid var(--tinta);
+  background-color: #b89460;
+  transition: border-color 0.3s var(--ease-out);
+}
+
+.arma-saco {
+  display: block;
+  width: min(100%, 280px);
+  margin: 0 auto 16px;
+  filter: drop-shadow(0 14px 14px rgba(28, 23, 16, 0.35));
+}
+
+.medidor-yute .medidor-escala span,
+.medidor-yute span {
+  border-color: var(--ink);
+}
+
+.medidor-yute span[data-lleno="true"] {
+  background: var(--tinta);
+  border-color: var(--tinta);
+}
+
+.arma-vista .medidor .dato {
+  color: var(--ink);
+}
+
+.arma-receta {
+  margin: 14px 0;
+  font-size: 14px;
+}
+
+.arma-demo {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.arma-gracias {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: center;
+  margin-top: clamp(28px, 4vw, 44px);
+  padding: clamp(20px, 3vw, 36px);
+  border: 4px solid var(--tinta);
+  background-color: #b89460;
+  animation: ficha-entra 0.8s var(--ease-out) both;
+}
+
+.arma-gracias h3 {
+  margin: 0 0 12px;
+  font-size: clamp(44px, 7vw, 84px);
+  color: var(--tinta);
+}
+
+.arma-numero {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+
+.arma-numero strong {
+  font-size: 34px;
+  margin-left: 6px;
+}
+
+.arma-estado {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  font-size: 13px;
+}
+
+.arma-estado li {
+  padding: 6px 10px;
+  border: 2px dashed var(--ink-soft);
+  color: var(--ink-soft);
+}
+
+.arma-estado li[data-hecho="true"] {
+  border: 2px solid var(--ink);
+  background: var(--ink);
+  color: var(--jute);
+}
+
+.arma-gracias .resultado-acciones {
+  margin-top: 18px;
+}
+
+@media (max-width: 900px) {
+  .arma-grilla,
+  .arma-gracias {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .arma-vista {
+    position: static;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav {
+    gap: 8px;
+  }
+
+  .nav ul {
+    overflow-x: auto;
+    scrollbar-width: none;
+    mask-image: linear-gradient(90deg, #000 85%, transparent);
+  }
+
+  .nav ul::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav a.nav-link {
+    white-space: nowrap;
+  }
+}
