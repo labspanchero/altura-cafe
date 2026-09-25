@@ -315,8 +315,11 @@ export default function TazaLlena() {
       });
       const arte = new THREE.Mesh(new THREE.CircleGeometry(1, 64), arteMat);
       arte.rotation.x = -Math.PI / 2;
+      // Dentro del grupo: gira con la taza. El giro en su plano compensa
+      // la orientación base del grupo para que el corazón mire a la cámara.
+      arte.rotation.z = Math.PI;
       arte.renderOrder = 2;
-      escena.add(arte);
+      grupo.add(arte);
       let tuesteCrema = -1;
 
       let tueste = 1.6;
