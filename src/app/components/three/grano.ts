@@ -68,8 +68,9 @@ let cache: TexturasGrano | null = null;
 
 export function texturasGrano(): TexturasGrano {
   if (cache) return cache;
-  const W = 1024;
-  const H = 512;
+  const liviana = typeof window !== "undefined" && (window.innerWidth < 720 || (navigator.hardwareConcurrency ?? 8) <= 4);
+  const W = liviana ? 512 : 1024;
+  const H = W / 2;
   let sem = 29;
   const r = () => ((sem = (sem * 16807) % 2147483647) / 2147483647);
 
@@ -143,7 +144,7 @@ export function texturasGrano(): TexturasGrano {
   capaRuido(gMapa, 6, 0.55, 255, 170);
   capaRuido(gMapa, 24, 0.45, 250, 185);
   capaRuido(gMapa, 96, 0.3, 245, 200);
-  arrugas(gMapa, 900, () => `rgba(70,70,70,${0.08 + r() * 0.12})`, 1.4);
+  arrugas(gMapa, liviana ? 450 : 900, () => `rgba(70,70,70,${0.08 + r() * 0.12})`, 1.4);
   for (let i = 0; i < 1600; i++) {
     gMapa.fillStyle = r() < 0.5 ? "rgba(255,255,255,0.18)" : "rgba(60,60,60,0.18)";
     gMapa.fillRect(r() * W, r() * H, 1.5, 1.5);
@@ -157,7 +158,7 @@ export function texturasGrano(): TexturasGrano {
   gRel.fillStyle = "#808080";
   gRel.fillRect(0, 0, W, H);
   capaRuido(gRel, 48, 0.5, 170, 90);
-  arrugas(gRel, 1400, () => `rgba(30,30,30,${0.25 + r() * 0.3})`, 1.8);
+  arrugas(gRel, liviana ? 700 : 1400, () => `rgba(30,30,30,${0.25 + r() * 0.3})`, 1.8);
   arrugas(gRel, 500, () => `rgba(230,230,230,${0.15 + r() * 0.2})`, 1.2);
   surco(gRel, 0.25, 14, "rgba(10,10,10,0.8)");
   surco(gRel, 0.75, 14, "rgba(10,10,10,0.8)");

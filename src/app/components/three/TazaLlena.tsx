@@ -329,6 +329,26 @@ export default function TazaLlena() {
       const alTueste = (e: Event) => (tueste = (e as CustomEvent<number>).detail);
       window.addEventListener("altura:tueste", alTueste);
 
+      // Tocar el logo NERD de la taza dispara el easter egg de la portada.
+      const rayoLogo = new THREE.Raycaster();
+      const ndcLogo = new THREE.Vector2();
+      const sobreLogo = (e: PointerEvent | MouseEvent) => {
+        const r = renderer.domElement.getBoundingClientRect();
+        ndcLogo.set(((e.clientX - r.left) / r.width) * 2 - 1, -(((e.clientY - r.top) / r.height) * 2 - 1));
+        rayoLogo.setFromCamera(ndcLogo, camara);
+        const hit = rayoLogo.intersectObject(taza, false)[0];
+        const uv = hit?.uv;
+        return !!uv && Math.abs(uv.x - 0.5) < 0.05 && uv.y > 0.215 && uv.y < 0.48;
+      };
+      const alMoverLogo = (e: PointerEvent) => {
+        renderer.domElement.style.cursor = sobreLogo(e) ? "pointer" : "";
+      };
+      const alClicLogo = (e: MouseEvent) => {
+        if (sobreLogo(e)) window.dispatchEvent(new Event("altura:nerd"));
+      };
+      renderer.domElement.addEventListener("pointermove", alMoverLogo);
+      renderer.domElement.addEventListener("click", alClicLogo);
+
       const ajustar = () => {
         const w = cont.clientWidth;
         const h = cont.clientHeight;
@@ -426,6 +446,8 @@ export default function TazaLlena() {
         texCrema.dispose();
         [texEsmalte, texRug, texLiso].forEach((t) => t.dispose());
         renderer.dispose();
+        renderer.domElement.removeEventListener("pointermove", alMoverLogo);
+        renderer.domElement.removeEventListener("click", alClicLogo);
         renderer.domElement.remove();
       };
     })();
@@ -443,7 +465,7 @@ export default function TazaLlena() {
         <span className="stencil">{nivel < 100 ? "Sirviendo" : "Lista"}</span>
         <span className="dato">Extracción ideal 18–22% · 1:15 a 1:17</span>
       </div>
-      <p className="dato tostador-ayuda">El color del café sigue el tueste que elegiste en el tostador.</p>
+      <p className="dato tostador-ayuda">El color del café sigue el tueste que elegiste en el tostador. ¿Ves el logo NERD? Tócalo.</p>
     </div>
   );
 }

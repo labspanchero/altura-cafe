@@ -16,6 +16,13 @@ export default function LluviaGranos() {
     let limpiar = () => {};
 
     (async () => {
+      // Arranca cuando el navegador queda libre: la portada se pinta primero.
+      await new Promise<void>((ok) => {
+        const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+        if (w.requestIdleCallback) w.requestIdleCallback(() => ok(), { timeout: 1500 });
+        else setTimeout(ok, 600);
+      });
+      if (cancelado) return;
       const THREE = await import("three");
       const { crearGeometriaGrano, luces, prefiereMenosMovimiento, materialGrano } = await import("./grano");
       if (cancelado) return;
@@ -64,6 +71,66 @@ export default function LluviaGranos() {
           tostado: 0,
         });
       }
+
+      // Easter egg: al tocar el logo NERD de la taza, los granos forman N-E-R-D.
+      const COLORES_NERD = ["#e8414c", "#18a39c", "#f2b233", "#e8414c"];
+      const matsNerd = await Promise.all(
+        COLORES_NERD.map(async (c) => {
+          const m = materialGrano(1);
+          m.color.set(c);
+          m.roughness = 0.45;
+          return m;
+        }),
+      );
+      const extras: { m: Mesh; desde: Vector3 }[] = [];
+      for (let i = 0; i < (movil ? 150 : 190); i++) {
+        const m = new THREE.Mesh(geo, matsNerd[0]);
+        m.visible = false;
+        m.scale.setScalar(movil ? 0.1 + Math.random() * 0.03 : 0.13 + Math.random() * 0.04);
+        m.rotation.set(Math.random() * 6, Math.random() * 6, Math.random() * 6);
+        escena.add(m);
+        extras.push({ m, desde: new THREE.Vector3((Math.random() - 0.5) * 12, 7 + Math.random() * 4, (Math.random() - 0.5) * 3) });
+      }
+      const originales = new Map<Mesh, Mesh["material"]>();
+      let objetivos: { p: Vector3; letra: number }[] = [];
+      let nerdDesde = -1;
+      const NERD_MS = 6500;
+      const armarLetras = () => {
+        const c = document.createElement("canvas");
+        c.width = 360;
+        c.height = 110;
+        const g2 = c.getContext("2d")!;
+        const fam = getComputedStyle(document.querySelector(".stencil") ?? document.body).fontFamily;
+        g2.font = `900 104px ${fam}`;
+        g2.textBaseline = "middle";
+        g2.textAlign = "center";
+        const letras = ["N", "E", "R", "D"];
+        letras.forEach((l, i) => g2.fillText(l, 45 + i * 90, 58));
+        const px = g2.getImageData(0, 0, 360, 110).data;
+        const puntos: { x: number; y: number; letra: number }[] = [];
+        const paso = 5;
+        for (let y = 0; y < 110; y += paso)
+          for (let x = 0; x < 360; x += paso) if (px[(y * 360 + x) * 4 + 3] > 128) puntos.push({ x, y, letra: Math.min(3, Math.floor(x / 90)) });
+        const total = granos.length + extras.length;
+        const ancho = movil ? 2.9 : 7.2;
+        const alto2 = ancho * (110 / 360);
+        const cx = movil ? 0 : 2.9;
+        const cy = movil ? 2.75 : -1.1;
+        objetivos = Array.from({ length: total }, (_, i) => {
+          const q = puntos[Math.floor((i / total) * puntos.length)] ?? puntos[i % puntos.length];
+          return {
+            p: new THREE.Vector3(cx + (q.x / 360 - 0.5) * ancho, cy - (q.y / 110 - 0.5) * alto2, (Math.random() - 0.5) * 0.6),
+            letra: q.letra,
+          };
+        });
+      };
+      const alNerd = () => {
+        armarLetras();
+        const lejos = window.scrollY > 40;
+        if (lejos) window.scrollTo({ top: 0, behavior: "smooth" });
+        nerdDesde = performance.now() + (lejos ? 900 : 0);
+      };
+      window.addEventListener("altura:nerd", alNerd);
 
       const mouse = { x: 0, y: 0, px: -9999, py: -9999 };
       const alMover = (e: PointerEvent) => {
@@ -226,6 +293,37 @@ export default function LluviaGranos() {
             g.m.scale.setScalar(g.escala);
           }
         }
+        // modo NERD: los granos viajan a las letras y vuelven a caer
+        let k = 0;
+        if (nerdDesde > 0 && objetivos.length) {
+          const t = performance.now() - nerdDesde;
+          if (t > NERD_MS) {
+            nerdDesde = -1;
+            for (const [m, mat] of originales) m.material = mat;
+            originales.clear();
+            extras.forEach((x) => (x.m.visible = false));
+          } else if (t > 0) {
+            k = t < 1400 ? suave(t / 1400) : t > NERD_MS - 1200 ? suave((NERD_MS - t) / 1200) : 1;
+          }
+        }
+        if (k > 0) {
+          granos.forEach((g, i) => {
+            const o = objetivos[i];
+            g.m.position.lerp(o.p, k);
+            g.m.scale.setScalar(g.escala * (1 - k * (movil ? 0.45 : 0.3)));
+            if (k > 0.35 && !originales.has(g.m)) {
+              originales.set(g.m, g.m.material);
+              g.m.material = matsNerd[o.letra];
+            }
+          });
+          extras.forEach((x, j) => {
+            const o = objetivos[granos.length + j];
+            x.m.visible = true;
+            x.m.material = matsNerd[o.letra];
+            x.m.position.lerpVectors(x.desde, o.p, k);
+            x.m.rotation.y += dt * 0.8;
+          });
+        }
         renderer.render(escena, camara);
       };
       if (quieto) {
@@ -246,6 +344,8 @@ export default function LluviaGranos() {
         io.disconnect();
         geo.dispose();
         materiales.forEach((m) => m.dispose());
+        matsNerd.forEach((m) => m.dispose());
+        window.removeEventListener("altura:nerd", alNerd);
         renderer.dispose();
         renderer.domElement.remove();
       };
