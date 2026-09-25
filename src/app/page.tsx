@@ -5,6 +5,7 @@ import ContadorVivo from "./components/ContadorVivo";
 import MarcasFondo from "./components/MarcasFondo";
 import ArmaTuLote from "./components/ArmaTuLote";
 import Laboratorio from "./components/Laboratorio";
+import ComoEstaHecho from "./components/ComoEstaHecho";
 import { CartaProvider } from "./components/CartaContexto";
 import { obtenerCarta } from "@/lib/carta";
 
@@ -63,6 +64,9 @@ export default async function Home() {
           </li>
           <li>
             <a className="nav-link" href="#tu-cafe">Escanear</a>
+          </li>
+          <li>
+            <a className="nav-link" href="#como-esta-hecho">Cómo se hizo</a>
           </li>
         </ul>
       </nav>
@@ -160,6 +164,7 @@ export default async function Home() {
         <Carta />
         <ArmaTuLote />
         <Laboratorio />
+        <ComoEstaHecho />
       </main>
 
       <footer className="pie">

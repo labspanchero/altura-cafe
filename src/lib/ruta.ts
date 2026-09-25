@@ -109,3 +109,22 @@ export function limpiarRuta(crudo: unknown, lugar: string, citas: Set<string>): 
   if (paradas.length < 2) return null;
   return { ciudad, consejo: txt(o.consejo, 200), paradas, maps: mapsRuta(paradas, ciudad) };
 }
+
+// Reordena las paradas ubicadas para caminar siempre hacia la más cercana (vecino más próximo),
+// empezando por la primera que propuso la búsqueda. Las que no se pudieron ubicar van al final.
+export function ordenarParaCaminar(paradas: Parada[]): Parada[] {
+  const ubicadas = paradas.filter((p) => p.lat !== undefined && p.lon !== undefined);
+  const resto = paradas.filter((p) => p.lat === undefined || p.lon === undefined);
+  if (ubicadas.length < 3) return [...ubicadas, ...resto];
+  const orden = [ubicadas[0]];
+  const pendientes = ubicadas.slice(1);
+  while (pendientes.length) {
+    const ultima = orden[orden.length - 1] as Required<Pick<Parada, "lat" | "lon">>;
+    let mejor = 0;
+    pendientes.forEach((p, i) => {
+      if (distanciaKm(ultima, p as typeof ultima) < distanciaKm(ultima, pendientes[mejor] as typeof ultima)) mejor = i;
+    });
+    orden.push(pendientes.splice(mejor, 1)[0]);
+  }
+  return [...orden, ...resto];
+}

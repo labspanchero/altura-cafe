@@ -2,7 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import { mapsParada, type Parada, type Ruta } from "@/lib/ruta";
+import { mapsParada, mapsRuta, ordenarParaCaminar, type Parada, type Ruta } from "@/lib/ruta";
+import { compartirImagen } from "@/lib/tarjeta";
 
 const MapaRuta = dynamic(() => import("./MapaRuta"), { ssr: false, loading: () => <div className="mapa-ruta" aria-hidden="true" /> });
 
@@ -72,7 +73,10 @@ export default function RutaCafe() {
   // Las coordenadas llegan aparte: el geocodificador de OpenStreetMap va a 1 consulta por segundo.
   async function ubicar(q: string, r: Ruta) {
     if (r.ubicada) {
-      setUbicadas(r.paradas);
+      // Rutas guardadas antes del reordenamiento: se ordenan acá para caminar.
+      const paradas = ordenarParaCaminar(r.paradas);
+      setUbicadas(paradas);
+      setRuta({ ...r, paradas, maps: mapsRuta(paradas, r.ciudad) });
       setMapaEstado("listo");
       return;
     }
@@ -81,10 +85,24 @@ export default function RutaCafe() {
       const res = await fetch("api/ruta/mapa", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lugar: q }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
+      // Las paradas vuelven ordenadas para caminar: la lista y el link de Google Maps siguen ese orden.
       setUbicadas(data.paradas);
+      setRuta((r) => (r ? { ...r, paradas: data.paradas, maps: data.maps ?? r.maps } : r));
       setMapaEstado("listo");
     } catch {
       setMapaEstado("error");
+    }
+  }
+
+  const [compartiendo, setCompartiendo] = useState(false);
+  async function compartir(r: Ruta) {
+    setCompartiendo(true);
+    try {
+      const { tarjetaRuta } = await import("@/lib/tarjetaRuta");
+      const blob = await tarjetaRuta(r, ubicadas ?? r.paradas);
+      if (blob) await compartirImagen(blob, `ruta-del-cafe-${r.ciudad.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`, `Mi Ruta del café en ${r.ciudad}, armada por Altura.`);
+    } finally {
+      setCompartiendo(false);
     }
   }
 
@@ -154,9 +172,14 @@ export default function RutaCafe() {
           <div className="ruta-resultado" id="ruta-resultado" aria-live="polite">
             <div className="ruta-cabeza">
               <h3 className="stencil">{ruta.ciudad}</h3>
-              <a className="sello" data-lleno="true" href={ruta.maps} target="_blank" rel="noopener noreferrer">
-                Abrir ruta en Google Maps
-              </a>
+              <div className="ruta-acciones">
+                <a className="sello" data-lleno="true" href={ruta.maps} target="_blank" rel="noopener noreferrer">
+                  Abrir ruta en Google Maps
+                </a>
+                <button type="button" className="sello" onClick={() => compartir(ruta)} disabled={compartiendo || mapaEstado === "ubicando"}>
+                  {compartiendo ? "Preparando…" : "Compartir mi ruta"}
+                </button>
+              </div>
             </div>
             {ruta.consejo && <p className="ruta-consejo">{ruta.consejo}</p>}
             <div className="mapa-ruta-marco">

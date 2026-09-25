@@ -1,6 +1,6 @@
 import { ipDe, leerJson, superaLimite } from "@/lib/entorno";
 import { guardarRuta, leerRuta } from "@/lib/rutaCache";
-import { claveLugar, filtrarCercanas, normalizarLugar, type Ruta } from "@/lib/ruta";
+import { claveLugar, filtrarCercanas, mapsRuta, normalizarLugar, ordenarParaCaminar, type Ruta } from "@/lib/ruta";
 
 // Ubica en el mapa las paradas de una ruta ya armada (solo las que están en caché).
 // Nominatim (OpenStreetMap) pide como máximo 1 consulta por segundo y un User-Agent identificable:
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
   const clave = claveLugar(lugar);
   const ruta = await leerRuta(clave, 2 * 86400);
   if (!ruta) return Response.json({ error: "Primero arma la ruta." }, { status: 404 });
-  if (ruta.ubicada) return Response.json({ paradas: ruta.paradas, cache: true });
+  if (ruta.ubicada) return Response.json({ paradas: ruta.paradas, maps: ruta.maps, cache: true });
 
   if (await superaLimite(`mapa:${ipDe(request)}`, 6, 600)) {
     return Response.json({ error: "Espera unos minutos para ver más mapas." }, { status: 429 });
@@ -44,8 +44,8 @@ export async function POST(request: Request) {
     const punto = (await geocodificar([p.direccion, p.barrio, ruta.ciudad].filter(Boolean).join(", "))) ?? null;
     paradas.push(punto ? { ...p, ...punto } : p);
   }
-  const listas = filtrarCercanas(paradas, centro);
-  const nueva: Ruta = { ...ruta, paradas: listas, ubicada: true };
+  const listas = ordenarParaCaminar(filtrarCercanas(paradas, centro));
+  const nueva: Ruta = { ...ruta, paradas: listas, maps: mapsRuta(listas, ruta.ciudad), ubicada: true };
   await guardarRuta(clave, nueva, true);
-  return Response.json({ paradas: listas, cache: false });
+  return Response.json({ paradas: listas, maps: nueva.maps, cache: false });
 }

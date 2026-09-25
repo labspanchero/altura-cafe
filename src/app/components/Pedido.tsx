@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { compartirImagen, fondoYute, fuentes, qr } from "@/lib/tarjeta";
 import { METODOS, type Cafe, type Metodo, type Receta } from "@/lib/cafes";
 import { useCarta } from "./CartaContexto";
 import MetodoIcono from "./MetodoIcono";
@@ -89,28 +90,8 @@ async function tarjetaResultado(r: Resultado) {
   cv.width = W;
   cv.height = H;
   const g = cv.getContext("2d")!;
-  const muestra = document.querySelector(".stencil");
-  const stencil = muestra ? getComputedStyle(muestra).fontFamily : "sans-serif";
-  const datoEl = document.querySelector(".dato");
-  const dato = datoEl ? getComputedStyle(datoEl).fontFamily : "sans-serif";
-  await document.fonts.ready;
-
-  // yute con la trama de la página
-  g.fillStyle = "#b08a52";
-  g.fillRect(0, 0, W, H);
-  const trama = getComputedStyle(document.documentElement).getPropertyValue("--arpillera").match(/url\((.+)\)/)?.[1];
-  if (trama) {
-    const img = new Image();
-    img.src = trama;
-    await img.decode().catch(() => {});
-    const pat = g.createPattern(img, "repeat");
-    if (pat) {
-      g.globalAlpha = 0.9;
-      g.fillStyle = pat;
-      g.fillRect(0, 0, W, H);
-      g.globalAlpha = 1;
-    }
-  }
+  const { stencil, dato } = await fuentes();
+  await fondoYute(g, W, H);
   const tinta = "#1c1710";
   g.strokeStyle = tinta;
   g.lineWidth = 10;
@@ -158,7 +139,7 @@ async function tarjetaResultado(r: Resultado) {
   g.lineWidth = 8;
   g.strokeStyle = r.cafe.tinta;
   const anchoSello = W - 256 - 250;
-  g.strokeRect(128, ys, anchoSello, 300);
+  g.strokeRect(128, ys, anchoSello, 250);
   g.fillStyle = textoLote;
   let tm = 92;
   g.font = `900 ${tm}px ${stencil}`;
@@ -166,25 +147,16 @@ async function tarjetaResultado(r: Resultado) {
     tm -= 4;
     g.font = `900 ${tm}px ${stencil}`;
   }
-  g.fillText(r.metodo.nombre.toUpperCase(), 168, ys + 110);
+  g.fillText(r.metodo.nombre.toUpperCase(), 168, ys + 100);
   g.font = `700 40px ${dato}`;
-  g.fillText(`MOLIENDA ${r.receta.molienda.toUpperCase()}`, 172, ys + 180);
-  g.fillText(`${r.receta.dosis} · ${r.receta.agua} · ${r.receta.temperatura} · ${r.receta.tiempo}`.toUpperCase(), 172, ys + 245);
+  g.fillText(`MOLIENDA ${r.receta.molienda.toUpperCase()}`, 172, ys + 160);
+  g.fillText(`${r.receta.dosis} · ${r.receta.agua} · ${r.receta.temperatura} · ${r.receta.tiempo}`.toUpperCase(), 172, ys + 218);
 
   // QR que lleva a la app
   try {
-    const QR = (await import("qrcode")).default;
-    const qr = await QR.toDataURL("https://altura-cafe.webflow.io/", {
-      margin: 1,
-      width: 190,
-      color: { dark: "#1c1710", light: "#efe4cf" },
-      errorCorrectionLevel: "M",
-    });
-    const img = new Image();
-    img.src = qr;
-    await img.decode();
+    const img = await qr("https://altura-cafe.webflow.io/", 190);
     const qx = W - 128 - 214;
-    const qy = ys + 62;
+    const qy = ys + 36;
     g.fillStyle = "#efe4cf";
     g.fillRect(qx, qy, 214, 214);
     g.drawImage(img, qx + 12, qy + 12, 190, 190);
@@ -207,21 +179,7 @@ async function tarjetaResultado(r: Resultado) {
 async function compartirResultado(r: Resultado) {
   const blob = await tarjetaResultado(r);
   if (!blob) return;
-  const archivo = new File([blob], `mi-cafe-${r.cafe.lote}.png`, { type: "image/png" });
-  const texto = `Mi café es ${r.cafe.pais} ${r.cafe.lote}: ${r.cafe.notas.join(", ")}. Encuentra el tuyo en Altura.`;
-  try {
-    if (navigator.canShare?.({ files: [archivo] })) {
-      await navigator.share({ files: [archivo], text: texto, url: location.href });
-      return;
-    }
-  } catch {
-    // compartir cancelado: se descarga
-  }
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = archivo.name;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  await compartirImagen(blob, `mi-cafe-${r.cafe.lote}.png`, `Mi café es ${r.cafe.pais} ${r.cafe.lote}: ${r.cafe.notas.join(", ")}. Encuentra el tuyo en Altura.`);
 }
 
 function Quiz() {

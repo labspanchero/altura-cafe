@@ -151,7 +151,13 @@ describe("seguridad", () => {
 });
 
 describe("ruta del café", async () => {
-  const { limpiarRuta, limpiarUrl, normalizarLugar, mapsRuta, distanciaKm, filtrarCercanas } = await import("@/lib/ruta");
+  const { limpiarRuta, limpiarUrl, normalizarLugar, mapsRuta, distanciaKm, filtrarCercanas, ordenarParaCaminar } = await import("@/lib/ruta");
+  it("ordena las paradas para caminar siempre hacia la más cercana", () => {
+    const base = { barrio: "", direccion: "x", destacado: "", puntaje: null, fuentePuntaje: null, fuente: "https://a.com" };
+    const p = (nombre: string, lon?: number) => ({ ...base, nombre, ...(lon === undefined ? {} : { lat: -34.58, lon }) });
+    const orden = ordenarParaCaminar([p("A", -58.43), p("Lejos", -58.4), p("Sin ubicar"), p("Cerca", -58.429), p("Medio", -58.42)]);
+    expect(orden.map((x) => x.nombre)).toEqual(["A", "Cerca", "Medio", "Lejos", "Sin ubicar"]);
+  });
   it("saca del mapa las paradas que el geocodificador ubicó lejos", () => {
     const palermo = { lat: -34.5803, lon: -58.4245 };
     expect(distanciaKm(palermo, { lat: -34.5886, lon: -58.4317 })).toBeLessThan(2);
