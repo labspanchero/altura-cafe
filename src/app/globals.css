@@ -1582,3 +1582,104 @@ main > section {
   white-space: nowrap;
   border: 0;
 }
+
+/* ——— Móvil enriquecido ——— */
+@media (max-width: 860px) {
+  /* El saco de escritorio vuelve en chico: se estampa y se ata con el scroll. */
+  .historia-saco {
+    padding: 10px var(--gutter) 12px;
+  }
+
+  .historia-saco .saco {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    height: auto;
+  }
+
+  .saco > svg {
+    display: block;
+    width: 96px;
+    height: 144px;
+    max-height: none;
+  }
+
+  .saco-movil {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .saco-etapa {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .saco-etapa .stencil {
+    font-size: 30px;
+    line-height: 0.95;
+  }
+
+  .saco-etapa .dato {
+    font-size: 13px;
+    color: var(--ink-soft);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .saco-tira {
+    width: 100%;
+    -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
+    mask-image: linear-gradient(90deg, #000 85%, transparent);
+  }
+
+  .saco-tira span {
+    font-size: 12px;
+    padding: 3px 7px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Los cuatro links siempre visibles; si no entran, la lista se desliza. */
+  .nav {
+    gap: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .nav-marca {
+    flex: 0 0 auto;
+    font-size: 24px;
+  }
+
+  .nav ul {
+    min-width: 0;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nav ul::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav ul li:nth-child(n + 3) {
+    display: list-item;
+  }
+
+  .nav ul li {
+    flex: 0 0 auto;
+  }
+
+  .nav a.nav-link {
+    padding: 6px 7px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}

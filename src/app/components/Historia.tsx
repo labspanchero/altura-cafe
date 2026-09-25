@@ -236,7 +236,7 @@ function Saco({ activa }: { activa: number }) {
   useEffect(() => {
     const t = tira.current;
     const chip = t?.querySelector<HTMLElement>('[data-activa="true"]');
-    if (t && chip) t.scrollTo({ left: t.scrollLeft + chip.getBoundingClientRect().left - t.getBoundingClientRect().left - 8, behavior: "smooth" });
+    if (t && chip) t.scrollTo({ left: t.scrollLeft + chip.getBoundingClientRect().left - t.getBoundingClientRect().left, behavior: "smooth" });
   }, [activa]);
   return (
     <div className="saco" aria-hidden="true">
@@ -314,31 +314,12 @@ function Saco({ activa }: { activa: number }) {
         ))}
       </svg>
       <div className="saco-movil">
-        <svg className="mini-saco" viewBox="0 0 480 720">
-          <path
-            d="M40 60 Q60 20 110 36 L370 36 Q420 20 440 60 L452 660 Q450 700 410 704 L70 704 Q30 700 28 660Z"
-            fill="var(--jute-deep)"
-            stroke="var(--ink)"
-            strokeWidth="14"
-          />
-          <text x="240" y="170" textAnchor="middle" className="stencil" fontSize="96" fill="var(--ink)">
-            ALTURA
-          </text>
-          {ETAPAS.map((e, i) => (
-            <rect
-              key={e.id}
-              className="estampa"
-              data-puesta={i <= activa}
-              style={{ "--giro": `${e.estampa.giro}deg` } as React.CSSProperties}
-              x={e.estampa.x}
-              y={e.estampa.y}
-              width={e.estampa.ancho}
-              height={e.estampa.texto.length * 36 + 16}
-              fill="var(--lote)"
-              opacity="0.9"
-            />
-          ))}
-        </svg>
+        <p className="saco-etapa">
+          <span className="stencil">{activa >= 0 ? ETAPAS[activa].titulo : "Saco abierto"}</span>
+          <span className="dato">
+            {activa >= 0 ? `${ETAPAS[activa].variable[0]} · ${ETAPAS[activa].variable[1]}` : "Sigue el lote"}
+          </span>
+        </p>
         <div className="saco-tira" ref={tira}>
           {ETAPAS.map((e, i) => (
             <span key={e.id} className="dato" data-puesta={i <= activa} data-activa={i === activa}>
