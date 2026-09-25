@@ -222,6 +222,11 @@ export default function MapaAltura() {
         el.style.zIndex = String(Math.round((1 - v.z) * 1000));
       };
 
+      // Tamaño de cada etiqueta (se mide una vez; se borra al cambiar el ancho).
+      const tamanos = new Map<HTMLElement, { w: number; h: number }>();
+      const olvidarTamanos = () => tamanos.clear();
+      window.addEventListener("resize", olvidarTamanos);
+
       const reloj = new THREE.Clock();
       let raf = 0;
       const dibujar = () => {
@@ -232,11 +237,33 @@ export default function MapaAltura() {
         );
         camara.lookAt(objetivo);
         camara.updateMatrixWorld();
-        for (const b of banderas) {
-          const on = activoRef.current === b.id;
-          const s = b.grupo.scale.x + ((on ? 1.35 : 1) - b.grupo.scale.x) * 0.2;
-          b.grupo.scale.setScalar(s);
-          proyectar(b.tope, etiquetas.current[b.id]);
+        // Etiquetas de las banderas: se proyectan y, si dos se pisan, la de atrás sube.
+        const puestas: { x: number; y: number; w: number; h: number }[] = [];
+        const lista = banderas
+          .map((b) => {
+            const on = activoRef.current === b.id;
+            const s = b.grupo.scale.x + ((on ? 1.35 : 1) - b.grupo.scale.x) * 0.2;
+            b.grupo.scale.setScalar(s);
+            v.copy(b.tope).project(camara);
+            return { el: etiquetas.current[b.id], x: (v.x * 0.5 + 0.5) * ancho, y: (-v.y * 0.5 + 0.5) * alto, z: v.z };
+          })
+          .sort((a, b) => a.z - b.z);
+        for (const e of lista) {
+          if (!e.el) continue;
+          let t = tamanos.get(e.el);
+          if (!t) {
+            t = { w: e.el.offsetWidth, h: e.el.offsetHeight };
+            tamanos.set(e.el, t);
+          }
+          const caja = { x: e.x - 6, y: e.y - 34, w: t.w, h: t.h };
+          for (let intento = 0; intento < 6; intento++) {
+            const choca = puestas.find((o) => caja.x < o.x + o.w + 4 && o.x < caja.x + caja.w + 4 && caja.y < o.y + o.h + 4 && o.y < caja.y + caja.h + 4);
+            if (!choca) break;
+            caja.y = choca.y - caja.h - 4;
+          }
+          puestas.push(caja);
+          e.el.style.transform = `translate(${e.x.toFixed(1)}px, ${(caja.y + 34).toFixed(1)}px)`;
+          e.el.style.zIndex = String(Math.round((1 - e.z) * 1000));
         }
         for (const { m, p } of puntosMarca) proyectar(p, marcas.current[m]);
         renderer.render(escena, camara);
@@ -256,6 +283,7 @@ export default function MapaAltura() {
 
       limpiar = () => {
         cancelAnimationFrame(raf);
+        window.removeEventListener("resize", olvidarTamanos);
         renderer.domElement.removeEventListener("pointerdown", abajo);
         window.removeEventListener("pointermove", mover);
         window.removeEventListener("pointerup", arriba);

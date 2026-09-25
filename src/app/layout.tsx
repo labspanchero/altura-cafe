@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Barlow, Barlow_Condensed, Big_Shoulders_Stencil } from "next/font/google";
 import "./globals.css";
 
@@ -23,6 +23,9 @@ const body = Barlow({
 const titulo = "Altura · Café de especialidad, de la planta a la taza";
 const descripcion =
   "Sigue un lote de café verde desde la planta hasta la taza y conoce la ficha completa de cada café: origen, altitud, proceso, notas, molienda y receta.";
+
+// Color de la barra del navegador en el teléfono.
+export const viewport: Viewport = { themeColor: "#b08a52" };
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://altura-cafe.webflow.io"),
