@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import BolsaDorada from "./BolsaDorada";
-import { METODOS, METODOS_ORDEN, type Cafe, type Metodo } from "@/lib/cafes";
-import { CANTIDADES, ORIGENES, PROCESOS, TUESTES, notas, perfil, recetaDe, type Config } from "@/lib/armar";
+import { METODOS, METODOS_ORDEN, type Cafe } from "@/lib/cafes";
+import { CANTIDADES, ORIGENES, PROCESOS, TUESTES, moliendaPedido, nombreMetodo, notas, perfil, recetaDe, type Config, type MetodoPedido } from "@/lib/armar";
 import { etapasDe } from "@/lib/etapas";
 import MetodoIcono from "./MetodoIcono";
 import Temporizador from "./Temporizador";
@@ -104,7 +104,7 @@ export default function ArmaTuLote() {
               <p>
                 Tu café <strong>{pedido.config.nombre}</strong>: {ORIGENES[pedido.config.origen].nombre}, proceso{" "}
                 {PROCESOS[pedido.config.proceso].nombre.toLowerCase()}, tueste {TUESTES[pedido.config.tueste].nombre.toLowerCase()},{" "}
-                molido para {METODOS[pedido.config.metodo].nombre} · {pedido.config.cantidad >= 1000 ? "1 kg" : `${pedido.config.cantidad} g`}.
+                {pedido.config.metodo === "grano" ? "en grano" : `molido para ${METODOS[pedido.config.metodo].nombre}`} · {pedido.config.cantidad >= 1000 ? "1 kg" : `${pedido.config.cantidad} g`}.
               </p>
               <ol className="arma-estado dato">
                 <li data-hecho="true">Pedido recibido</li>
@@ -166,12 +166,25 @@ export default function ArmaTuLote() {
                 />
               </fieldset>
               <fieldset>
-                <legend className="dato">4 · Tu método (define la molienda)</legend>
+                <legend className="dato">4 · Molienda: en grano o para tu método</legend>
                 <Opciones
                   nombre="metodo"
                   valor={c.metodo}
-                  alCambiar={(v) => set("metodo", v as Metodo)}
-                  opciones={METODOS_ORDEN.map((m) => ({ v: m, n: METODOS[m].nombre, d: METODOS[m].molienda, icono: <MetodoIcono metodo={m} /> }))}
+                  alCambiar={(v) => set("metodo", v as MetodoPedido)}
+                  opciones={[
+                    {
+                      v: "grano" as MetodoPedido,
+                      n: "En grano",
+                      d: "Lo mueles en casa",
+                      icono: (
+                        <svg viewBox="0 0 64 64" className="metodo-icono" aria-hidden="true">
+                          <ellipse cx="32" cy="32" rx="16" ry="23" transform="rotate(28 32 32)" fill="none" stroke="currentColor" strokeWidth="3" />
+                          <path d="M26 12 C40 24 22 38 38 52" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
+                      ),
+                    },
+                    ...METODOS_ORDEN.map((m) => ({ v: m as MetodoPedido, n: METODOS[m].nombre, d: METODOS[m].molienda, icono: <MetodoIcono metodo={m} /> })),
+                  ]}
                 />
               </fieldset>
               <fieldset>
@@ -208,7 +221,7 @@ export default function ArmaTuLote() {
                 </div>
               ))}
               <p className="dato arma-receta">
-                {METODOS[c.metodo].nombre}: molienda {receta.molienda.toLowerCase()} · {receta.dosis} · {receta.agua} · {receta.temperatura} · {receta.tiempo}
+                {c.metodo === "grano" ? "En grano. Muélelo justo antes de preparar; receta sugerida en V60" : METODOS[c.metodo].nombre}: molienda {receta.molienda.toLowerCase()} · {receta.dosis} · {receta.agua} · {receta.temperatura} · {receta.tiempo}
               </p>
               <button type="submit" className="sello" data-lleno="true" disabled={enviando}>
                 {enviando ? "Embolsando…" : "Hacer mi pedido"}
@@ -241,13 +254,13 @@ function SacoMiLote({ nombre, c }: { nombre: string; c: Config }) {
         ["Tueste", TUESTES[c.tueste].nombre],
         ["Notas", notas(c).slice(0, 2).join(" · ")],
       ]}
-      pie={`${METODOS[c.metodo].nombre} · ${cantidad} · molido ${METODOS[c.metodo].molienda.toLowerCase()}`}
+      pie={`${nombreMetodo(c.metodo)} · ${cantidad} · ${moliendaPedido(c.metodo)}`}
       tinta={o.tinta}
       sellos={[
         ["ORIGEN", o.nombre.toUpperCase()],
         ["PROCESO", PROCESOS[c.proceso].nombre.toUpperCase()],
         ["TUESTE", TUESTES[c.tueste].nombre.toUpperCase()],
-        ["MÉTODO", METODOS[c.metodo].nombre.toUpperCase()],
+        [c.metodo === "grano" ? "FORMATO" : "MÉTODO", c.metodo === "grano" ? "GRANO" : nombreMetodo(c.metodo).toUpperCase()],
         ["PESO", cantidad.toUpperCase()],
       ]}
     />

@@ -153,7 +153,7 @@ export default function BolsaDorada({ nombre, titulo, subtitulo, datos, pie, tin
                 <text x={cx} y={cy - 6} textAnchor="middle" className="dato" fontSize="7.5" fill="#e8cf8a" letterSpacing="1">
                   {arriba}
                 </text>
-                <text x={cx} y={cy + 9} textAnchor="middle" className="stencil" fontSize={valor.length > 8 ? 10 : valor.length > 6 ? 12 : 15} fill="#f3dfa2">
+                <text x={cx} y={cy + 9} textAnchor="middle" className="stencil" fontSize={valor.length > 7 ? 10.5 : valor.length > 5 ? 12.5 : 15} fill="#f3dfa2">
                   {valor}
                 </text>
               </g>

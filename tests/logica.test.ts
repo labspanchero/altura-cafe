@@ -115,6 +115,7 @@ describe("arma tu café", () => {
     expect(validarConfig(base)?.nombre).toBe("Café bNerdb");
     expect(validarConfig({ ...base, cantidad: 3 })).toBeNull();
     expect(validarConfig({ ...base, origen: "marte" })).toBeNull();
+    expect(validarConfig({ ...base, metodo: "grano" })?.metodo).toBe("grano");
   });
 
   it("mantiene el perfil entre 1 y 5 y el tueste oscuro suma amargor", () => {

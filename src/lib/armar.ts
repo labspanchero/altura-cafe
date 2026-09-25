@@ -28,7 +28,9 @@ export const CANTIDADES = [250, 500, 1000] as const;
 export type Origen = keyof typeof ORIGENES;
 export type Proceso = keyof typeof PROCESOS;
 export type Tueste = keyof typeof TUESTES;
-export type Config = { origen: Origen; proceso: Proceso; tueste: Tueste; metodo: Metodo; cantidad: (typeof CANTIDADES)[number]; nombre: string };
+// "grano": sin moler, para molerlo en casa según el método que se quiera.
+export type MetodoPedido = Metodo | "grano";
+export type Config = { origen: Origen; proceso: Proceso; tueste: Tueste; metodo: MetodoPedido; cantidad: (typeof CANTIDADES)[number]; nombre: string };
 
 const clamp = (v: number) => Math.max(1, Math.min(5, Math.round(v)));
 
@@ -65,7 +67,8 @@ export function recetaDe(c: Config) {
     fechaTueste: null,
     esCafe: true,
   };
-  return recetaPara(leido, c.metodo);
+  // En grano: la receta de referencia es V60, que se muele al momento.
+  return recetaPara(leido, c.metodo === "grano" ? "v60" : c.metodo);
 }
 
 export function validarConfig(b: unknown): Config | null {
@@ -76,9 +79,17 @@ export function validarConfig(b: unknown): Config | null {
     typeof o.origen !== "string" || !(o.origen in ORIGENES) ||
     typeof o.proceso !== "string" || !(o.proceso in PROCESOS) ||
     typeof o.tueste !== "string" || !(o.tueste in TUESTES) ||
-    typeof o.metodo !== "string" || !(o.metodo in METODOS) ||
+    typeof o.metodo !== "string" || !(o.metodo in METODOS || o.metodo === "grano") ||
     !CANTIDADES.includes(o.cantidad as never)
   )
     return null;
   return { ...(o as unknown as Config), nombre: nombre || "Mi café" };
+}
+
+export function nombreMetodo(m: MetodoPedido) {
+  return m === "grano" ? "En grano" : METODOS[m].nombre;
+}
+
+export function moliendaPedido(m: MetodoPedido) {
+  return m === "grano" ? "sin moler" : `molido ${METODOS[m].molienda.toLowerCase()}`;
 }
