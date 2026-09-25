@@ -149,3 +149,34 @@ describe("seguridad", () => {
     expect(await leerJson(roto, 1000)).toBeNull();
   });
 });
+
+describe("ruta del café", async () => {
+  const { limpiarRuta, limpiarUrl, normalizarLugar, mapsRuta } = await import("@/lib/ruta");
+  it("extrae la URL de una fuente en markdown y quita utm", () => {
+    expect(limpiarUrl("([catas.ar](https://www.catas.ar/?utm_source=openai))")).toBe("https://www.catas.ar/");
+    expect(limpiarUrl("javascript:alert(1)")).toBeNull();
+  });
+  it("normaliza el lugar y rechaza vacíos", () => {
+    expect(normalizarLugar("  Palermo <script>, BA ")).toBe("Palermo script , BA");
+    expect(normalizarLugar("x")).toBeNull();
+  });
+  it("descarta paradas sin fuente o con fuente fuera de las citas", () => {
+    const ruta = limpiarRuta(
+      {
+        ciudad: "Palermo",
+        consejo: "",
+        paradas: [
+          { nombre: "A", barrio: "", direccion: "Calle 1", destacado: "", puntaje: 4.6, fuentePuntaje: "Google", fuente: "https://a.com/x" },
+          { nombre: "B", barrio: "", direccion: "Calle 2", destacado: "", puntaje: null, fuentePuntaje: null, fuente: "https://b.com" },
+          { nombre: "Inventada", barrio: "", direccion: "Calle 3", destacado: "", puntaje: 5, fuentePuntaje: "x", fuente: "" },
+          { nombre: "Otra", barrio: "", direccion: "Calle 4", destacado: "", puntaje: null, fuentePuntaje: null, fuente: "https://no-citada.com" },
+        ],
+      },
+      "Palermo",
+      new Set(["https://a.com/x", "https://b.com/"]),
+    );
+    expect(ruta?.paradas.map((p) => p.nombre)).toEqual(["A", "B"]);
+    expect(ruta?.maps).toContain("travelmode=walking");
+    expect(mapsRuta(ruta!.paradas, "Palermo")).toContain("destination=");
+  });
+});

@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS rutas (
+  clave TEXT PRIMARY KEY,
+  datos TEXT NOT NULL,
+  creado INTEGER NOT NULL
+);

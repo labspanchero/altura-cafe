@@ -6,6 +6,7 @@ import ContadorVivo from "./components/ContadorVivo";
 import MarcasFondo from "./components/MarcasFondo";
 import TraeTuCafe from "./components/TraeTuCafe";
 import ArmaTuLote from "./components/ArmaTuLote";
+import RutaCafe from "./components/RutaCafe";
 import { CartaProvider } from "./components/CartaContexto";
 import { obtenerCarta } from "@/lib/carta";
 
@@ -65,6 +66,9 @@ export default async function Home() {
           <li>
             <a className="nav-link" href="#tu-cafe">Escanear</a>
           </li>
+          <li>
+            <a className="nav-link" href="#ruta">Ruta</a>
+          </li>
         </ul>
       </nav>
 
@@ -118,6 +122,18 @@ export default async function Home() {
                 </span>
                 <span className="escanear-flecha" aria-hidden="true">→</span>
               </a>
+              <a className="escanear-cta ruta-cta" href="#ruta" data-enfocar="ruta">
+                <svg viewBox="0 0 48 48" aria-hidden="true" className="escanear-icono">
+                  <path d="M24 42s12-10.6 12-20.5a12 12 0 1 0-24 0C12 31.4 24 42 24 42z" />
+                  <circle cx="24" cy="21" r="4.5" />
+                  <path className="ruta-trazo" d="M6 44c6-4 10 2 16-2" />
+                </svg>
+                <span className="escanear-texto">
+                  <span className="stencil">Ruta del café</span>
+                  <span className="dato">Cafeterías de especialidad donde estés</span>
+                </span>
+                <span className="escanear-flecha" aria-hidden="true">→</span>
+              </a>
               <a className="escanear-cta barista-cta" href="#barista" data-enfocar="pregunta">
                 <svg viewBox="0 0 48 48" aria-hidden="true" className="escanear-icono">
                   <path d="M8 10h32a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3H22l-9 8v-8H8a3 3 0 0 1-3-3V13a3 3 0 0 1 3-3z" />
@@ -150,6 +166,7 @@ export default async function Home() {
         <ArmaTuLote />
         <Pedido />
         <TraeTuCafe />
+        <RutaCafe />
       </main>
 
       <footer className="pie">
