@@ -295,6 +295,13 @@ function Saco({ activa }: { activa: number }) {
                 <stop offset="0.5" stopColor="#f3dfa2" />
                 <stop offset="1" stopColor="#b88c3c" />
               </linearGradient>
+              <linearGradient id="etiqueta-luz" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stopColor="#000" stopOpacity="0.35" />
+                <stop offset="0.14" stopColor="#000" stopOpacity="0.05" />
+                <stop offset="0.55" stopColor="#fff" stopOpacity="0.12" />
+                <stop offset="0.86" stopColor="#000" stopOpacity="0.08" />
+                <stop offset="1" stopColor="#000" stopOpacity="0.4" />
+              </linearGradient>
               <linearGradient id="brillo" x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0" stopColor="#fff" stopOpacity="0" />
                 <stop offset="0.5" stopColor="#fff" stopOpacity="0.55" />
@@ -342,14 +349,21 @@ function Saco({ activa }: { activa: number }) {
 
             {/* banda de etiqueta en la tinta del lote */}
             <g>
-              <rect x="76" y="388" width="328" height="118" fill="var(--lote)" />
-              <text x="96" y="432" className="stencil" fontSize="38" fill="#f4ecdc">
+              <g clipPath="url(#bolsa-recorte)">
+                <path d="M60 396 Q240 380 420 396 V504 Q240 490 60 504Z" fill="var(--lote)" />
+                <path d="M60 396 Q240 380 420 396" stroke="#e8cf8a" strokeWidth="1.5" fill="none" opacity="0.8" />
+                <path d="M60 504 Q240 490 420 504" stroke="#e8cf8a" strokeWidth="1.5" fill="none" opacity="0.8" />
+                {/* luz de cilindro sobre la etiqueta */}
+                <path d="M60 396 Q240 380 420 396 V504 Q240 490 60 504Z" fill="url(#bolsa-luz)" />
+                <path d="M60 396 Q240 380 420 396 V504 Q240 490 60 504Z" fill="url(#etiqueta-luz)" />
+              </g>
+              <text x="100" y="430" className="stencil" fontSize="38" fill="#f4ecdc">
                 ETIOPÍA
               </text>
-              <text x="97" y="456" className="dato" fontSize="13" fill="#f4ecdc" letterSpacing="1.5">
+              <text x="101" y="454" className="dato" fontSize="13" fill="#f4ecdc" letterSpacing="1.5">
                 GUJI · HAMBELA · LAVADO
               </text>
-              <path d="M270 402 V492" stroke="#f4ecdc" strokeWidth="1" opacity="0.6" />
+              <path d="M270 404 V488" stroke="#f4ecdc" strokeWidth="1" opacity="0.5" />
               {[
                 ["ALTITUD", "2.150 MSNM"],
                 ["VARIEDAD", "HEIRLOOM"],
@@ -364,7 +378,7 @@ function Saco({ activa }: { activa: number }) {
                   </text>
                 </g>
               ))}
-              <text x="97" y="492" className="dato" fontSize="10.5" fill="#f4ecdc" letterSpacing="2" opacity="0.85">
+              <text x="101" y="486" className="dato" fontSize="10.5" fill="#f4ecdc" letterSpacing="2" opacity="0.85">
                 LOTE ALT-07 · 250 G · GRANO
               </text>
             </g>
