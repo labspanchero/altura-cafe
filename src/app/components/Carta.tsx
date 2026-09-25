@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { METODOS, type Cafe, type Perfil } from "@/lib/cafes";
 import { useCarta } from "./CartaContexto";
 import Temporizador from "./Temporizador";
+import BolsaDorada from "./BolsaDorada";
 import { etapasDe } from "@/lib/etapas";
 import { texturaArpillera } from "@/lib/arpillera";
 import MetodoIcono from "./MetodoIcono";
@@ -338,15 +339,27 @@ export default function Carta() {
                 onPointerLeave={soltar}
                 style={{ "--tinta": c.tinta } as React.CSSProperties}
               >
-                <SiluetaSaco />
-                <span className="dato pila-lote" style={{ color: esClara(c.tinta) ? "var(--ink)" : "#fff" }}>
-                  {c.lote}
-                </span>
-                <span className="stencil pila-pais">{c.pais}</span>
-                <span className="dato pila-pie">
-                  {c.proceso.split(",")[0]} · {c.altitud.toLocaleString("es")} msnm
-                  <br />
-                  {c.notas[0]}
+                <BolsaDorada
+                  compacta
+                  nombre={c.lote}
+                  titulo={c.pais}
+                  subtitulo={`${c.region.split(",")[0]} · ${c.proceso.split(",")[0]}`}
+                  datos={[
+                    ["Altitud", `${c.altitud} msnm`],
+                    ["Variedad", c.variedad.split(" (")[0]],
+                    ["Nota", c.notas[0]],
+                  ]}
+                  lema="Altura · Café de especialidad"
+                  pie={`Cosecha ${c.cosecha} · tueste ${c.tueste.toLowerCase()}`}
+                  tinta={c.tinta}
+                  sellos={[
+                    ["SCA", c.puntaje.toLocaleString("es")],
+                    ["PROCESO", c.proceso.split(",")[0].toUpperCase()],
+                    ["TUESTE", c.tueste.toUpperCase()],
+                  ]}
+                />
+                <span className="sr-only">
+                  {c.pais} {c.lote}: {c.proceso}, {c.altitud} msnm, notas de {c.notas.join(", ")}
                 </span>
                 {(meGusta.conteos[c.id] ?? 0) > 0 && (
                   <span className="pila-megusta dato" aria-label={`${meGusta.conteos[c.id]} me gusta`}>

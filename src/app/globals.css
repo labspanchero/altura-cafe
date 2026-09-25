@@ -3075,3 +3075,98 @@ body::after {
     animation: none;
   }
 }
+
+/* ——— La carta con bolsas doradas ——— */
+.pared {
+  gap: 20px 14px;
+}
+
+.pila {
+  aspect-ratio: 480 / 790;
+  padding: 0;
+  filter: none;
+}
+
+.pila .bolsa-compacta {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  cursor: inherit;
+  pointer-events: none;
+}
+
+.pila .bolsa-compacta .bolsa-giro {
+  position: absolute;
+  inset: 0;
+  transform: none;
+}
+
+.pila .bolsa-compacta .bolsa-cara {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 16px 14px rgba(0, 0, 0, 0.55));
+}
+
+.pila .bolsa-compacta .bolsa-brillo {
+  transform: translateX(var(--lx-px, 160px)) skewX(-14deg);
+  opacity: 0.8;
+}
+
+.pila:hover {
+  filter: none;
+}
+
+.pila:hover .bolsa-compacta .bolsa-cara {
+  filter: drop-shadow(0 26px 20px rgba(0, 0, 0, 0.7));
+}
+
+.pila::after {
+  inset: 4% 12% 6%;
+  border-radius: 18px;
+}
+
+.pila[aria-pressed="true"] .bolsa-cara {
+  outline: none;
+}
+
+.pila[aria-pressed="true"]::before {
+  content: "";
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: -10px;
+  height: 4px;
+  background: var(--paper);
+  z-index: 2;
+}
+
+.pila .pila-megusta {
+  top: 12%;
+  right: 16%;
+  z-index: 2;
+}
+
+.pila .sello-pop {
+  animation: none;
+}
+
+.pila::before {
+  display: none;
+}
+
+.pila[aria-pressed="true"]::before {
+  display: block;
+  -webkit-mask: none;
+  mask: none;
+  background: var(--paper);
+  inset: auto 18% -10px;
+  height: 4px;
+}
+
+.pila::after {
+  display: none;
+}

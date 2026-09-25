@@ -17,9 +17,11 @@ type Props = {
   pie: string;
   tinta: string;
   sellos: [string, string][];
+  compacta?: boolean;
+  lema?: string;
 };
 
-export default function BolsaDorada({ nombre, titulo, subtitulo, datos, pie, tinta, sellos }: Props) {
+export default function BolsaDorada({ nombre, titulo, subtitulo, datos, pie, tinta, sellos, compacta = false, lema = "Altura · Lote a pedido" }: Props) {
   const u = useId().replace(/:/g, "");
   const giro = useRef<HTMLDivElement>(null);
   const id = (k: string) => `${k}-${u}`;
@@ -38,9 +40,19 @@ export default function BolsaDorada({ nombre, titulo, subtitulo, datos, pie, tin
   };
 
   return (
-    <div className="bolsa bolsa-dorada" onPointerMove={inclinar} onPointerLeave={soltar}>
+    <div
+      className={`bolsa bolsa-dorada${compacta ? " bolsa-compacta" : ""}`}
+      onPointerMove={compacta ? undefined : inclinar}
+      onPointerLeave={compacta ? undefined : soltar}
+    >
       <div className="bolsa-giro" ref={giro}>
-        <svg className="bolsa-cara" viewBox="0 0 480 780" role="img" aria-label={`Bolsa de ${nombre}: ${titulo}, ${subtitulo}`}>
+        <svg
+          className="bolsa-cara"
+          viewBox="0 0 480 780"
+          role={compacta ? undefined : "img"}
+          aria-hidden={compacta ? true : undefined}
+          aria-label={compacta ? undefined : `Bolsa de ${nombre}: ${titulo}, ${subtitulo}`}
+        >
           <defs>
             <clipPath id={id("rec")}>
               <path d={BOLSA} />
@@ -103,10 +115,10 @@ export default function BolsaDorada({ nombre, titulo, subtitulo, datos, pie, tin
             {nombre.toUpperCase()}
           </text>
           <text x="240" y="366" textAnchor="middle" className="dato" fontSize="10.5" fill="#1c1710" letterSpacing="3" opacity="0.7">
-            ALTURA · LOTE A PEDIDO
+            {lema.toUpperCase()}
           </text>
 
-          <text x="100" y="430" className="stencil" fontSize="38" fill="#f4ecdc">
+          <text x="100" y="430" className="stencil" fontSize={titulo.length > 8 ? 32 : 38} fill="#f4ecdc">
             {titulo.toUpperCase()}
           </text>
           <text x="101" y="454" className="dato" fontSize="13" fill="#f4ecdc" letterSpacing="1.5">
